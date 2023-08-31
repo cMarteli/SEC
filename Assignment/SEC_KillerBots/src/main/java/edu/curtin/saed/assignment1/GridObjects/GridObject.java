@@ -1,13 +1,19 @@
-package edu.curtin.saed.assignment1.GridObjects;
+package edu.curtin.saed.assignment1.gridobjects;
 
 /* Parent class to manage shared attributes for Bot, Citadel, and Wall */
 import java.awt.Point;
 
 public class GridObject {
     protected Point position;
-    /* Constructor takes in x and y coordinates*/
+
+    /* Constructor takes in x and y coordinates as an int */
     public GridObject(int x, int y) {
-        this.position = new Point(x, y);
+        this.position = new Point(x,y);
+    }
+    /* Constructor takes in x and y coordinates as a double*/
+    public GridObject(double x, double y) {
+        this.position = new Point();
+        this.position.setLocation(x, y);
     }
 
     /*Alternate Constructor takes in point */
@@ -21,12 +27,20 @@ public class GridObject {
     }
 
     /* sets position given x and y coordinates */
-    public void setPosition(int x, int y) {
+    public void setPosition(double x, double y) {
         this.position.setLocation(x, y);
     }
 
     /* sets position given point */
     public void setPosition(Point p) {
     this.position.setLocation(p);
+    }
+
+    public double getY() {
+        return this.position.getY();
+    }
+
+    public double getX() {
+        return this.position.getX();
     }
 }

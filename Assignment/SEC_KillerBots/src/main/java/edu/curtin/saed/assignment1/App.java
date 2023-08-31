@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 /*
@@ -13,8 +14,12 @@ import javafx.stage.Stage;
  * Software Engineering Concepts JavaFXDemo - David Cooper
  *
  */
+
 public class App extends Application
 {
+    public static final String APP_TITLE = "Revenge of the Killer Bots";
+    public static final int SCENE_WIDTH = 800;
+    public static final int SCENE_HEIGHT = 800;
     public static void main(String[] args)
     {
         launch();
@@ -23,8 +28,8 @@ public class App extends Application
     @Override
     public void start(Stage stage)
     {
-        stage.setTitle("Example App (JavaFX)");
-        JFXArena arena = new JFXArena();
+        stage.setTitle(APP_TITLE); //sets title of window
+        JFXArena arena = new JFXArena(); //creates arena object
         arena.addListener((x, y) ->
         {
             System.out.println("Arena click at (" + x + "," + y + ")");
@@ -54,7 +59,7 @@ public class App extends Application
         contentPane.setTop(toolbar);
         contentPane.setCenter(splitPane);
 
-        Scene scene = new Scene(contentPane, 800, 800);
+        Scene scene = new Scene(contentPane, SCENE_WIDTH, SCENE_HEIGHT, Color.BLACK);
         stage.setScene(scene);
         stage.show();
     }

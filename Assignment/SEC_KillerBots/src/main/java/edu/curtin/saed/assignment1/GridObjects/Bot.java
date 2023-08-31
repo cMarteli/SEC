@@ -1,4 +1,4 @@
-package edu.curtin.saed.assignment1.GridObjects;
+package edu.curtin.saed.assignment1.gridobjects;
 import java.awt.Point;
 import java.util.Random;
 
@@ -6,7 +6,7 @@ import java.util.Random;
 public class Bot extends GridObject{
 
     private int id;
-    private long delayValue;
+    private int delayValue;
     private static int robotCounter = 1;
     private static Random random = new Random();
 
@@ -21,7 +21,7 @@ public class Bot extends GridObject{
         return id;
     }
 
-    public long getDelayValue() {
+    public int getDelayValue() {
         return delayValue;
     }
 
@@ -41,6 +41,7 @@ public class Bot extends GridObject{
         return true;
     }
 
+    //TODO: math operations here may not work as well with double
     public void tryMove(Point[][] grid, Point citadel) {
         Point[] possibleMoves = {
             new Point(getPosition().x + 1, getPosition().y),
