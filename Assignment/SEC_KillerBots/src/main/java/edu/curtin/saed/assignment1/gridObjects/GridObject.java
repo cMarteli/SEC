@@ -1,4 +1,4 @@
-package edu.curtin.saed.assignment1.gridobjects;
+package edu.curtin.saed.assignment1.gridObjects;
 
 /* Parent class to manage shared attributes for Bot, Citadel, and Wall */
 import java.awt.Point;

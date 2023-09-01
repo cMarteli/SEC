@@ -1,4 +1,4 @@
-package edu.curtin.saed.assignment1.gridobjects;
+package edu.curtin.saed.assignment1.gridObjects;
 import java.awt.Point;
 import java.util.Random;
 
