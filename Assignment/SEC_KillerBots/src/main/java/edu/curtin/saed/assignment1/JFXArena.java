@@ -18,57 +18,70 @@ public class JFXArena extends Pane
     // Represents an image to draw, retrieved as a project resource.
     private static final String ROBOT_IMAGE = "1554047213.png";
     private static final String CITADEL_IMAGE = "rg1024-isometric-tower.png";
+    // Map to hold loaded images
+    //private Map<String, Image> imageMap = new HashMap<>();
     private Image robot1;
     private Image citadel;
-    
-    // The following values are arbitrary, and you may need to modify them according to the 
+    private static final Color NEON_BLUE = Color.rgb(0, 128, 255);
+
+    // The following values are arbitrary, and you may need to modify them according to the
     // requirements of your application.
     private int gridWidth = 9;
     private int gridHeight = 9;
-    private double robotX = 1.0;
-    private double robotY = 3.0;
+    // private double robotX = 1.0;
+    // private double robotY = 3.0;
+    private double robotX = 0.0;
+    private double robotY = 0.0;
 
     private double gridSquareSize; // Auto-calculated
     private Canvas canvas; // Used to provide a 'drawing surface'.
 
     private List<ArenaListener> listeners = null;
-    
+
     /**
      * Creates a new arena object, loading the robot image and initialising a drawing surface.
      */
     public JFXArena()
     {
-        // Here's how (in JavaFX) you get an Image object from an image file that's part of the 
-        // project's "resources". If you need multiple different images, you can modify this code 
+        // Here's how (in JavaFX) you get an Image object from an image file that's part of the
+        // project's "resources". If you need multiple different images, you can modify this code
         // accordingly.
-        
+
         // (NOTE: _DO NOT_ use ordinary file-reading operations here, and in particular do not try
-        // to specify the file's path/location. That will ruin things if you try to create a 
-        // distributable version of your code with './gradlew build'. The approach below is how a 
-        // project is supposed to read its own internal resources, and should work both for 
+        // to specify the file's path/location. That will ruin things if you try to create a
+        // distributable version of your code with './gradlew build'. The approach below is how a
+        // project is supposed to read its own internal resources, and should work both for
         // './gradlew run' and './gradlew build'.)
-                
-        try(InputStream is = getClass().getClassLoader().getResourceAsStream(ROBOT_IMAGE))
-        {
-            if(is == null)
-            {
-                throw new AssertionError("Cannot find image file " + ROBOT_IMAGE);
-            }
-            robot1 = new Image(is);
-        }
-        catch(IOException e)
-        {
-            throw new AssertionError("Cannot load image file " + ROBOT_IMAGE, e);
-        }
-        
+
+        //Load images
+        citadel = loadImage(CITADEL_IMAGE);
+        robot1 = loadImage(ROBOT_IMAGE);
+
         canvas = new Canvas();
         canvas.widthProperty().bind(widthProperty());
         canvas.heightProperty().bind(heightProperty());
         getChildren().add(canvas);
     }
-    
-    
+
     /**
+     * Loads images in a separate method
+     * @return Image object
+     * @throws AssertionError if image file cannot be found
+     */
+    private Image loadImage(String resourceName) {
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream(resourceName)) {
+            if (is == null) {
+                throw new AssertionError("Cannot find image file " + resourceName);
+            }
+            return new Image(is);
+        } catch (IOException e) {
+            throw new AssertionError("Cannot load image file " + resourceName, e);
+        }
+    }
+
+
+    /**
+     * TODO: Modify this
      * Moves a robot image to a new grid position. This is highly rudimentary, as you will need
      * many different robots in practice. This method currently just serves as a demonstration.
      */
@@ -78,10 +91,23 @@ public class JFXArena extends Pane
         robotY = y;
         requestLayout();
     }
-    
+
     /**
-     * Adds a callback for when the user clicks on a grid square within the arena. The callback 
-     * (of type ArenaListener) receives the grid (x,y) coordinates as parameters to the 
+     * Calculates the center coordinates of the grid.
+     * Used to draw the citadel
+     *
+     * @return A double array where the first element is the center x-coordinate
+     *         and the second element is the center y-coordinate.
+     */
+    public double[] getCenterCoordinates() {
+        double centerX = (gridWidth - 1) / 2.0;
+        double centerY = (gridHeight - 1) / 2.0;
+        return new double[] { centerX, centerY };
+    }
+
+    /**
+     * Adds a callback for when the user clicks on a grid square within the arena. The callback
+     * (of type ArenaListener) receives the grid (x,y) coordinates as parameters to the
      * 'squareClicked()' method.
      */
     public void addListener(ArenaListener newListener)
@@ -93,11 +119,11 @@ public class JFXArena extends Pane
             {
                 int gridX = (int)(event.getX() / gridSquareSize);
                 int gridY = (int)(event.getY() / gridSquareSize);
-                
+
                 if(gridX < gridWidth && gridY < gridHeight)
                 {
                     for(ArenaListener listener : listeners)
-                    {   
+                    {
                         listener.squareClicked(gridX, gridY);
                     }
                 }
@@ -105,10 +131,10 @@ public class JFXArena extends Pane
         }
         listeners.add(newListener);
     }
-        
-        
+
+
     /**
-     * This method is called in order to redraw the screen, either because the user is manipulating 
+     * This method is called in order to redraw the screen, either because the user is manipulating
      * the window, OR because you've called 'requestLayout()'.
      *
      * You will need to modify the last part of this method; specifically the sequence of calls to
@@ -117,23 +143,27 @@ public class JFXArena extends Pane
     @Override
     public void layoutChildren()
     {
-        super.layoutChildren(); 
+        super.layoutChildren();
         GraphicsContext gfx = canvas.getGraphicsContext2D();
         gfx.clearRect(0.0, 0.0, canvas.getWidth(), canvas.getHeight());
-        
+
+        // Fills the background
+        gfx.setFill(Color.BLACK); //changed this colour to black
+        gfx.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
         // First, calculate how big each grid cell should be, in pixels. (We do need to do this
         // every time we repaint the arena, because the size can change.)
         gridSquareSize = Math.min(
             getWidth() / (double) gridWidth,
             getHeight() / (double) gridHeight);
-            
+
         double arenaPixelWidth = gridWidth * gridSquareSize;
         double arenaPixelHeight = gridHeight * gridSquareSize;
-            
-            
+
+
         // Draw the arena grid lines. This may help for debugging purposes, and just generally
         // to see what's going on.
-        gfx.setStroke(Color.DARKGREY);
+        gfx.setStroke(NEON_BLUE); // changed the colour here to neon blue
         gfx.strokeRect(0.0, 0.0, arenaPixelWidth - 1.0, arenaPixelHeight - 1.0); // Outer edge
 
         for(int gridX = 1; gridX < gridWidth; gridX++) // Internal vertical grid lines
@@ -141,7 +171,7 @@ public class JFXArena extends Pane
             double x = (double) gridX * gridSquareSize;
             gfx.strokeLine(x, 0.0, x, arenaPixelHeight);
         }
-        
+
         for(int gridY = 1; gridY < gridHeight; gridY++) // Internal horizontal grid lines
         {
             double y = (double) gridY * gridSquareSize;
@@ -151,46 +181,51 @@ public class JFXArena extends Pane
         // Invoke helper methods to draw things at the current location.
         // ** You will need to adapt this to the requirements of your application. **
         drawImage(gfx, robot1, robotX, robotY);
-        drawLabel(gfx, "Robot Name", robotX, robotY);
+        drawLabel(gfx, "Cassius Clay", robotX, robotY);
 
-        //DEBUG draw citadel
-        drawImage(gfx, robot1, robotX, robotY);
-        drawLabel(gfx, "Robot Name", robotX, robotY);
+        // Get coordinates of the center of the arena
+        double[] centerCoordinates = getCenterCoordinates();
+        double citadelX = centerCoordinates[0];
+        double citadelY = centerCoordinates[1];
+
+        // Draw the citadel at the center
+        drawImage(gfx, citadel, citadelX, citadelY);
+        //drawLabel(gfx, "Citadel", citadelX, citadelY);
     }
-    
-    
-    /** 
-     * Draw an image in a specific grid location. *Only* call this from within layoutChildren(). 
+
+
+    /**
+     * Draw an image in a specific grid location. *Only* call this from within layoutChildren().
      *
-     * Note that the grid location can be fractional, so that (for instance), you can draw an image 
+     * Note that the grid location can be fractional, so that (for instance), you can draw an image
      * at location (3.5,4), and it will appear on the boundary between grid cells (3,4) and (4,4).
-     *     
+     *
      * You shouldn't need to modify this method.
      */
     private void drawImage(GraphicsContext gfx, Image image, double gridX, double gridY)
     {
-        // Get the pixel coordinates representing the centre of where the image is to be drawn. 
+        // Get the pixel coordinates representing the centre of where the image is to be drawn.
         double x = (gridX + 0.5) * gridSquareSize;
         double y = (gridY + 0.5) * gridSquareSize;
-        
-        // We also need to know how "big" to make the image. The image file has a natural width 
-        // and height, but that's not necessarily the size we want to draw it on the screen. We 
+
+        // We also need to know how "big" to make the image. The image file has a natural width
+        // and height, but that's not necessarily the size we want to draw it on the screen. We
         // do, however, want to preserve its aspect ratio.
         double fullSizePixelWidth = robot1.getWidth();
         double fullSizePixelHeight = robot1.getHeight();
-        
+
         double displayedPixelWidth, displayedPixelHeight;
         if(fullSizePixelWidth > fullSizePixelHeight)
         {
-            // Here, the image is wider than it is high, so we'll display it such that it's as 
-            // wide as a full grid cell, and the height will be set to preserve the aspect 
+            // Here, the image is wider than it is high, so we'll display it such that it's as
+            // wide as a full grid cell, and the height will be set to preserve the aspect
             // ratio.
             displayedPixelWidth = gridSquareSize;
             displayedPixelHeight = gridSquareSize * fullSizePixelHeight / fullSizePixelWidth;
         }
         else
         {
-            // Otherwise, it's the other way around -- full height, and width is set to 
+            // Otherwise, it's the other way around -- full height, and width is set to
             // preserve the aspect ratio.
             displayedPixelHeight = gridSquareSize;
             displayedPixelWidth = gridSquareSize * fullSizePixelWidth / fullSizePixelHeight;
@@ -199,16 +234,16 @@ public class JFXArena extends Pane
         // Actually put the image on the screen.
         gfx.drawImage(image,
             x - displayedPixelWidth / 2.0,  // Top-left pixel coordinates.
-            y - displayedPixelHeight / 2.0, 
+            y - displayedPixelHeight / 2.0,
             displayedPixelWidth,              // Size of displayed image.
             displayedPixelHeight);
     }
-    
-    
+
+
     /**
-     * Displays a string of text underneath a specific grid location. *Only* call this from within 
-     * layoutChildren(). 
-     *     
+     * Displays a string of text underneath a specific grid location. *Only* call this from within
+     * layoutChildren().
+     *
      * You shouldn't need to modify this method.
      */
     private void drawLabel(GraphicsContext gfx, String label, double gridX, double gridY)
@@ -218,27 +253,27 @@ public class JFXArena extends Pane
         gfx.setStroke(Color.BLUE);
         gfx.strokeText(label, (gridX + 0.5) * gridSquareSize, (gridY + 1.0) * gridSquareSize);
     }
-    
-    /** 
+
+    /**
      * Draws a (slightly clipped) line between two grid coordinates.
-     *     
+     *
      * You shouldn't need to modify this method.
      */
-    private void drawLine(GraphicsContext gfx, double gridX1, double gridY1, 
+    private void drawLine(GraphicsContext gfx, double gridX1, double gridY1,
                                                double gridX2, double gridY2)
     {
         gfx.setStroke(Color.RED);
-        
+
         // Recalculate the starting coordinate to be one unit closer to the destination, so that it
         // doesn't overlap with any image appearing in the starting grid cell.
         final double radius = 0.5;
         double angle = Math.atan2(gridY2 - gridY1, gridX2 - gridX1);
         double clippedGridX1 = gridX1 + Math.cos(angle) * radius;
         double clippedGridY1 = gridY1 + Math.sin(angle) * radius;
-        
-        gfx.strokeLine((clippedGridX1 + 0.5) * gridSquareSize, 
-                       (clippedGridY1 + 0.5) * gridSquareSize, 
-                       (gridX2 + 0.5) * gridSquareSize, 
+
+        gfx.strokeLine((clippedGridX1 + 0.5) * gridSquareSize,
+                       (clippedGridY1 + 0.5) * gridSquareSize,
+                       (gridX2 + 0.5) * gridSquareSize,
                        (gridY2 + 0.5) * gridSquareSize);
     }
 }

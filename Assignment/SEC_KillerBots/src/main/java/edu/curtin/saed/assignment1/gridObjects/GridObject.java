@@ -36,11 +36,11 @@ public class GridObject {
     this.position.setLocation(p);
     }
 
-    public double getY() {
-        return this.position.getY();
+    public int getY() {
+        return (int)this.position.getY();
     }
 
-    public double getX() {
-        return this.position.getX();
+    public int getX() {
+        return (int)this.position.getX();
     }
 }

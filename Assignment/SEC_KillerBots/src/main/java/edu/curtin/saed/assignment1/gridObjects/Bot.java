@@ -2,7 +2,7 @@ package edu.curtin.saed.assignment1.gridObjects;
 import java.awt.Point;
 import java.util.Random;
 
-/* Robot class stores coordinates */
+/* GridObject class stores coordinates */
 public class Bot extends GridObject{
 
     private int id;
@@ -29,32 +29,4 @@ public class Bot extends GridObject{
         setPosition(newPosition); // Assuming GridObject has a setPosition method
     }
 
-    public boolean canMoveTo(Point newPosition, Point citadel, Point[][] grid) {
-        if (newPosition.equals(citadel)) {
-            return false;
-        }
-
-        if (grid[newPosition.x][newPosition.y] != null) {
-            return false;
-        }
-
-        return true;
-    }
-
-    //TODO: math operations here may not work as well with double
-    public void tryMove(Point[][] grid, Point citadel) {
-        Point[] possibleMoves = {
-            new Point(getPosition().x + 1, getPosition().y),
-            new Point(getPosition().x - 1, getPosition().y),
-            new Point(getPosition().x, getPosition().y + 1),
-            new Point(getPosition().x, getPosition().y - 1)
-        };
-
-        for (Point possibleMove : possibleMoves) {
-            if (canMoveTo(possibleMove, citadel, grid)) {
-                move(possibleMove);
-                return;
-            }
-        }
-    }
 }
