@@ -20,18 +20,20 @@ public class JFXArena extends Pane
     private static final String CITADEL_IMAGE = "rg1024-isometric-tower.png";
     // Map to hold loaded images
     //private Map<String, Image> imageMap = new HashMap<>();
-    private Image robot1;
-    private Image citadel;
+    private Image botImg;
+    private Image citadelImg;
     private static final Color NEON_BLUE = Color.rgb(0, 128, 255);
 
     // The following values are arbitrary, and you may need to modify them according to the
     // requirements of your application.
-    private int gridWidth = 9;
-    private int gridHeight = 9;
-    // private double robotX = 1.0;
-    // private double robotY = 3.0;
-    private double robotX = 0.0;
-    private double robotY = 0.0;
+    private int gridWidth;
+    private int gridHeight;
+
+    private List<double[]> robotPositions = new ArrayList<>();
+
+    //Center coordinates of the grid
+    private double citadelX;
+    private double citadelY;
 
     private double gridSquareSize; // Auto-calculated
     private Canvas canvas; // Used to provide a 'drawing surface'.
@@ -54,13 +56,28 @@ public class JFXArena extends Pane
         // './gradlew run' and './gradlew build'.)
 
         //Load images
-        citadel = loadImage(CITADEL_IMAGE);
-        robot1 = loadImage(ROBOT_IMAGE);
+        citadelImg = loadImage(CITADEL_IMAGE);
+        botImg = loadImage(ROBOT_IMAGE);
+
+        gridWidth = 0;
+        gridHeight = 0;
+        citadelX = 0;
+        citadelY = 0;
 
         canvas = new Canvas();
         canvas.widthProperty().bind(widthProperty());
         canvas.heightProperty().bind(heightProperty());
         getChildren().add(canvas);
+    }
+
+    public void setGridSize(int width, int height) {
+        gridWidth= width;
+        gridHeight = height;
+    }
+
+    public void setCitadelPosition(Double x, Double y) {
+        citadelX = x;
+        citadelY = y;
     }
 
     /**
@@ -81,28 +98,21 @@ public class JFXArena extends Pane
 
 
     /**
-     * TODO: Modify this
-     * Moves a robot image to a new grid position. This is highly rudimentary, as you will need
-     * many different robots in practice. This method currently just serves as a demonstration.
+     * Adds a new robot position or updates an existing one.
+     * @param x X-coordinate of the robot.
+     * @param y Y-coordinate of the robot.
+     * @param id Identifier for the robot. If a robot with this ID already exists, its position is updated.
      */
-    public void setRobotPosition(double x, double y)
-    {
-        robotX = x;
-        robotY = y;
+    public void setRobotPosition(double x, double y, int id) {
+        // Check if a robot with this ID already exists
+        if (id < robotPositions.size()) {
+            robotPositions.get(id)[0] = x;
+            robotPositions.get(id)[1] = y;
+        } else {
+            // Add new robot position
+            robotPositions.add(new double[]{x, y});
+        }
         requestLayout();
-    }
-
-    /**
-     * Calculates the center coordinates of the grid.
-     * Used to draw the citadel
-     *
-     * @return A double array where the first element is the center x-coordinate
-     *         and the second element is the center y-coordinate.
-     */
-    public double[] getCenterCoordinates() {
-        double centerX = (gridWidth - 1) / 2.0;
-        double centerY = (gridHeight - 1) / 2.0;
-        return new double[] { centerX, centerY };
     }
 
     /**
@@ -178,19 +188,16 @@ public class JFXArena extends Pane
             gfx.strokeLine(0.0, y, arenaPixelWidth, y);
         }
 
-        // Invoke helper methods to draw things at the current location.
-        // ** You will need to adapt this to the requirements of your application. **
-        drawImage(gfx, robot1, robotX, robotY);
-        drawLabel(gfx, "Cassius Clay", robotX, robotY);
-
-        // Get coordinates of the center of the arena
-        double[] centerCoordinates = getCenterCoordinates();
-        double citadelX = centerCoordinates[0];
-        double citadelY = centerCoordinates[1];
-
         // Draw the citadel at the center
-        drawImage(gfx, citadel, citadelX, citadelY);
+        drawImage(gfx, citadelImg, citadelX, citadelY);
         //drawLabel(gfx, "Citadel", citadelX, citadelY);
+
+        // Loop through the list of robot positions and draw each one
+        for (int i = 0; i < robotPositions.size(); i++) {
+            double[] position = robotPositions.get(i);
+            drawImage(gfx, botImg, position[0], position[1]);
+            drawLabel(gfx, "Robot " + (i + 1), position[0], position[1]);
+        }
     }
 
 
@@ -211,8 +218,8 @@ public class JFXArena extends Pane
         // We also need to know how "big" to make the image. The image file has a natural width
         // and height, but that's not necessarily the size we want to draw it on the screen. We
         // do, however, want to preserve its aspect ratio.
-        double fullSizePixelWidth = robot1.getWidth();
-        double fullSizePixelHeight = robot1.getHeight();
+        double fullSizePixelWidth = botImg.getWidth();
+        double fullSizePixelHeight = botImg.getHeight();
 
         double displayedPixelWidth, displayedPixelHeight;
         if(fullSizePixelWidth > fullSizePixelHeight)
@@ -259,8 +266,7 @@ public class JFXArena extends Pane
      *
      * You shouldn't need to modify this method.
      */
-    private void drawLine(GraphicsContext gfx, double gridX1, double gridY1,
-                                               double gridX2, double gridY2)
+    private void drawLine(GraphicsContext gfx, double gridX1, double gridY1, double gridX2, double gridY2)
     {
         gfx.setStroke(Color.RED);
 

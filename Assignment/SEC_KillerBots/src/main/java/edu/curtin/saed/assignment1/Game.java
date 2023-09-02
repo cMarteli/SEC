@@ -10,7 +10,7 @@ import java.awt.Point;
 
 
 /* Game class to manage game logic
- * TODO: FIX MEMORY LEAKS, ONLY WORKS WITH ONE BOT!!!!
+ * TODO: TEST FOR MEMORY LEAKS
 */
 public class Game {
 
@@ -20,48 +20,42 @@ public class Game {
 
     private volatile boolean running = true;  // New flag to control threads
     private final List<Thread> activeThreads = new CopyOnWriteArrayList<>(); // New list to hold active threads
+    private List<Bot> bots;  // List of bots in the game
 
-
-    Bot b1, b2; //TODO: DEBUG ONLY
-
-    public Game(JFXArena a) {
+    public Game(JFXArena a, int x, int y) {
         arena = a;
-        grid = new Grid(9, 9); //TODO: Hardcoded values;
+        grid = new Grid(x, y);
+
+        a.setGridSize(x, y);
+        // Set the citadel position in the arena based on game logic
         citadel = grid.getCitadelLocation();
-        b1 = new Bot(0, 0); //TODO: DEBUG ONLY
-        b2 = new Bot(0, 2); //TODO: DEBUG ONLY
+        arena.setCitadelPosition(citadel.getX(), citadel.getY());
+        
+        //DEBUG ONLY manually adding bots TODO: Currently adding an extra bot
+        bots = new ArrayList<>();
+        bots.add(new Bot(0, 0));
+        bots.add(new Bot(0, 2));
 
         System.out.println("Game created");//DEBUG
     }
 
-    // public void initGame(){
-    //     System.out.println("Game started");//DEBUG
 
-    //     new Thread(() -> {
-    //         try {
-    //             initiateRobotMovement(b1); //TODO: DEBUG ONLY
-    //         } catch (InterruptedException e) {
-    //             // Handle exception
-    //         }
-    //     }).start();
+    public void initGame() {
+        System.out.println("Game started"); // DEBUG
 
+        /* Loop through each bot and create a new thread for it */
+        for (Bot bot : bots) {
+            Thread t = new Thread(() -> {
+                try {
+                    initiateRobotMovement(bot);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();  // Reset the interrupt flag
+                }
+            });
 
-    // }
-
-    public void initGame(){
-        System.out.println("Game started");//DEBUG
-
-        /* Create a new thread and add it to the activeThreads list */
-        Thread t1 = new Thread(() -> {
-            try {
-                initiateRobotMovement(b1);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();  // Reset the interrupt flag
-            }
-        });
-
-        activeThreads.add(t1);
-        t1.start();
+            activeThreads.add(t);
+            t.start();
+        }
     }
 
     public void stopGame() {
@@ -78,9 +72,8 @@ public class Game {
     /**
      * Updates the graphical representation on the JFXArena.
      */
-    public void updateScreen() {
-        // Assuming your Grid object is a 2D array representation of the grid
-        GridObject[][] gridArray = grid.getGrid();
+    public void updateScreen() {        
+        GridObject[][] gridArray = grid.getGrid();// Get the grid array from the Grid class
 
         // Loop through each cell in the grid
         for (int y = 0; y < gridArray.length; y++) {
@@ -88,19 +81,15 @@ public class Game {
                 GridObject obj = gridArray[y][x];
                 // Check if the grid cell contains a robot
                 if (obj instanceof Bot) {
-                    arena.setRobotPosition(x, y);
+                    arena.setRobotPosition(x, y, ((Bot) obj).getId());
                 }
-                // Check for other types of GridObjects and update the arena accordingly
+                    // TODO:Check for other types of GridObjects and update the arena accordingly
+                }
             }
+
+            // Force a layout update on the arena
+            arena.requestLayout();
         }
-
-        // Optionally: Set the citadel position in the arena based on your game logic
-        //Point citadel = grid.getCitadelPosition();  // Replace with your method to get citadel position
-        //arena.setCitadelPosition(citadel.getX(), citadel.getY());
-
-        // Force a layout update on the arena
-        arena.requestLayout();
-    }
 
    public void decideNextMove(Bot robot) throws InterruptedException {
         ArrayList<Point> possibleMoves = new ArrayList<>();

@@ -22,7 +22,22 @@ public class App extends Application
     public static final String APP_TITLE = "Revenge of the Killer Bots";
     public static final int SCENE_WIDTH = 800; //can be later changed to (w-1)*100
     public static final int SCENE_HEIGHT = 800; ////can be later changed to (h-1)*100
+    public static final int DIMENSIONX = 9; //TODO: Hardcoded
+    public static final int DIMENSIONY = 9; //TODO: Hardcoded
     Game game;
+
+        // Create a new AnimationTimer
+    AnimationTimer timer = new AnimationTimer() {
+        private long lastUpdate = 0;
+
+        @Override
+        public void handle(long now) {
+            if (now - lastUpdate >= 40_000_000) { // 25 times per second is every 40 ms, which is 40,000,000 nanoseconds
+                game.updateScreen();
+                lastUpdate = now;
+            }
+        }
+    };
 
     public static void main(String[] args)
     {
@@ -32,6 +47,7 @@ public class App extends Application
     /** Frees memory when game is closed */
     @Override
     public void stop() {
+        System.out.println("Closing game");//DEBUG
         game.stopGame();  // Stop the game when the application stops
     }
 
@@ -42,7 +58,7 @@ public class App extends Application
         stage.getIcons().add(icon); //sets icon of window
         stage.setTitle(APP_TITLE); //sets title of window
         JFXArena arena = new JFXArena(); //creates arena object
-        game = new Game(arena); //Creates a new game instance
+        game = new Game(arena, DIMENSIONX, DIMENSIONY); //Creates a new game instance
 
         ToolBar toolbar = new ToolBar();
 //         Button btn1 = new Button("My Button 1");
@@ -60,7 +76,7 @@ public class App extends Application
         arena.addListener((x, y) ->
         {
             logger.appendText("\nArena click at (" + x + "," + y + ")");
-            game.stopGame();
+            //game.stopGame();
             //game.updateScreen();
         });
 
@@ -78,21 +94,10 @@ public class App extends Application
         stage.setScene(scene);
         stage.show();
 
-        game.initGame();
+        game.initGame(); //starts game here
 
         /* Auto refresh the screen */
-        // Create a new AnimationTimer
-        AnimationTimer timer = new AnimationTimer() {
-            private long lastUpdate = 0;
 
-            @Override
-            public void handle(long now) {
-                if (now - lastUpdate >= 40_000_000) { // 25 times per second is every 40 ms, which is 40,000,000 nanoseconds
-                    game.updateScreen();
-                    lastUpdate = now;
-                }
-            }
-        };
 
         // Start the AnimationTimer
         timer.start();
