@@ -7,7 +7,7 @@ public class Bot extends GridObject{
 
     private int id;
     private int delayValue;
-    private static int robotCounter = 1;
+    private static int robotCounter = 0; //Starting at 1 will cause setRobotPosition() in JFXArena to break
     private static Random random = new Random();
 
 
