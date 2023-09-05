@@ -54,7 +54,7 @@ public class Game {
             while (running) {
                 try {
                     TimeUnit.MILLISECONDS.sleep(SPAWN_RATE); // Wait for 1500 ms
-                    addBotAtRandomCorner(); // Add a bot at a random corner
+                    spawnBot(); // Add a bot at a random corner
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt(); // Reset the interrupt flag
                 }
@@ -103,7 +103,7 @@ public class Game {
      * Adds a bot at a random corner of the grid.
      * Checks if the corners are free before adding a new bot.
      */
-    private void addBotAtRandomCorner() {
+    private void spawnBot() {
         // Define the four corners
         Point[] corners = new Point[] {
                 new Point(0, 0), // top left

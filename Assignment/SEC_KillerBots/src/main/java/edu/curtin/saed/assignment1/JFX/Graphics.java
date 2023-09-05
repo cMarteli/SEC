@@ -1,6 +1,6 @@
 /**
  * Graphics.java
- * Final class, contains paths to images and RGB values for colour display
+ * Constants class, contains paths to images and RGB values for colour display
  * 2023/SEC Assignment 1
  * @author Victor Marteli (19598552)
  */
@@ -17,5 +17,7 @@ public final class Graphics {
 
     public static final Color GRID_COLOUR = Color.rgb(0, 128, 255); // neon blue
     public static final Color BG_COLOUR = Color.BLACK; // black
+    public static final Color LABEL_COLOUR = Color.SILVER; // black
+    public static final Color LINE_COLOUR = Color.RED; // black
 
 }

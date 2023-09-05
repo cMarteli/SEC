@@ -12,7 +12,6 @@ import javafx.scene.canvas.*;
 import javafx.geometry.VPos;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 
 import java.io.*;
@@ -41,6 +40,7 @@ public class JFXArena extends Pane {
     private Canvas canvas; // Used to provide a 'drawing surface'.
 
     private List<ArenaListener> listeners = null;
+    private BotSpawnListener botSpawnListener;
 
     /**
      * Creates a new arena object, loading the robot image and initialising a
@@ -108,18 +108,24 @@ public class JFXArena extends Pane {
     /**
      * Adds a new robot position or updates an existing one.
      *
-     * @param x  X-coordinate of the robot.
-     * @param y  Y-coordinate of the robot.
-     * @param id Identifier for the robot. If a robot with this ID already exists,
-     *           its position is updated.
+     * @param bot The bot to set or update.
      */
     public void setRobotPosition(Bot bot) {
         int id = bot.getId();
+        boolean isNewBot = false;
+
         if (id < robotPositions.size()) {
             robotPositions.set(id, bot);
         } else {
             robotPositions.add(bot);
+            isNewBot = true; // This is a new bot
         }
+
+        // If it's a new bot, notify the listener
+        if (isNewBot && botSpawnListener != null) {
+            botSpawnListener.onBotSpawn((int) bot.getX(), (int) bot.getY());
+        }
+
         requestLayout();
     }
 
@@ -145,6 +151,15 @@ public class JFXArena extends Pane {
             });
         }
         listeners.add(newListener);
+    }
+
+    /**
+     * Sets the BotSpawnListener.
+     *
+     * @param listener The listener to set.
+     */
+    public void setBotSpawnListener(BotSpawnListener listener) {
+        this.botSpawnListener = listener;
     }
 
     /**
@@ -276,7 +291,7 @@ public class JFXArena extends Pane {
     private void drawLabel(GraphicsContext gfx, String label, double gridX, double gridY) {
         gfx.setTextAlign(TextAlignment.CENTER);
         gfx.setTextBaseline(VPos.TOP);
-        gfx.setStroke(Color.BLUE);
+        gfx.setStroke(Graphics.LABEL_COLOUR);
         gfx.strokeText(label, (gridX + 0.5) * gridSquareSize, (gridY + 1.0) * gridSquareSize);
     }
 
@@ -286,7 +301,7 @@ public class JFXArena extends Pane {
      * You shouldn't need to modify this method.
      */
     private void drawLine(GraphicsContext gfx, double gridX1, double gridY1, double gridX2, double gridY2) {
-        gfx.setStroke(Color.RED);
+        gfx.setStroke(Graphics.LINE_COLOUR);
 
         // Recalculate the starting coordinate to be one unit closer to the destination,
         // so that it

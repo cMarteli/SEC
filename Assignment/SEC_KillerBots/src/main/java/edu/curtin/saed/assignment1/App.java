@@ -18,7 +18,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
-public class App extends Application {
+public class App extends Application implements BotSpawnListener {// TODO: add the listener to arena class?
 
     public static final String APP_TITLE = "Revenge of the Killer Bots";
     // public static final int SCENE_WIDTH = 800; //can be later changed to
@@ -27,6 +27,7 @@ public class App extends Application {
     // (h-1)*100
     public static final int DIMENSIONX = 9; // TODO: Hardcoded
     public static final int DIMENSIONY = 9; // TODO: Hardcoded
+    private TextArea logger;
     Game game;
 
     // Create a new AnimationTimer
@@ -74,10 +75,11 @@ public class App extends Application {
         // System.out.println("Button 1 pressed");
         // });
 
-        TextArea logger = new TextArea();
+        logger = new TextArea();
         arena.addListener((x, y) -> {
             logger.appendText("\nArena click at (" + x + "," + y + ")");
         });
+        arena.setBotSpawnListener(this);
 
         SplitPane splitPane = new SplitPane();
         splitPane.getItems().addAll(arena, logger);
@@ -90,7 +92,7 @@ public class App extends Application {
         // Scene scene = new Scene(contentPane, SCENE_WIDTH, SCENE_HEIGHT);
         Scene scene = new Scene(contentPane, (DIMENSIONX - 1) * 100, (DIMENSIONY - 1) * 100);
 
-        stage.setFullScreen(true); // sets window to fullscreen
+        // stage.setFullScreen(true); // sets window to fullscreen
         stage.setScene(scene);
         stage.show();
 
@@ -100,6 +102,11 @@ public class App extends Application {
 
         // Start the AnimationTimer
         timer.start();
+    }
+
+    @Override
+    public void onBotSpawn(int x, int y) {
+        logger.appendText("\nNew bot spawned at (" + x + "," + y + ")");
     }
 
 }
