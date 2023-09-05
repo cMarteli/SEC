@@ -17,19 +17,17 @@ public class Grid {
     private int height;
     private Point citadelLocation;
 
-
-
     public Grid(int width, int height) {
         // Initialize grid as a 2D array
         this.width = width;
         this.height = height;
         this.grid = new GridObject[height][width];
 
-        //Calculates the center coordinates of the grid.
+        // Calculates the center coordinates of the grid.
         double centerX = (width - 1) / 2.0;
         double centerY = (height - 1) / 2.0;
 
-        this.citadelLocation = new Point((int)centerX, (int)centerY);
+        this.citadelLocation = new Point((int) centerX, (int) centerY);
     }
 
     /**
@@ -39,10 +37,9 @@ public class Grid {
      */
     public void placeRobot(Bot robot, int x, int y) {
         if (this.grid[y][x] == null) {
-            this.grid[y][x] = robot; //sets robot to that location
-            robot.setPosition(x,y); //updates robot internal position
-        }
-        else {
+            this.grid[y][x] = robot; // sets robot to that location
+            robot.setPosition(x, y); // updates robot internal position
+        } else {
             System.out.println("Cannot place robot at (" + x + "," + y + ") as there is already a grid object there.");
         }
     }
@@ -56,11 +53,10 @@ public class Grid {
         return grid;
     }
 
-
-
     public int getWidth() {
         return width;
     }
+
     public int getHeight() {
         return height;
     }
@@ -68,6 +64,5 @@ public class Grid {
     public Point getCitadelLocation() {
         return citadelLocation;
     }
-
 
 }

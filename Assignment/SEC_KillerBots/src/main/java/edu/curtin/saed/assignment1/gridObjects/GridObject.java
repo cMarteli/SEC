@@ -14,15 +14,16 @@ public class GridObject {
 
     /* Constructor takes in x and y coordinates as an int */
     public GridObject(int x, int y) {
-        this.position = new Point(x,y);
+        this.position = new Point(x, y);
     }
-    /* Constructor takes in x and y coordinates as a double*/
+
+    /* Constructor takes in x and y coordinates as a double */
     public GridObject(double x, double y) {
         this.position = new Point();
         this.position.setLocation(x, y);
     }
 
-    /*Alternate Constructor takes in point */
+    /* Alternate Constructor takes in point */
     public GridObject(Point p) {
         this.position = new Point(p);
     }
@@ -39,14 +40,14 @@ public class GridObject {
 
     /* sets position given point */
     public void setPosition(Point p) {
-    this.position.setLocation(p);
+        this.position.setLocation(p);
     }
 
     public int getY() {
-        return (int)this.position.getY();
+        return (int) this.position.getY();
     }
 
     public int getX() {
-        return (int)this.position.getX();
+        return (int) this.position.getX();
     }
 }
