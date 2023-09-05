@@ -5,7 +5,7 @@
  * @author Victor Marteli (19598552)
  */
 
-package edu.curtin.saed.assignment1;
+package edu.curtin.saed.assignment1.JFX;
 
 import javafx.scene.paint.Color;
 

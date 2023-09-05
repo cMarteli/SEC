@@ -6,7 +6,7 @@
  * Modified: September, 2023 by Victor Marteli 
  */
 
-package edu.curtin.saed.assignment1;
+package edu.curtin.saed.assignment1.JFX;
 
 import javafx.scene.canvas.*;
 import javafx.geometry.VPos;

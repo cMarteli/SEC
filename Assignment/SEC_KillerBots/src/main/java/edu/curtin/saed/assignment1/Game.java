@@ -8,6 +8,7 @@
 
 package edu.curtin.saed.assignment1;
 
+import edu.curtin.saed.assignment1.JFX.JFXArena;
 import edu.curtin.saed.assignment1.gridObjects.*;
 import java.util.ArrayList;
 import java.util.List;

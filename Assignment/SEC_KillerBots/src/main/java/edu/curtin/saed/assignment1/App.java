@@ -9,6 +9,7 @@
 
 package edu.curtin.saed.assignment1;
 
+import edu.curtin.saed.assignment1.JFX.JFXArena;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
