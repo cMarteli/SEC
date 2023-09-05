@@ -18,6 +18,8 @@ import javafx.scene.text.TextAlignment;
 import java.io.*;
 import java.util.*;
 
+import edu.curtin.saed.assignment1.gridObjects.Bot;
+
 public class JFXArena extends Pane {
     // Represents an image to draw, retrieved as a project resource.
     private Image botImg;
@@ -28,7 +30,8 @@ public class JFXArena extends Pane {
     private int gridHeight;
 
     // list of robot positions
-    private List<double[]> robotPositions = new ArrayList<>();
+    // private List<double[]> robotPositions = new ArrayList<>();
+    private List<Bot> robotPositions = new ArrayList<>();
 
     // Center coordinates of the grid
     private double citadelX;
@@ -110,14 +113,12 @@ public class JFXArena extends Pane {
      * @param id Identifier for the robot. If a robot with this ID already exists,
      *           its position is updated.
      */
-    public void setRobotPosition(double x, double y, int id) {
-        // Check if a robot with this ID already exists
+    public void setRobotPosition(Bot bot) {
+        int id = bot.getId();
         if (id < robotPositions.size()) {
-            robotPositions.get(id)[0] = x;
-            robotPositions.get(id)[1] = y;
+            robotPositions.set(id, bot);
         } else {
-            // Add new robot position
-            robotPositions.add(new double[] { x, y });
+            robotPositions.add(bot);
         }
         requestLayout();
     }
@@ -194,16 +195,27 @@ public class JFXArena extends Pane {
             gfx.strokeLine(0.0, y, arenaPixelWidth, y);
         }
 
-        // Draw the citadel at the center
+        // Draws the citadel at the center
         drawImage(gfx, citadelImg, citadelX, citadelY);
         // drawLabel(gfx, "Citadel", citadelX, citadelY);
 
         // Loop through the list of robot positions and draw each one
         for (int i = 0; i < robotPositions.size(); i++) {
-            double[] position = robotPositions.get(i);
-            drawImage(gfx, botImg, position[0], position[1]);
-            drawLabel(gfx, "Robot " + (i + 1), position[0], position[1]);
+            Bot bot = robotPositions.get(i);
+            double x = bot.getX();
+            double y = bot.getY();
+            double nextX = bot.getNextPosition().getX();
+            double nextY = bot.getNextPosition().getY();
+            double progress = bot.getAnimationProgress();
+
+            // Calculate the interpolated position for the bot
+            double renderX = x + (nextX - x) * progress;
+            double renderY = y + (nextY - y) * progress;
+
+            drawImage(gfx, botImg, renderX, renderY);
+            drawLabel(gfx, "Robot " + (i + 1), renderX, renderY);
         }
+
     }
 
     /**
@@ -226,7 +238,7 @@ public class JFXArena extends Pane {
         // We also need to know how "big" to make the image. The image file has a
         // natural width
         // and height, but that's not necessarily the size we want to draw it on the
-        // screen. We
+        // screen. Wei
         // do, however, want to preserve its aspect ratio.
         double fullSizePixelWidth = botImg.getWidth();
         double fullSizePixelHeight = botImg.getHeight();

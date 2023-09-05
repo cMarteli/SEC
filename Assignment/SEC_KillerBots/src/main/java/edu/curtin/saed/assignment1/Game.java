@@ -11,7 +11,12 @@ import edu.curtin.saed.assignment1.JFX.JFXArena;
 import edu.curtin.saed.assignment1.gridObjects.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.awt.Point;
 
@@ -21,9 +26,13 @@ public class Game {
     private Point citadel;
     JFXArena arena;
 
+    private final int SPAWN_RATE = 1500;
     private volatile boolean running = true; // New flag to control threads
     private final List<Thread> activeThreads = new CopyOnWriteArrayList<>(); // New list to hold active threads
-    private List<Bot> bots; // List of bots in the game
+    private BlockingQueue<Bot> bots; // List of bots in the game
+    // Create a thread pool with a fixed number of threads
+    private ExecutorService botThreadPool = Executors.newFixedThreadPool(20); // 10 threads in the pool
+    private Random random = new Random(); // For random bot spawning
 
     public Game(JFXArena a, int x, int y) {
         arena = a;
@@ -34,32 +43,26 @@ public class Game {
         citadel = grid.getCitadelLocation();
         arena.setCitadelPosition(citadel.getX(), citadel.getY());
 
-        // DEBUG ONLY manually adding bots
-        bots = new ArrayList<>();
-        bots.add(new Bot(0, 0));
-        bots.add(new Bot(0, 8));
-        bots.add(new Bot(8, 8));
-        bots.add(new Bot(8, 0));
-
-        System.out.println("Game created");// DEBUG
+        bots = new LinkedBlockingQueue<>();
     }
 
     public void initGame() {
         System.out.println("Game started"); // DEBUG
 
-        /* Loop through each bot and create a new thread for it */
-        for (Bot bot : bots) {
-            Thread t = new Thread(() -> {
+        /* New thread to add bots at corners every 1500 ms */
+        Thread addBotThread = new Thread(() -> {
+            while (running) {
                 try {
-                    initiateRobotMovement(bot);
+                    TimeUnit.MILLISECONDS.sleep(SPAWN_RATE); // Wait for 1500 ms
+                    addBotAtRandomCorner(); // Add a bot at a random corner
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt(); // Reset the interrupt flag
                 }
-            });
+            }
+        });
 
-            activeThreads.add(t);
-            t.start();
-        }
+        activeThreads.add(addBotThread);
+        addBotThread.start();
     }
 
     public void stopGame() {
@@ -69,6 +72,8 @@ public class Game {
             t.interrupt(); // Interrupt the thread
         }
         activeThreads.clear(); // Remove all threads from the list
+        // Shutdown the thread pool
+        botThreadPool.shutdown();
     }
 
     /**
@@ -82,8 +87,9 @@ public class Game {
             for (int x = 0; x < gridArray[0].length; x++) {
                 GridObject obj = gridArray[y][x];
                 // Check if the grid cell contains a robot
+                // In the updateScreen() method of Game.java
                 if (obj instanceof Bot) {
-                    arena.setRobotPosition(x, y, ((Bot) obj).getId());
+                    arena.setRobotPosition((Bot) obj);
                 }
                 // TODO:Check for other types of GridObjects and update the arena accordingly
             }
@@ -94,11 +100,53 @@ public class Game {
     }
 
     /**
+     * Adds a bot at a random corner of the grid.
+     * Checks if the corners are free before adding a new bot.
+     */
+    private void addBotAtRandomCorner() {
+        // Define the four corners
+        Point[] corners = new Point[] {
+                new Point(0, 0), // top left
+                new Point(0, grid.getHeight() - 1), // top right
+                new Point(grid.getWidth() - 1, 0), // bottom left
+                new Point(grid.getWidth() - 1, grid.getHeight() - 1) // bottom right
+        };
+
+        // Filter out occupied corners
+        List<Point> freeCorners = new ArrayList<>();
+        for (Point corner : corners) {
+            if (grid.isCellEmpty(corner)) {
+                freeCorners.add(corner);
+            }
+        }
+
+        // If there's at least one free corner, add a bot there
+        if (!freeCorners.isEmpty()) {
+            Point chosenCorner = freeCorners.get(random.nextInt(freeCorners.size()));
+            Bot newBot = new Bot(chosenCorner.x, chosenCorner.y);
+
+            // Add the new bot to the BlockingQueue
+            bots.offer(newBot);
+
+            grid.getGrid()[chosenCorner.y][chosenCorner.x] = newBot;
+
+            // Submit the bot's task to the thread pool
+            botThreadPool.submit(() -> {
+                try {
+                    initiateRobotMovement(newBot);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // Reset the interrupt flag
+                }
+            });
+        }
+    }
+
+    /**
      * Decides the next move for a given bot.
      * It checks all possible moves (up, down, left, right) and chooses the one that
      * is closest to the citadel.
      * If no moves are possible, the bot waits for a specified delay.
-     * 
+     *
      * @param robot The bot for which to decide the next move.
      * @throws InterruptedException if the thread is interrupted.
      */
@@ -143,17 +191,32 @@ public class Game {
         });
 
         Point newCoords = possibleMoves.get(0);
+        robot.setNextPosition(newCoords); // Set the next position
+
+        // Animate the move in 10 steps
+        for (int i = 1; i <= 10; i++) {
+            robot.setAnimationProgress(i / 10.0);
+            TimeUnit.MILLISECONDS.sleep(40); // Sleep for 40 ms between each step
+        }
+
+        // Complete the move
         grid.getGrid()[robot.getY()][robot.getX()] = null; // Empty current cell
         grid.getGrid()[newCoords.y][newCoords.x] = robot; // Move to new cell
         robot.move(newCoords); // move robot to new point
+        robot.setAnimationProgress(0.0); // Reset animation progress
+
     }
 
     // Function to initiate robot movements
     public void initiateRobotMovement(Bot b) throws InterruptedException {
-        System.out.println("Bot started moving"); // debug
         while (running && !Thread.currentThread().isInterrupted()) {
             this.decideNextMove(b);
-            TimeUnit.MILLISECONDS.sleep(b.getDelayValue());
+            for (double progress = 0.0; progress <= 1.0; progress += 0.04) { // 25 frames
+                b.setAnimationProgress(progress);
+                TimeUnit.MILLISECONDS.sleep(16); // 16 ms per frame
+            }
+            b.move(b.getNextPosition());
+            TimeUnit.MILLISECONDS.sleep(b.getDelayValue() - 400); // 400 ms already spent in animation
         }
     }
 

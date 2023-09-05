@@ -15,6 +15,8 @@ public class Bot extends GridObject {
     private int id;
     private int delayValue;
     private static int robotCounter = 0; // Starting at 1 will cause setRobotPosition() in JFXArena to break
+    private Point nextPosition;
+    private double animationProgress; // 0.0 to 1.0
     private static Random random = new Random();
 
     public Bot(int x, int y) {
@@ -33,6 +35,22 @@ public class Bot extends GridObject {
 
     public void move(Point newPosition) {
         setPosition(newPosition); // Assuming GridObject has a setPosition method
+    }
+
+    public void setNextPosition(Point nextPosition) {
+        this.nextPosition = nextPosition;
+    }
+
+    public Point getNextPosition() {
+        return nextPosition;
+    }
+
+    public void setAnimationProgress(double animationProgress) {
+        this.animationProgress = animationProgress;
+    }
+
+    public double getAnimationProgress() {
+        return animationProgress;
     }
 
 }
