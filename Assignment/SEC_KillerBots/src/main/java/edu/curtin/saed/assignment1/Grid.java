@@ -1,3 +1,10 @@
+/**
+ * Grid.java
+ * Stores grid information
+ * 2023/SEC Assignment 1
+ * @author Victor Marteli (19598552)
+ */
+
 package edu.curtin.saed.assignment1;
 
 import edu.curtin.saed.assignment1.gridObjects.*;

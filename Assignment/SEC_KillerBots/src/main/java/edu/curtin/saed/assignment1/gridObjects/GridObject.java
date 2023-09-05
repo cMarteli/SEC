@@ -1,6 +1,12 @@
+/**
+ * GridObject.java
+ * 2023/SEC Assignment 1
+ * Parent class to manage shared attributes for Bot, Citadel, and Wall
+ * @author Victor Marteli (19598552)
+ */
+
 package edu.curtin.saed.assignment1.gridObjects;
 
-/* Parent class to manage shared attributes for Bot, Citadel, and Wall */
 import java.awt.Point;
 
 public class GridObject {

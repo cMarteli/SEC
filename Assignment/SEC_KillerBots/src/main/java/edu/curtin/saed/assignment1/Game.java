@@ -1,17 +1,20 @@
+/**
+ * Game.java
+ * Game class to manage game logic
+ * TODO: TEST FOR MEMORY LEAKS
+ * 2023/SEC Assignment 1
+ * @author Victor Marteli (19598552)
+ */
+
 package edu.curtin.saed.assignment1;
 
 import edu.curtin.saed.assignment1.gridObjects.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.awt.Point;
 
-
-/* Game class to manage game logic
- * TODO: TEST FOR MEMORY LEAKS
-*/
 public class Game {
 
     private Grid grid;
@@ -31,10 +34,12 @@ public class Game {
         citadel = grid.getCitadelLocation();
         arena.setCitadelPosition(citadel.getX(), citadel.getY());
         
-        //DEBUG ONLY manually adding bots TODO: Currently adding an extra bot
+        //DEBUG ONLY manually adding bots
         bots = new ArrayList<>();
         bots.add(new Bot(0, 0));
-        bots.add(new Bot(0, 2));
+        bots.add(new Bot(0, 8));
+        bots.add(new Bot(8, 8));
+        bots.add(new Bot(8, 0));
 
         System.out.println("Game created");//DEBUG
     }
@@ -138,7 +143,6 @@ public class Game {
     }
 
     // Function to initiate robot movements
-    //TODO: Should take a list of bots not just one
     public void initiateRobotMovement(Bot b) throws InterruptedException {
         System.out.println("Bot started moving"); //debug
         while (running && !Thread.currentThread().isInterrupted()){

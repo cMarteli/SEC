@@ -1,8 +1,14 @@
+/**
+ * Bot.java
+ * 2023/SEC Assignment 1
+ * GridObject parent class stores coordinates
+ * @author Victor Marteli (19598552)
+ */
+
 package edu.curtin.saed.assignment1.gridObjects;
 import java.awt.Point;
 import java.util.Random;
 
-/* GridObject class stores coordinates */
 public class Bot extends GridObject{
 
     private int id;

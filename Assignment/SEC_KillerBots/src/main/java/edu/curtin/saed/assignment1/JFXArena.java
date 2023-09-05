@@ -1,3 +1,11 @@
+/**
+ * JFXArena.java
+ * A JavaFX GUI element that displays a grid on which you can draw images, text and lines.
+ * 2023/SEC Assignment 1
+ * Code adapted from: Software Engineering Concepts JavaFXDemo by David Cooper
+ * Modified: September, 2023 by Victor Marteli 
+ */
+
 package edu.curtin.saed.assignment1;
 
 import javafx.scene.canvas.*;
@@ -10,9 +18,6 @@ import javafx.scene.text.TextAlignment;
 import java.io.*;
 import java.util.*;
 
-/**
- * A JavaFX GUI element that displays a grid on which you can draw images, text and lines.
- */
 public class JFXArena extends Pane
 {
     // Represents an image to draw, retrieved as a project resource.
