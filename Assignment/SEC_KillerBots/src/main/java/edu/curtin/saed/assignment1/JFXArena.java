@@ -21,19 +21,14 @@ import java.util.*;
 public class JFXArena extends Pane
 {
     // Represents an image to draw, retrieved as a project resource.
-    private static final String ROBOT_IMAGE = "1554047213.png";
-    private static final String CITADEL_IMAGE = "rg1024-isometric-tower.png";
-    // Map to hold loaded images
-    //private Map<String, Image> imageMap = new HashMap<>();
     private Image botImg;
     private Image citadelImg;
-    private static final Color NEON_BLUE = Color.rgb(0, 128, 255);
 
-    // The following values are arbitrary, and you may need to modify them according to the
-    // requirements of your application.
+    // Holds grid dimension values
     private int gridWidth;
     private int gridHeight;
 
+    //list of robot positions
     private List<double[]> robotPositions = new ArrayList<>();
 
     //Center coordinates of the grid
@@ -61,8 +56,8 @@ public class JFXArena extends Pane
         // './gradlew run' and './gradlew build'.)
 
         //Load images
-        citadelImg = loadImage(CITADEL_IMAGE);
-        botImg = loadImage(ROBOT_IMAGE);
+        citadelImg = loadImage(Graphics.CITADEL_IMAGE);
+        botImg = loadImage(Graphics.ROBOT_IMAGE);
 
         gridWidth = 0;
         gridHeight = 0;
@@ -163,7 +158,7 @@ public class JFXArena extends Pane
         gfx.clearRect(0.0, 0.0, canvas.getWidth(), canvas.getHeight());
 
         // Fills the background
-        gfx.setFill(Color.BLACK); //changed this colour to black
+        gfx.setFill(Graphics.BG_COLOUR); //changed this colour to black
         gfx.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
         // First, calculate how big each grid cell should be, in pixels. (We do need to do this
@@ -178,7 +173,7 @@ public class JFXArena extends Pane
 
         // Draw the arena grid lines. This may help for debugging purposes, and just generally
         // to see what's going on.
-        gfx.setStroke(NEON_BLUE); // changed the colour here to neon blue
+        gfx.setStroke(Graphics.GRID_COLOUR); // changed the colour here to neon blue
         gfx.strokeRect(0.0, 0.0, arenaPixelWidth - 1.0, arenaPixelHeight - 1.0); // Outer edge
 
         for(int gridX = 1; gridX < gridWidth; gridX++) // Internal vertical grid lines
