@@ -22,11 +22,15 @@ public class BotMover implements Runnable {
     private volatile boolean running;
     private static final ConcurrentHashMap<Point, Boolean> occupiedCells = new ConcurrentHashMap<>();
 
-    public BotMover(Grid grid, Point citadel, Bot bot, boolean running) {
-        this.grid = grid;
-        this.citadel = citadel;
-        this.bot = bot;
-        this.running = running;
+    public BotMover(Grid inGrid, Point inPoint, Bot inBot, boolean inRun) {
+        grid = inGrid;
+        citadel = inPoint;
+        bot = inBot;
+        running = inRun;
+    }
+
+    public void stop() {
+        running = false;
     }
 
     @Override
