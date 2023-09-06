@@ -12,28 +12,32 @@ package edu.curtin.saed.assignment1;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import edu.curtin.saed.assignment1.JFX.*;
+import edu.curtin.saed.assignment1.gameLogic.*;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
-public class App extends Application implements BotSpawnListener {// TODO: add the listener to arena class?
+public class App extends Application {
 
-    public static final String APP_TITLE = "Revenge of the Killer Bots";
-    public static final int DIMENSIONX = 9; // TODO: Hardcoded
-    public static final int DIMENSIONY = 9; // TODO: Hardcoded
+    protected Game game;
+    protected Grid grid;
+
+    private static final String APP_TITLE = "Revenge of the Killer Bots";
+    private static final int DIMENSIONX = 9; // TODO: Hardcoded
+    private static final int DIMENSIONY = 9; // TODO: Hardcoded
     private TextArea logger;
     private AtomicInteger score = new AtomicInteger(0); // Atomic to ensure thread safety
     private Label scoreLbl; // Label to display score
     private boolean gameRunning = true; // Flag to keep track of the game status
-    Game game;
-    Grid grid;
 
-    // Create a new AnimationTimer
+    /*
+     * Create a new AnimationTimer to refresh screen
+     * and keep track of rolling score
+     */
     AnimationTimer timer = new AnimationTimer() {
         private long lastUpdate = 0;
         private long lastScoreUpdate = 0;
@@ -71,9 +75,9 @@ public class App extends Application implements BotSpawnListener {// TODO: add t
         Image icon = new Image(Graphics.ICON_IMAGE);
         stage.getIcons().add(icon); // sets tray icon
         stage.setTitle(APP_TITLE); // sets title of window
-        JFXArena arena = new JFXArena(); // creates arena object
         logger = new TextArea();
 
+        JFXArena arena = new JFXArena(logger); // creates arena object
         grid = new Grid(DIMENSIONX, DIMENSIONY); // creates grid object
         game = new Game(arena, grid); // Creates a new game instance
 
@@ -81,7 +85,7 @@ public class App extends Application implements BotSpawnListener {// TODO: add t
         Button fsBtn = new Button("Fullscreen");
         Button endBtn = new Button("Stop Game");
         scoreLbl = new Label("Score: 0"); // Initialize the score label
-        Label queue = new Label("Walls Queued");
+        Label queue = new Label("Walls Queued"); // TODO: Implement wall queue
         toolbar.getItems().addAll(scoreLbl, new Separator(), queue, new Separator(),
                 fsBtn, new Separator(), endBtn);
 
@@ -92,16 +96,21 @@ public class App extends Application implements BotSpawnListener {// TODO: add t
         });
         // ends game
         endBtn.setOnAction((event) -> {
-            stop();
-            logger.appendText("\nEnd of game\n Final Score:" + score.get() + "\n");
+            if (gameRunning) {
+                stop();
+                logger.appendText("\nEnd of game\n Final Score:" + score.get() + "\n");
+            }
             // Platform.exit();
         });
 
+        /* Listeners */
+        // Click listener for the arena
         arena.addListener((x, y) -> {
+
             logger.appendText("\nArena click at (" + x + "," + y + ")");
         });
-        arena.setBotSpawnListener(this);
 
+        /* Window Layout */
         SplitPane splitPane = new SplitPane();
         splitPane.getItems().addAll(arena, logger);
         arena.setMinWidth(300.0);
@@ -117,10 +126,7 @@ public class App extends Application implements BotSpawnListener {// TODO: add t
 
         game.initGame(); // starts game here
 
-        /* Auto refresh the screen */
-
-        // Start the AnimationTimer
-        timer.start();
+        timer.start(); // Start the AnimationTimer
     }
 
     private void toggleFullscreen(Stage stage) {
@@ -129,11 +135,6 @@ public class App extends Application implements BotSpawnListener {// TODO: add t
         } else {
             stage.setFullScreen(true);
         }
-    }
-
-    @Override
-    public void onBotSpawn(int x, int y) {
-        logger.appendText("\nNew bot spawned at (" + x + "," + y + ")");
     }
 
 }

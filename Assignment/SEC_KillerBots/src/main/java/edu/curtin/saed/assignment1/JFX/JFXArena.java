@@ -9,6 +9,7 @@
 package edu.curtin.saed.assignment1.JFX;
 
 import javafx.scene.canvas.*;
+import javafx.scene.control.TextArea;
 import javafx.geometry.VPos;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
@@ -39,31 +40,16 @@ public class JFXArena extends Pane {
 
     private double gridSquareSize; // Auto-calculated
     private Canvas canvas; // Used to provide a 'drawing surface'.
+    private TextArea logger;
 
-    private List<ArenaListener> listeners = null;
-    private BotSpawnListener botSpawnListener;
+    private List<ArenaListener> listeners = new ArrayList<>();
 
     /**
      * Creates a new arena object, loading the robot image and initialising a
      * drawing surface.
      */
-    public JFXArena() {
-        // Here's how (in JavaFX) you get an Image object from an image file that's part
-        // of the
-        // project's "resources". If you need multiple different images, you can modify
-        // this code
-        // accordingly.
-
-        // (NOTE: _DO NOT_ use ordinary file-reading operations here, and in particular
-        // do not try
-        // to specify the file's path/location. That will ruin things if you try to
-        // create a
-        // distributable version of your code with './gradlew build'. The approach below
-        // is how a
-        // project is supposed to read its own internal resources, and should work both
-        // for
-        // './gradlew run' and './gradlew build'.)
-
+    public JFXArena(TextArea log) {
+        logger = log; // passes the logger to the arena
         // Load images
         citadelImg = loadImage(Graphics.CITADEL_IMAGE);
         botImg = loadImage(Graphics.ROBOT_IMAGE);
@@ -124,24 +110,14 @@ public class JFXArena extends Pane {
             isNewBot = true; // This is a new bot
         }
 
-        // If it's a new bot, notify the listener
-        if (isNewBot && botSpawnListener != null) {
-            botSpawnListener.onBotSpawn((int) bot.getX(), (int) bot.getY());
+        if (isNewBot) {
+            logger.appendText("New bot spawned at position (" + bot.getX() + ", " + bot.getY() + ")\n");
         }
-
         requestLayout();
     }
 
-    /**
-     * Adds a callback for when the user clicks on a grid square within the arena.
-     * The callback
-     * (of type ArenaListener) receives the grid (x,y) coordinates as parameters to
-     * the
-     * 'squareClicked()' method.
-     */
     public void addListener(ArenaListener newListener) {
-        if (listeners == null) {
-            listeners = new LinkedList<>();
+        if (listeners.isEmpty()) {
             setOnMouseClicked(event -> {
                 int gridX = (int) (event.getX() / gridSquareSize);
                 int gridY = (int) (event.getY() / gridSquareSize);
@@ -154,15 +130,6 @@ public class JFXArena extends Pane {
             });
         }
         listeners.add(newListener);
-    }
-
-    /**
-     * Sets the BotSpawnListener.
-     *
-     * @param listener The listener to set.
-     */
-    public void setBotSpawnListener(BotSpawnListener listener) {
-        this.botSpawnListener = listener;
     }
 
     /**
