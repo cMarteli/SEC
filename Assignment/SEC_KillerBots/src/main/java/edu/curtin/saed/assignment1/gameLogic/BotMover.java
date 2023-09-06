@@ -12,6 +12,7 @@ import edu.curtin.saed.assignment1.Grid;
 import edu.curtin.saed.assignment1.gridObjects.Bot;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public class BotMover implements Runnable {
@@ -19,6 +20,7 @@ public class BotMover implements Runnable {
     private Bot bot;
     private Point citadel;
     private volatile boolean running;
+    private static final ConcurrentHashMap<Point, Boolean> occupiedCells = new ConcurrentHashMap<>();
 
     public BotMover(Grid grid, Point citadel, Bot bot, boolean running) {
         this.grid = grid;
@@ -86,19 +88,26 @@ public class BotMover implements Runnable {
             return Integer.compare(distanceA, distanceB);
         });
 
-        Point newCoords = possibleMoves.get(0);
-        bot.setNextPosition(newCoords);
-
-        // Animate the move
-        for (int i = 1; i <= 10; i++) {
-            bot.setAnimationProgress(i / 10.0);
-            TimeUnit.MILLISECONDS.sleep(40);
+        for (Point newCoords : possibleMoves) {
+            // Check-then-act using atomic operation putIfAbsent
+            if (occupiedCells.putIfAbsent(newCoords, true) == null) {
+                try {
+                    bot.setNextPosition(newCoords); // Perform the move
+                    /* Animate the move */
+                    for (int i = 1; i <= 10; i++) {
+                        bot.setAnimationProgress(i / 10.0);
+                        TimeUnit.MILLISECONDS.sleep(40);
+                        /* Complete the move */
+                        grid.getGrid()[bot.getY()][bot.getX()] = null;
+                        grid.getGrid()[newCoords.y][newCoords.x] = bot;
+                        bot.move(newCoords);
+                        bot.setAnimationProgress(0.0);
+                    }
+                } finally {
+                    occupiedCells.remove(newCoords); // Removes the in-use flag
+                }
+                break; // Successfully moved, break out of loop
+            }
         }
-
-        // Complete the move
-        grid.getGrid()[bot.getY()][bot.getX()] = null;
-        grid.getGrid()[newCoords.y][newCoords.x] = bot;
-        bot.move(newCoords);
-        bot.setAnimationProgress(0.0);
     }
 }

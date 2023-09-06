@@ -13,6 +13,7 @@ import edu.curtin.saed.assignment1.JFX.*;
 import edu.curtin.saed.assignment1.gameLogic.*;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -69,6 +70,9 @@ public class App extends Application {
         if (game.isRunning()) {
             logger.appendText("\nEnd of game\n Final Score:" + game.getScore() + "\n");
             game.stopGame();
+            gameLoop.stop();
+            grid.clearGrid();
+            // Platform.exit();
         }
     }
 
