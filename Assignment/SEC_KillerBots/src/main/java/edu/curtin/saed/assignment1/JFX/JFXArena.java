@@ -23,13 +23,14 @@ public class JFXArena extends Pane {
     // Represents an image to draw, retrieved as a project resource.
     private Image botImg;
     private Image citadelImg;
+    private Image wallImg;
+    private Image walldmgImg;
 
     // Holds grid dimension values
     private int gridWidth;
     private int gridHeight;
 
     // list of robot positions
-    // private List<double[]> robotPositions = new ArrayList<>();
     private List<Bot> robotPositions = new ArrayList<>();
 
     // Center coordinates of the grid
@@ -66,6 +67,8 @@ public class JFXArena extends Pane {
         // Load images
         citadelImg = loadImage(Graphics.CITADEL_IMAGE);
         botImg = loadImage(Graphics.ROBOT_IMAGE);
+        wallImg = loadImage(Graphics.WALL_IMAGE);
+        walldmgImg = loadImage(Graphics.WALLDMG_IMAGE);
 
         gridWidth = 0;
         gridHeight = 0;
@@ -228,7 +231,7 @@ public class JFXArena extends Pane {
             double renderY = y + (nextY - y) * progress;
 
             drawImage(gfx, botImg, renderX, renderY);
-            drawLabel(gfx, "Robot " + (i + 1), renderX, renderY);
+            drawLabel(gfx, "Bot_" + (i + 1), renderX, renderY);
         }
 
     }

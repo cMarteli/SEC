@@ -20,9 +20,9 @@ public class Bot extends GridObject {
     private static Random random = new Random();
 
     public Bot(int x, int y) {
-        super(x, y); // Call the constructor of the parent class GridObject
-        this.id = robotCounter++;
-        this.delayValue = random.nextInt(1501) + 500;
+        super(x, y); // Storing location in parent class GridObject
+        id = robotCounter++;
+        delayValue = random.nextInt(1501) + 500; // generates a delay value between 500 and 2000 ms
     }
 
     public int getId() {
@@ -33,20 +33,21 @@ public class Bot extends GridObject {
         return delayValue;
     }
 
-    public void move(Point newPosition) {
-        setPosition(newPosition); // Assuming GridObject has a setPosition method
+    public void move(Point newPos) {
+        setPosition(newPos);
     }
 
-    public void setNextPosition(Point nextPosition) {
-        this.nextPosition = nextPosition;
+    public void setNextPosition(Point nextPos) {
+        nextPosition = nextPos;
     }
 
     public Point getNextPosition() {
         return nextPosition;
     }
 
-    public void setAnimationProgress(double animationProgress) {
-        this.animationProgress = animationProgress;
+    /* Animation helper methods */
+    public void setAnimationProgress(double aProg) {
+        animationProgress = aProg;
     }
 
     public double getAnimationProgress() {
