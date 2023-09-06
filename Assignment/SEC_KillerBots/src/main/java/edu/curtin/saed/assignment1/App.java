@@ -9,8 +9,6 @@
 
 package edu.curtin.saed.assignment1;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import edu.curtin.saed.assignment1.JFX.*;
 import edu.curtin.saed.assignment1.gameLogic.*;
 import javafx.animation.AnimationTimer;
@@ -23,36 +21,40 @@ import javafx.stage.Stage;
 
 public class App extends Application {
 
+    /* Class constants */
+    private static final String APP_TITLE = "Revenge of the Killer Bots";
+    private static final int GRID_SIZE_X = 9;
+    private static final int GRID_SIZE_Y = 9;
+    private static final long UPDATE_INTERVAL = 40; // In milliseconds
+    private static final long SCORE_UPDATE_INTERVAL = 1000; // In milliseconds
+
+    /* Class variables */
     protected Game game;
     protected Grid grid;
-
-    private static final String APP_TITLE = "Revenge of the Killer Bots";
-    private static final int DIMENSIONX = 9; // TODO: Hardcoded
-    private static final int DIMENSIONY = 9; // TODO: Hardcoded
     private TextArea logger;
-    private AtomicInteger score = new AtomicInteger(0); // Atomic to ensure thread safety
-    private Label scoreLbl; // Label to display score
-    private boolean gameRunning = true; // Flag to keep track of the game status
+    private Label scoreLbl;
+    private Label queue;
 
-    /*
-     * Create a new AnimationTimer to refresh screen
-     * and keep track of rolling score
-     */
-    AnimationTimer timer = new AnimationTimer() {
-        private long lastUpdate = 0;
-        private long lastScoreUpdate = 0;
+    /* Animation Timer for Game Loop */
+    AnimationTimer gameLoop = new AnimationTimer() {
+        private long lastUpdateTime = 0;
+        private long lastScoreUpdateTime = 0;
 
         @Override
-        public void handle(long nowNano) {
-            long now = nowNano / 1_000_000; // Convert to milliseconds
-            if (gameRunning && now - lastUpdate >= 40) { // 25fps is every 40 ms
-                game.updateScreen();
-                lastUpdate = now;
+        public void handle(long currentTimeInNano) {
+            long currentTimeInMilli = currentTimeInNano / 1_000_000; // Convert to milliseconds
+
+            /* Screen Update */
+            if (game.isRunning() && (currentTimeInMilli - lastUpdateTime >= UPDATE_INTERVAL)) {
+                game.updateJFX();
+                lastUpdateTime = currentTimeInMilli;
             }
-            if (gameRunning && now - lastScoreUpdate >= 1000) { // 1s is 1000 ms
-                int newScore = score.addAndGet(10); // Increase score by 10
-                scoreLbl.setText("Score: " + newScore);
-                lastScoreUpdate = now;
+
+            /* Score Update */
+            if (game.isRunning() && (currentTimeInMilli - lastScoreUpdateTime >= SCORE_UPDATE_INTERVAL)) {
+                game.updateScore(10);
+                scoreLbl.setText("Score: " + game.getScore());
+                lastScoreUpdateTime = currentTimeInMilli;
             }
         }
     };
@@ -61,80 +63,63 @@ public class App extends Application {
         launch();
     }
 
-    /** Frees memory when game is closed */
+    /* Stops the game and frees resources */
     @Override
     public void stop() {
-        System.out.println("Closing game");// DEBUG
-        gameRunning = false; // Stop the game timer
-        game.stopGame(); // Stop the game when the application stops
-    }
-
-    @Override
-    public void start(Stage stage) // stage is passed in as a parameter
-    {
-        Image icon = new Image(Graphics.ICON_IMAGE);
-        stage.getIcons().add(icon); // sets tray icon
-        stage.setTitle(APP_TITLE); // sets title of window
-        logger = new TextArea();
-
-        JFXArena arena = new JFXArena(logger); // creates arena object
-        grid = new Grid(DIMENSIONX, DIMENSIONY); // creates grid object
-        game = new Game(arena, grid); // Creates a new game instance
-
-        ToolBar toolbar = new ToolBar();
-        Button fsBtn = new Button("Fullscreen");
-        Button endBtn = new Button("Stop Game");
-        scoreLbl = new Label("Score: 0"); // Initialize the score label
-        Label queue = new Label("Walls Queued"); // TODO: Implement wall queue
-        toolbar.getItems().addAll(scoreLbl, new Separator(), queue, new Separator(),
-                fsBtn, new Separator(), endBtn);
-
-        /* Buttons */
-        // Fullscreen button listener
-        fsBtn.setOnAction((event) -> {
-            toggleFullscreen(stage);
-        });
-        // ends game
-        endBtn.setOnAction((event) -> {
-            if (gameRunning) {
-                stop();
-                logger.appendText("\nEnd of game\n Final Score:" + score.get() + "\n");
-            }
-            // Platform.exit();
-        });
-
-        /* Listeners */
-        // Click listener for the arena
-        arena.addListener((x, y) -> {
-
-            logger.appendText("\nArena click at (" + x + "," + y + ")");
-        });
-
-        /* Window Layout */
-        SplitPane splitPane = new SplitPane();
-        splitPane.getItems().addAll(arena, logger);
-        arena.setMinWidth(300.0);
-
-        BorderPane contentPane = new BorderPane();
-        contentPane.setTop(toolbar);
-        contentPane.setCenter(splitPane);
-
-        // Scene scene = new Scene(contentPane, SCENE_WIDTH, SCENE_HEIGHT);
-        Scene scene = new Scene(contentPane, (DIMENSIONX - 1) * 100, (DIMENSIONY - 1) * 100);
-        stage.setScene(scene);
-        stage.show();
-
-        game.initGame(); // starts game here
-
-        timer.start(); // Start the AnimationTimer
-    }
-
-    private void toggleFullscreen(Stage stage) {
-        if (stage.isFullScreen()) {
-            stage.setFullScreen(false);
-        } else {
-            stage.setFullScreen(true);
+        if (game.isRunning()) {
+            logger.appendText("\nEnd of game\n Final Score:" + game.getScore() + "\n");
+            game.stopGame();
         }
     }
 
+    /* Application entry point */
+    @Override
+    public void start(Stage stage) {
+        setupUI(stage);
+        game.initGame();
+        gameLoop.start();
+    }
+
+    /* Initializes the user interface */
+    private void setupUI(Stage stage) {
+        /* Window Configuration */
+        Image icon = new Image(Graphics.ICON_IMAGE);
+        stage.getIcons().add(icon);
+        stage.setTitle(APP_TITLE);
+
+        logger = new TextArea();
+        JFXArena arena = new JFXArena(logger);
+        grid = new Grid(GRID_SIZE_X, GRID_SIZE_Y);
+        game = new Game(arena, grid);
+
+        /* Toolbar */
+        ToolBar toolbar = setupToolbar(stage);
+
+        /* Window Layout */
+        SplitPane splitPane = new SplitPane(arena, logger);
+        BorderPane contentPane = new BorderPane(splitPane, toolbar, null, null, null);
+
+        Scene scene = new Scene(contentPane, (GRID_SIZE_X - 1) * 100, (GRID_SIZE_Y - 1) * 100);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    /* Creates and returns a configured toolbar */
+    private ToolBar setupToolbar(Stage stage) { // Add Stage stage parameter
+        scoreLbl = new Label("Score: 0");
+        queue = new Label("Walls Queued: 0");
+        Button fullScreenBtn = new Button("Fullscreen");
+        Button stopGameBtn = new Button("Stop Game");
+
+        fullScreenBtn.setOnAction(event -> toggleFullscreen(stage)); // Pass stage here
+        stopGameBtn.setOnAction(event -> stop());
+
+        return new ToolBar(scoreLbl, new Separator(), queue, new Separator(), fullScreenBtn, new Separator(),
+                stopGameBtn);
+    }
+
+    /* Toggles the fullscreen mode */
+    private void toggleFullscreen(Stage stage) {
+        stage.setFullScreen(!stage.isFullScreen());
+    }
 }

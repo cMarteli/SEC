@@ -78,7 +78,7 @@ public class JFXArena extends Pane {
     }
 
     /**
-     * Loads images in a separate method
+     * Loads images from the resources folder.
      *
      * @return Image object
      * @throws AssertionError if image file cannot be found
@@ -107,7 +107,7 @@ public class JFXArena extends Pane {
             robotPositions.set(id, bot);
         } else {
             robotPositions.add(bot);
-            isNewBot = true; // This is a new bot
+            isNewBot = true; // Marks as a new bot for logger
         }
 
         if (isNewBot) {
