@@ -23,22 +23,22 @@ import java.awt.Point;
 public class Game {
 
     private Grid grid;
-    private Point citadel;
     JFXArena arena;
+    private Point citadel;
 
     private final int SPAWN_RATE = 1500;
     private volatile boolean running = true; // New flag to control threads
     private final List<Thread> activeThreads = new CopyOnWriteArrayList<>(); // New list to hold active threads
     private BlockingQueue<Bot> bots; // List of bots in the game
     // Create a thread pool with a fixed number of threads
-    private ExecutorService botThreadPool = Executors.newFixedThreadPool(20); // 10 threads in the pool
+    private ExecutorService botThreadPool = Executors.newFixedThreadPool(20); // 20 threads in the pool
     private Random random = new Random(); // For random bot spawning
 
-    public Game(JFXArena a, int x, int y) {
+    public Game(JFXArena a, Grid g) {
         arena = a;
-        grid = new Grid(x, y);
+        grid = g;
 
-        a.setGridSize(x, y);
+        a.setGridSize(grid.getWidth(), grid.getHeight());
         // Set the citadel position in the arena based on game logic
         citadel = grid.getCitadelLocation();
         arena.setCitadelPosition(citadel.getX(), citadel.getY());

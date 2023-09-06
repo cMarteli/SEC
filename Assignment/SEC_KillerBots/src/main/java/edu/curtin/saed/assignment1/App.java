@@ -9,6 +9,8 @@
 
 package edu.curtin.saed.assignment1;
 
+import java.util.Scanner;
+
 import edu.curtin.saed.assignment1.JFX.*;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -21,14 +23,12 @@ import javafx.stage.Stage;
 public class App extends Application implements BotSpawnListener {// TODO: add the listener to arena class?
 
     public static final String APP_TITLE = "Revenge of the Killer Bots";
-    // public static final int SCENE_WIDTH = 800; //can be later changed to
-    // (w-1)*100
-    // public static final int SCENE_HEIGHT = 800; //can be later changed to
-    // (h-1)*100
     public static final int DIMENSIONX = 9; // TODO: Hardcoded
     public static final int DIMENSIONY = 9; // TODO: Hardcoded
     private TextArea logger;
     Game game;
+    Grid grid;
+    public static boolean isFullScreen = false;
 
     // Create a new AnimationTimer
     AnimationTimer timer = new AnimationTimer() {
@@ -36,7 +36,8 @@ public class App extends Application implements BotSpawnListener {// TODO: add t
 
         @Override
         public void handle(long now) {
-            if (now - lastUpdate >= 40_000_000) { // 25 times per second is every 40 ms, which is 40,000,000 nanoseconds
+            if (now - lastUpdate >= 40_000_000) { // 25 times per second is every 40 ms, which
+                                                  // is 40,000,000 nanoseconds
                 game.updateScreen();
                 lastUpdate = now;
             }
@@ -58,10 +59,12 @@ public class App extends Application implements BotSpawnListener {// TODO: add t
     public void start(Stage stage) // stage is passed in as a parameter
     {
         Image icon = new Image(Graphics.ICON_IMAGE);
-        stage.getIcons().add(icon); // sets icon of window
+        stage.getIcons().add(icon); // sets tray icon
         stage.setTitle(APP_TITLE); // sets title of window
         JFXArena arena = new JFXArena(); // creates arena object
-        game = new Game(arena, DIMENSIONX, DIMENSIONY); // Creates a new game instance
+
+        grid = new Grid(DIMENSIONX, DIMENSIONY); // creates grid object
+        game = new Game(arena, grid); // Creates a new game instance
 
         ToolBar toolbar = new ToolBar();
         // Button btn1 = new Button("My Button 1");
