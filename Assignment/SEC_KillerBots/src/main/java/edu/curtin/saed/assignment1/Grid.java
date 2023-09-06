@@ -7,8 +7,9 @@
 
 package edu.curtin.saed.assignment1;
 
-import edu.curtin.saed.assignment1.gridObjects.*;
 import java.awt.Point;
+
+import edu.curtin.saed.assignment1.gridobjects.*;
 
 public class Grid {
 
@@ -53,13 +54,13 @@ public class Grid {
         return grid;
     }
 
-    public void clearGrid() {
-        for (int i = 0; i < this.height; i++) {
-            for (int j = 0; j < this.width; i++) {
-                this.grid[i][j] = null;
-            }
-        }
-    }
+    // public void clearGrid() {
+    // for (int i = 0; i < this.height; i++) {
+    // for (int j = 0; j < this.width; j++) {
+    // this.grid[i][j] = null;
+    // }
+    // }
+    // }
 
     public int getWidth() {
         return width;

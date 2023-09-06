@@ -9,11 +9,10 @@
 
 package edu.curtin.saed.assignment1;
 
-import edu.curtin.saed.assignment1.JFX.*;
-import edu.curtin.saed.assignment1.gameLogic.*;
+import edu.curtin.saed.assignment1.gamelogic.*;
+import edu.curtin.saed.assignment1.jfx.*;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -34,10 +33,10 @@ public class App extends Application {
     protected Grid grid;
     private TextArea logger;
     private Label scoreLbl;
-    private Label queue;
+    // private Label queue; //TODO: Implement queue
 
     /* Animation Timer for Game Loop */
-    AnimationTimer gameLoop = new AnimationTimer() {
+    private AnimationTimer gameLoop = new AnimationTimer() {
         private long lastUpdateTime = 0;
         private long lastScoreUpdateTime = 0;
 
@@ -71,7 +70,7 @@ public class App extends Application {
             logger.appendText("\nEnd of game\n Final Score:" + game.getScore() + "\n");
             game.stopGame();
             gameLoop.stop();
-            grid.clearGrid();
+            // grid.clearGrid();
             // Platform.exit();
         }
     }
@@ -111,15 +110,18 @@ public class App extends Application {
     /* Creates and returns a configured toolbar */
     private ToolBar setupToolbar(Stage stage) { // Add Stage stage parameter
         scoreLbl = new Label("Score: 0");
-        queue = new Label("Walls Queued: 0");
+        // queue = new Label("Walls Queued: 0"); // TODO: Implement queue
         Button fullScreenBtn = new Button("Fullscreen");
         Button stopGameBtn = new Button("Stop Game");
 
         fullScreenBtn.setOnAction(event -> toggleFullscreen(stage)); // Pass stage here
         stopGameBtn.setOnAction(event -> stop());
 
-        return new ToolBar(scoreLbl, new Separator(), queue, new Separator(), fullScreenBtn, new Separator(),
-                stopGameBtn);
+        // return new ToolBar(scoreLbl, new Separator(), queue, new Separator(),
+        // fullScreenBtn, new Separator(),
+        // stopGameBtn);
+        return new ToolBar(scoreLbl, new Separator(), new Separator(), fullScreenBtn, new Separator(),
+                stopGameBtn); // TODO: Implement queue
     }
 
     /* Toggles the fullscreen mode */
