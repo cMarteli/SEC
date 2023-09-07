@@ -6,12 +6,12 @@
 
 package edu.curtin.saed.assignment1.gridobjects;
 
-public class Wall {
+public class Wall extends GridObject {
 
     private boolean isDamaged;
 
-    public Wall() {
-        isDamaged = false;
+    public Wall(double x, double y) { // TODO: might need to change to int for consistency with Bot
+        super(x, y);
     }
 
     public boolean isDamaged() {

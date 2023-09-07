@@ -95,6 +95,12 @@ public class App extends Application {
         grid = new Grid(GRID_SIZE_X, GRID_SIZE_Y);
         game = new Game(arena, grid);
 
+        /* Button click listener */
+        arena.addListener((x, y) -> {
+            System.out.println("Arena click at (" + x + "," + y + ")"); // DEBUG
+            // TODO: Add build wall here
+        });
+
         /* Toolbar */
         ToolBar toolbar = setupToolbar(stage);
 

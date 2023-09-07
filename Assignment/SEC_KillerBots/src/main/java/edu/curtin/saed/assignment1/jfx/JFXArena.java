@@ -18,14 +18,14 @@ import javafx.scene.text.TextAlignment;
 import java.io.*;
 import java.util.*;
 
-import edu.curtin.saed.assignment1.gridobjects.Bot;
+import edu.curtin.saed.assignment1.gridobjects.*;
 
 public class JFXArena extends Pane {
     // Represents an image to draw, retrieved as a project resource.
     private Image botImg;
     private Image citadelImg;
-    // private Image wallImg;
-    // private Image walldmgImg;
+    private Image wallImg;
+    private Image walldmgImg;
 
     // Holds grid dimension values
     private int gridWidth;
@@ -33,6 +33,7 @@ public class JFXArena extends Pane {
 
     // list of robot positions
     private List<Bot> robotPositions = new ArrayList<>();
+    private List<Wall> wallPositions = new ArrayList<>();
 
     // Center coordinates of the grid
     private double citadelX;
@@ -53,8 +54,8 @@ public class JFXArena extends Pane {
         // Load images
         citadelImg = loadImage(Graphics.CITADEL_IMAGE);
         botImg = loadImage(Graphics.ROBOT_IMAGE);
-        // wallImg = loadImage(Graphics.WALL_IMAGE);
-        // walldmgImg = loadImage(Graphics.WALLDMG_IMAGE);
+        wallImg = loadImage(Graphics.WALL_IMAGE);
+        walldmgImg = loadImage(Graphics.WALLDMG_IMAGE);
 
         gridWidth = 0;
         gridHeight = 0;
@@ -116,6 +117,15 @@ public class JFXArena extends Pane {
         requestLayout();
     }
 
+    // TODO: Wall should be added to list only not drawn here
+    public void setWallPosition(Double x, Double y, boolean isDamaged) {
+        double gridX = x;
+        double gridY = y;
+        // TODO: Check if wall is already in list
+        wallPositions.add(new Wall(x, y));
+        logger.appendText("Wall built at position (" + gridX + ", " + gridY + ")\n");
+    }
+
     public void addListener(ArenaListener newListener) {
         if (listeners.isEmpty()) {
             setOnMouseClicked(event -> {
@@ -125,6 +135,7 @@ public class JFXArena extends Pane {
                 if (gridX < gridWidth && gridY < gridHeight) {
                     for (ArenaListener listener : listeners) {
                         listener.squareClicked(gridX, gridY);
+                        setWallPosition((double) gridX, (double) gridY, false);
                     }
                 }
             });
