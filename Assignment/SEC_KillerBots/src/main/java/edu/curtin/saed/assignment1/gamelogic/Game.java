@@ -27,7 +27,7 @@ public class Game {
     private final Point citadel;
     private final ExecutorService botThreadPool = Executors.newFixedThreadPool(20);
     private final Random random = new Random();
-    private final AtomicInteger score = new AtomicInteger(0);
+    private final AtomicInteger score = new AtomicInteger(0); // atomic integer for thread safety
 
     private volatile boolean running = false; // Flag for game status
 
@@ -86,7 +86,7 @@ public class Game {
      * Updates the graphical representation on the JFXArena.
      */
     public void updateJFX() {
-        GridObject[][] gridArray = grid.getGrid();
+        GridObject[][] gridArray = grid.getGridObjArray();
         for (GridObject[] row : gridArray) {
             for (GridObject gridObject : row) {
                 if (gridObject instanceof Bot) {
@@ -126,30 +126,27 @@ public class Game {
     }
 
     /**
-     * Spawns a bot at a random, free corner of the grid.
+     * If free corners are available, randomly spawns a bot at one of them.
      */
     private void spawnBot() {
         List<Point> freeCorners = getFreeCorners();
         if (!freeCorners.isEmpty()) {
             Point chosenCorner = freeCorners.get(random.nextInt(freeCorners.size()));
             Bot newBot = new Bot(chosenCorner.x, chosenCorner.y);
-            grid.getGrid()[chosenCorner.y][chosenCorner.x] = newBot;
-            botThreadPool.submit(new BotMover(grid, citadel, newBot, running));
+            grid.getGridObjArray()[chosenCorner.y][chosenCorner.x] = newBot;
+            botThreadPool.submit(new BotMover(grid, newBot)); // Add new bot to thread pool
         }
     }
 
     /**
-     * Returns a list of free corners on the grid.
+     * Returns a list of empty corners on the grid.
      *
      * @return List of free corners.
      */
     private List<Point> getFreeCorners() {
-        Point[] corners = new Point[] {
-                new Point(0, 0),
-                new Point(0, grid.getHeight() - 1),
-                new Point(grid.getWidth() - 1, 0),
-                new Point(grid.getWidth() - 1, grid.getHeight() - 1)
-        };
+        /* First get all corners */
+        Point[] corners = grid.getCorners();
+        /* Then check which are empty and return them as a list */
         List<Point> freeCorners = new ArrayList<>();
         for (Point corner : corners) {
             if (grid.isCellEmpty(corner)) {

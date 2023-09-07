@@ -1,6 +1,7 @@
 /**
  * Grid.java
- * Stores grid information
+ * Stores grid information, performs boundary checks
+ * and updates bot positions.
  * 2023/SEC Assignment 1
  * @author Victor Marteli (19598552)
  */
@@ -8,59 +9,92 @@
 package edu.curtin.saed.assignment1;
 
 import java.awt.Point;
-
 import edu.curtin.saed.assignment1.gridobjects.*;
 
 public class Grid {
 
-    private GridObject[][] grid;
+    private GridObject[][] gridObjArray;
     private int width;
     private int height;
     private Point citadelLocation;
+    private Point[] corners;
 
-    public Grid(int width, int height) {
-        // Initialize grid as a 2D array
-        this.width = width;
-        this.height = height;
-        this.grid = new GridObject[height][width];
-
-        // Calculates the center coordinates of the grid.
-        double centerX = (width - 1) / 2.0;
-        double centerY = (height - 1) / 2.0;
-
-        this.citadelLocation = new Point((int) centerX, (int) centerY);
+    /**
+     * Constructor to initialize the grid.
+     *
+     * @param w The grid width.
+     * @param h The grid height.
+     */
+    public Grid(int w, int h) {
+        width = w;
+        height = h;
+        gridObjArray = new GridObject[height][width];
+        initializeGrid();
     }
 
     /**
-     * @param robot
-     * @param x
-     * @param y
+     * Initializes the grid and sets the corners and citadel location.
      */
-    public void placeRobot(Bot robot, int x, int y) {
-        if (this.grid[y][x] == null) {
-            this.grid[y][x] = robot; // sets robot to that location
-            robot.setPosition(x, y); // updates robot internal position
-        } else {
-            System.out.println("Cannot place robot at (" + x + "," + y + ") as there is already a grid object there.");
-        }
+    private void initializeGrid() {
+        setCorners();
+        setCitadelLocation();
     }
 
-    // Function to check if a cell is empty
+    /**
+     * Sets the corner points of the grid.
+     */
+    private void setCorners() {
+        corners = new Point[] {
+                new Point(0, 0), // Top left
+                new Point(width - 1, 0), // Top right
+                new Point(0, height - 1), // Bottom left
+                new Point(width - 1, height - 1) // Bottom right
+        };
+    }
+
+    /**
+     * Calculates and sets the citadel location at the center of the grid.
+     */
+    private void setCitadelLocation() {
+        int centerX = (width - 1) / 2;
+        int centerY = (height - 1) / 2;
+        citadelLocation = new Point(centerX, centerY);
+    }
+
+    /**
+     * Checks if a point is within the boundaries of the grid.
+     *
+     * @param p The point to check.
+     * @return True if the point is within bounds, false otherwise.
+     */
+    public boolean isWithinBounds(Point p) {
+        return p.x >= 0 && p.x < width && p.y >= 0 && p.y < height;
+    }
+
+    /**
+     * Updates a bot's coordinates in the grid.
+     *
+     * @param b         The bot to update.
+     * @param newCoords The new coordinates.
+     */
+    public void updateBotPosition(Bot b, Point newCoords) {
+        gridObjArray[b.getY()][b.getX()] = null; // Clear old position
+        gridObjArray[newCoords.y][newCoords.x] = b; // Set new position
+    }
+
+    /**
+     * Checks if a cell is empty.
+     *
+     * @param p The point to check.
+     * @return True if the cell is empty, false otherwise.
+     */
     public boolean isCellEmpty(Point p) {
-        return this.grid[p.y][p.x] == null;
+        return gridObjArray[p.y][p.x] == null;
     }
 
-    public GridObject[][] getGrid() {
-        return grid;
+    public GridObject[][] getGridObjArray() {
+        return gridObjArray;
     }
-
-    // public void clearGrid() {
-    // for (int i = 0; i < this.height; i++) {
-    // for (int j = 0; j < this.width; j++) {
-    // this.grid[i][j] = null;
-    // }
-    // }
-    // }
 
     public int getWidth() {
         return width;
@@ -74,4 +108,7 @@ public class Grid {
         return citadelLocation;
     }
 
+    public Point[] getCorners() {
+        return corners;
+    }
 }
