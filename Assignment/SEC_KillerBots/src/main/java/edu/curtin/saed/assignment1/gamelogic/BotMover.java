@@ -19,12 +19,12 @@ import java.util.concurrent.TimeUnit;
 public class BotMover implements Runnable {
     private Grid grid;
     private Bot bot;
-    private Point citadel;
+
+    /* ConcurrentHashMap is thread-safe */
     private static final ConcurrentHashMap<Point, Boolean> occupiedCells = new ConcurrentHashMap<>();
 
     public BotMover(Grid inGrid, Bot inBot) {
         grid = inGrid;
-        citadel = grid.getCitadelLocation();
         bot = inBot;
     }
 
@@ -33,7 +33,6 @@ public class BotMover implements Runnable {
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 decideNextMove();
-                // animateBotMovement();
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -45,16 +44,21 @@ public class BotMover implements Runnable {
         return occupiedCells;
     }
 
-    /*
+    /**
      * Helper function to animate the bot movement.
      */
-    private void animateBotMovement() throws InterruptedException {
-        for (double progress = 0.0; progress <= 1.0; progress += 0.04) {
+    private void animateBotMovement(Point newCoords) throws InterruptedException {
+        // Set animation to in-progress
+        for (double progress = 0.0; progress <= 1.0; progress += 0.1) {
             bot.setAnimationProgress(progress);
-            TimeUnit.MILLISECONDS.sleep(16);
+            TimeUnit.MILLISECONDS.sleep(40);
         }
-        bot.move(bot.getNextPosition());
-        TimeUnit.MILLISECONDS.sleep(bot.getDelayValue() - 400);
+        /* Update the bot's position on the grid */
+        grid.updateObjectPosition(bot, newCoords);
+        /* Complete the move */
+        bot.move(newCoords);
+        bot.setAnimationProgress(0.0); // Reset animation progress
+        TimeUnit.MILLISECONDS.sleep(bot.getDelayValue()); // Add delay after moving
     }
 
     /**
@@ -89,24 +93,14 @@ public class BotMover implements Runnable {
             TimeUnit.MILLISECONDS.sleep(bot.getDelayValue());
             return;
         }
-        /* Sorts possibleMoves based on distance from citadel */
-        sortMovesByClosest(possibleMoves, citadel);
+        sortMovesByClosest(possibleMoves, grid.getCitadelLocation()); // Sorts in-place
 
         for (Point newCoords : possibleMoves) {
-            // Check-then-act using atomic operation putIfAbsent
+            /* putIfAbsent() is atomic */
             if (occupiedCells.putIfAbsent(newCoords, true) == null) {
                 try {
-                    bot.setNextPosition(newCoords); // Perform the move
-                    /* Animate the move */
-                    for (int i = 1; i <= 10; i++) {
-                        bot.setAnimationProgress(i / 10.0);
-                        TimeUnit.MILLISECONDS.sleep(40);
-                        /* Complete the move */
-                        grid.updateBotPosition(bot, newCoords);
-
-                        bot.move(newCoords);
-                        bot.setAnimationProgress(0.0);
-                    }
+                    bot.setNextPosition(newCoords); // Set the next position
+                    animateBotMovement(newCoords); // Animate the move
                 } finally {
                     occupiedCells.remove(newCoords); // Removes the in-use flag
                 }

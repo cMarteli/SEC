@@ -1,7 +1,7 @@
 /**
  * Grid.java
  * Stores grid information, performs boundary checks
- * and updates bot positions.
+ * and GridObjects positions.
  * 2023/SEC Assignment 1
  * @author Victor Marteli (19598552)
  */
@@ -72,12 +72,12 @@ public class Grid {
     }
 
     /**
-     * Updates a bot's coordinates in the grid.
+     * Updates a GridObject's coordinates in the grid.
      *
-     * @param b         The bot to update.
+     * @param b         The GridObject to update.
      * @param newCoords The new coordinates.
      */
-    public void updateBotPosition(Bot b, Point newCoords) {
+    public void updateObjectPosition(GridObject b, Point newCoords) {
         gridObjArray[b.getY()][b.getX()] = null; // Clear old position
         gridObjArray[newCoords.y][newCoords.x] = b; // Set new position
     }
