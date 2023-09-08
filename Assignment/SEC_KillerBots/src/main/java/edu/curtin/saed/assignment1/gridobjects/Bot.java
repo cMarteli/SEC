@@ -33,10 +33,6 @@ public class Bot extends GridObject {
         return delayValue;
     }
 
-    public void move(Point newPos) {
-        setPosition(newPos);
-    }
-
     public void setNextPosition(Point nextPos) {
         nextPosition = nextPos;
     }

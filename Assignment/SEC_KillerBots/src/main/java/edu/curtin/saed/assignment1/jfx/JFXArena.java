@@ -88,51 +88,84 @@ public class JFXArena extends Pane {
     }
 
     /**
+     * Prints a message to the logger.
+     *
+     * @param text
+     */
+    public void printToLogger(String text) {
+        logger.appendText(text + "\n");
+    }
+
+    /**
+     * Adds a new wall on click. TODO: check method
+     *
+     * @param w the wall to add or update
+     */
+    public void updateWallPosition(Wall w) {
+        int id = w.getId();
+        boolean isNew = false;
+
+        if (id < wallPositions.size()) {
+            wallPositions.set(id, w);
+        } else {
+            wallPositions.add(w);
+            isNew = true; // Marks as a new wall
+        }
+
+        if (isNew) {
+            logger.appendText("New wall built at position (" + w.getX() + ", " + w.getY() + ")\n");
+        }
+        requestLayout();
+    }
+
+    /**
      * Adds a new robot position or updates an existing one.
      *
-     * @param bot The bot to set or update.
+     * @param b The bot to set or update.
      */
-    public void setRobotPosition(Bot bot) {
-        int id = bot.getId();
+    public void updateBotPosition(Bot b) {
+        int id = b.getId();
         boolean isNewBot = false;
 
         if (id < robotPositions.size()) {
-            robotPositions.set(id, bot);
+            robotPositions.set(id, b);
         } else {
-            robotPositions.add(bot);
+            robotPositions.add(b);
             isNewBot = true; // Marks as a new bot for logger
         }
 
         if (isNewBot) {
-            logger.appendText("New bot spawned at position (" + bot.getX() + ", " + bot.getY() + ")\n");
+            logger.appendText("New bot spawned at position (" + b.getX() + ", " + b.getY() + ")\n");
         }
         requestLayout();
     }
 
     public void clearRobotPosition(Bot b) {
+        int id = b.getId() + 1;
+        logger.appendText("Bot_" + id + " has been destroyed!\n");
         robotPositions.remove(b);
     }
 
-    /**
-     * Adds a new wall on click.
-     *
-     * @param x y mouse click coordinates
-     */
-    public void buildWall(double x, double y) {
-        int intx = (int) x;
-        int inty = (int) y;
+    // /**
+    // * Adds a new wall on click.
+    // *
+    // * @param x y mouse click coordinates
+    // */
+    // public void buildWall(double x, double y) {
+    // int intx = (int) x;
+    // int inty = (int) y;
 
-        GridObject obj = grid.getGridObj(x, y);
-        if (grid.isCellEmpty(intx, inty)) {
-            obj = new Wall(x, y);
-            wallPositions.add(new Wall(x, y));
-            grid.updateObjectPosition(obj, x, y); // TODO: this makes bots avoid the walls
-            logger.appendText("Wall built at position (" + intx + ", " + inty + ")\n");
-        } else {
-            logger.appendText("There's something there...\n");
-        }
-
-    }
+    // GridObject obj = grid.getGridObj(x, y);
+    // if (grid.isCellEmpty(intx, inty)) {
+    // obj = new Wall(x, y);
+    // wallPositions.add(new Wall(x, y));
+    // grid.updateObjectPosition(obj, x, y); // TODO: this makes bots avoid the
+    // walls
+    // logger.appendText("Wall built at position (" + intx + ", " + inty + ")\n");
+    // } else {
+    // logger.appendText("There's something there...\n");
+    // }
+    // }
 
     public void addListener(ArenaListener newListener) {
         if (listeners.isEmpty()) {
@@ -143,7 +176,7 @@ public class JFXArena extends Pane {
                 if (gridX < gridWidth && gridY < gridHeight) {
                     for (ArenaListener listener : listeners) {
                         listener.squareClicked(gridX, gridY);
-                        buildWall((double) gridX, (double) gridY);
+                        // buildWall((double) gridX, (double) gridY); TODO: remove this
                     }
                 }
             });
@@ -293,27 +326,4 @@ public class JFXArena extends Pane {
         gfx.strokeText(label, (gridX + 0.5) * gridSquareSize, (gridY + 1.0) * gridSquareSize);
     }
 
-    // /**
-    // * Draws a (slightly clipped) line between two grid coordinates.
-    // *
-    // * You shouldn't need to modify this method.
-    // */
-    // private void drawLine(GraphicsContext gfx, double gridX1, double gridY1,
-    // double gridX2, double gridY2) {
-    // gfx.setStroke(Graphics.LINE_COLOUR);
-
-    // // Recalculate the starting coordinate to be one unit closer to the
-    // destination,
-    // // so that it
-    // // doesn't overlap with any image appearing in the starting grid cell.
-    // final double radius = 0.5;
-    // double angle = Math.atan2(gridY2 - gridY1, gridX2 - gridX1);
-    // double clippedGridX1 = gridX1 + Math.cos(angle) * radius;
-    // double clippedGridY1 = gridY1 + Math.sin(angle) * radius;
-
-    // gfx.strokeLine((clippedGridX1 + 0.5) * gridSquareSize,
-    // (clippedGridY1 + 0.5) * gridSquareSize,
-    // (gridX2 + 0.5) * gridSquareSize,
-    // (gridY2 + 0.5) * gridSquareSize);
-    // }
 }

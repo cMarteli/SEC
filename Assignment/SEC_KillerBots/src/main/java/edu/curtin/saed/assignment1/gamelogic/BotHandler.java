@@ -1,5 +1,5 @@
 /**
- * BotMover.java
+ * BotHandler.java
  * Class to handle the movements of bots on the grid.
  * Calculates shortest path from center.
  * 2023/SEC Assignment 1
@@ -16,48 +16,29 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-public class BotMover implements Runnable {
+public class BotHandler implements Runnable {
     private Grid grid;
     private Bot bot;
     private Game game;
-    private volatile boolean isTerminated = false; // check
 
     /* ConcurrentHashMap is thread-safe */
     private static final ConcurrentHashMap<Point, Boolean> occupiedCells = new ConcurrentHashMap<>();
 
-    public BotMover(Grid inGrid, Bot inBot, Game inGame) {
+    public BotHandler(Grid inGrid, Bot inBot, Game inGame) {
         grid = inGrid;
         bot = inBot;
         game = inGame;
     }
 
-    // @Override
-    // public void run() {
-    // try {
-    // while (!Thread.currentThread().isInterrupted()) {
-    // decideNextMove();
-    // }
-    // } catch (InterruptedException e) {
-    // Thread.currentThread().interrupt();
-    // }
-    // }
-
     @Override
     public void run() {
         try {
-            while (!Thread.currentThread().isInterrupted() && !isTerminated) { // Modify this line
+            while (!Thread.currentThread().isInterrupted() && game.isRunning()) {
                 decideNextMove();
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-    }
-
-    /**
-     * Safely terminate this bot, ending its thread.
-     */
-    public void terminate() {
-        isTerminated = true;
     }
 
     /* Returns map of occupied cells */
@@ -77,7 +58,7 @@ public class BotMover implements Runnable {
         /* Update the bot's position on the grid */
         grid.updateObjectPosition(bot, newCoords);
         /* Complete the move */
-        bot.move(newCoords);
+        bot.setPosition(newCoords);
         bot.setAnimationProgress(0.0); // Reset animation progress
         TimeUnit.MILLISECONDS.sleep(bot.getDelayValue()); // Add delay after moving
     }
@@ -103,33 +84,12 @@ public class BotMover implements Runnable {
         });
     }
 
-    // /**
-    // * Function to decide the next move for a given bot.
-    // */
-    // private void decideNextMove() throws InterruptedException {
-    // /* Get a list of all possible moves */
-    // ArrayList<Point> possibleMoves = getPossibleMoves();
-    // /* If no possible moves, wait instead */
-    // if (possibleMoves.isEmpty()) {
-    // TimeUnit.MILLISECONDS.sleep(bot.getDelayValue());
-    // return;
-    // }
-    // sortMovesByClosest(possibleMoves, grid.getCitadelLocation()); // Sorts
-    // in-place
+    /* Kills bot thread and removes it from grid */
+    private void killBot() {
+        game.removeBot(bot);
+        Thread.currentThread().interrupt();
+    }
 
-    // for (Point newCoords : possibleMoves) {
-    // /* putIfAbsent() is atomic */
-    // if (occupiedCells.putIfAbsent(newCoords, true) == null) {
-    // try {
-    // bot.setNextPosition(newCoords); // Set the next position
-    // animateBotMovement(newCoords); // Animate the move
-    // } finally {
-    // occupiedCells.remove(newCoords); // Removes the in-use flag
-    // }
-    // break; // Successfully moved, break out of loop
-    // }
-    // }
-    // }
     /**
      * Function to decide the next move for a given bot.
      */
@@ -146,13 +106,10 @@ public class BotMover implements Runnable {
         for (Point newCoords : possibleMoves) {
             /* Check for collision with Wall */
             if (grid.cellHasWall(newCoords)) {
-                bot.move(newCoords); // Let the bot complete its move into the square with the wall.
-                grid.updateObjectPosition(bot, newCoords); // Update the position in the grid.
-                game.removeBot(bot); // Remove the bot from the game
-                Thread.currentThread().interrupt(); // Terminate the thread.
-                return; // Exit the function, thus ending the loop in the run() method.
+                killBot(); // TODO: Getting a race condition here, bots are not disappearing
+                // TODO: Also animation needs to finish before bot is removed
+                return; // Exit the function
             }
-
             /* putIfAbsent() is atomic */
             if (occupiedCells.putIfAbsent(newCoords, true) == null) {
                 try {
@@ -188,12 +145,9 @@ public class BotMover implements Runnable {
     }
 
     /**
-     * Add point to possible moves if it's a valid move
+     * Add point to possible moves if within bounds and has no bot
      */
     private void addIfValidMove(Point point, ArrayList<Point> possibleMoves) {
-        // if (grid.isWithinBounds(point) && grid.isCellEmpty(point)) {
-        // possibleMoves.add(point);
-        // }
         if (grid.isWithinBounds(point) && !grid.cellHasBot(point)) {
             possibleMoves.add(point);
         }

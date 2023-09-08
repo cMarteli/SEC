@@ -95,10 +95,12 @@ public class App extends Application {
         JFXArena arena = new JFXArena(grid, logger);
         game = new Game(arena, grid);
 
-        /* Button click listener */
-        arena.addListener((x, y) -> {
-            System.out.println("Arena click at (" + x + "," + y + ")"); // DEBUG
-        });
+        arena.addListener(game); // adds a listener to the arena
+
+        // /* Button click listener */
+        // arena.addListener((x, y) -> {
+        // // System.out.println("Arena click at (" + x + "," + y + ")"); // DEBUG
+        // });
 
         /* Toolbar */
         ToolBar toolbar = setupToolbar(stage);

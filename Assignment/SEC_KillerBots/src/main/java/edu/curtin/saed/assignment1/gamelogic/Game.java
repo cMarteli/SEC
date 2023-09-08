@@ -9,6 +9,7 @@ package edu.curtin.saed.assignment1.gamelogic;
 
 import edu.curtin.saed.assignment1.Grid;
 import edu.curtin.saed.assignment1.gridobjects.*;
+import edu.curtin.saed.assignment1.jfx.ArenaListener;
 import edu.curtin.saed.assignment1.jfx.JFXArena;
 
 import java.awt.Point;
@@ -16,24 +17,30 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Game {
+public class Game implements ArenaListener {
 
+    /**
+     *
+     */
+    private static final int WALL_BUILD_DELAY = 2000;
     /* Class constants */
     private static final int SPAWN_RATE_MS = 1500; // In milliseconds
+    private static final int BOT_POINTS = 100; // Amount of points won per bot destroyed
 
     /* Class variables */
     private final Grid grid;
     private final JFXArena arena;
-    private final ExecutorService botThreadPool = Executors.newFixedThreadPool(20);
+    private final ExecutorService botThreadPool = Executors.newFixedThreadPool(20); // max 20 bot threads
+    private BlockingQueue<Wall> wallQueue = new ArrayBlockingQueue<>(5); // max 5 walls can be queued
+    private final ScheduledExecutorService wallScheduler = Executors.newScheduledThreadPool(1); // limits to 1 thread
     private final Random random = new Random();
-    private final AtomicInteger score = new AtomicInteger(0); // atomic integer for thread safety
+    private final AtomicInteger score = new AtomicInteger(0); // atomic integer for points
 
     private volatile boolean running = false; // Flag for game status
 
     public Game(JFXArena a, Grid g) {
         arena = a;
         grid = g;
-        // initializeArena();
     }
 
     /**
@@ -43,14 +50,16 @@ public class Game {
         running = true;
         Thread addBotThread = createBotSpawningThread();
         addBotThread.start();
+        initWallScheduler();
     }
 
     /**
-     * Stops the game and shuts down the thread pool.
+     * Stops the game and cleans up threads.
      */
     public void stopGame() {
         running = false;
         botThreadPool.shutdown();
+        wallScheduler.shutdown();
     }
 
     /**
@@ -60,6 +69,51 @@ public class Game {
      */
     public boolean isRunning() {
         return running;
+    }
+
+    /*
+     * OnClick Listener from JFXArena
+     * Queus a new wall to be added to the grid
+     */
+    @Override
+    public void squareClicked(int x, int y) {
+        if (grid.isCellEmpty(x, y)) {
+            Wall w = new Wall(x, y);
+            // Add the wall to the queue instead of directly to the grid
+            try {
+                wallQueue.put(w);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            arena.printToLogger("New wall queued at: " + x + ", " + y);
+        }
+    }
+
+    /* Actually add the wall to the grid and update the graphical representation */
+    private void buildWall(Wall w) {
+        grid.updateObjectPosition(w, w.getX(), w.getY());
+        arena.updateWallPosition(w);
+    }
+
+    /**
+     * Creates a scheduler to add walls to the grid at regular intervals
+     */
+    private void initWallScheduler() {
+        wallScheduler.scheduleAtFixedRate(() -> {
+            synchronized (grid) {
+                try {
+                    if (wallQueue.size() > 0 && grid.getWallCount() < 10) {
+                        Wall w = wallQueue.poll();
+                        if (grid.isCellEmpty(w.getX(), w.getY())) {
+                            buildWall(w);
+                            grid.incrementWallCount();
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, 0, WALL_BUILD_DELAY, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -88,7 +142,10 @@ public class Game {
         for (GridObject[] row : gridArray) {
             for (GridObject gridObject : row) {
                 if (gridObject instanceof Bot) {
-                    arena.setRobotPosition((Bot) gridObject);
+                    arena.updateBotPosition((Bot) gridObject);
+                }
+                if (gridObject instanceof Wall) {
+                    arena.updateWallPosition((Wall) gridObject);
                 }
             }
         }
@@ -121,8 +178,8 @@ public class Game {
         if (!freeCorners.isEmpty()) {
             Point chosenCorner = freeCorners.get(random.nextInt(freeCorners.size()));
             Bot newBot = new Bot(chosenCorner.x, chosenCorner.y);
-            grid.getGridObjArray()[chosenCorner.y][chosenCorner.x] = newBot;
-            botThreadPool.submit(new BotMover(grid, newBot, this)); // Add new bot to thread pool
+            grid.updateObjectPosition(newBot, chosenCorner); // add new bot to grid
+            botThreadPool.submit(new BotHandler(grid, newBot, this)); // Add new bot to thread pool
         }
     }
 
@@ -132,10 +189,9 @@ public class Game {
      * @param bot The bot to be removed.
      */
     public void removeBot(Bot bot) {
-        Point botPosition = bot.getNextPosition();
-        grid.getGridObjArray()[botPosition.y][botPosition.x] = null; // Remove bot from grid
-        arena.clearRobotPosition(bot); // Assume you have this method to remove bot from JFXArena
-        updateScore(50); // TODO: check the assignment spec for the score
+        arena.clearRobotPosition(bot); // Remove bot from JFXArena
+        grid.removeObj(bot); // Remove bot from grid
+        updateScore(BOT_POINTS); // Update score
     }
 
     /**

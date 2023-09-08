@@ -2,6 +2,10 @@
 # make sure this file is name .gitignore
 # ctrl+h to toggle hidden files in ubuntu
 
+# Assignment files
+*.html
+*.pdf
+
 ### Java ###
 # Compiled class file
 *.class

@@ -9,6 +9,8 @@
 package edu.curtin.saed.assignment1;
 
 import java.awt.Point;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import edu.curtin.saed.assignment1.gridobjects.*;
 
 public class Grid {
@@ -18,6 +20,8 @@ public class Grid {
     private int height;
     private Point citadelLocation;
     private Point[] corners;
+
+    private AtomicInteger wallCount = new AtomicInteger(0);
 
     /**
      * Constructor to initialize the grid.
@@ -88,11 +92,11 @@ public class Grid {
      * @param b   The GridObject to update.
      * @param x,y The new coordinates in double format.
      */
-    public void updateObjectPosition(GridObject b, double x, double y) {
+    public synchronized void updateObjectPosition(GridObject obj, double x, double y) {
         Point newCoords = new Point();
         newCoords.setLocation(x, y);
-        gridObjArray[b.getY()][b.getX()] = null; // Clear old position
-        gridObjArray[newCoords.y][newCoords.x] = b; // Set new position
+        gridObjArray[obj.getY()][obj.getX()] = null; // Clear old position
+        gridObjArray[newCoords.y][newCoords.x] = obj; // Set new position
     }
 
     /**
@@ -111,13 +115,18 @@ public class Grid {
         return cellHasWall;
     }
 
+    /* Removes a GridObject from the grid */
+    public synchronized void removeObj(GridObject obj) {
+        gridObjArray[obj.getY()][obj.getX()] = null;
+    }
+
     /**
      * Checks if a cell is empty.
      *
      * @param p The point to check.
      * @return True if the cell is empty, false otherwise.
      */
-    public boolean isCellEmpty(Point p) {
+    public synchronized boolean isCellEmpty(Point p) {
         return gridObjArray[p.y][p.x] == null;
     }
 
@@ -143,6 +152,14 @@ public class Grid {
 
         }
         return null;
+    }
+
+    public void incrementWallCount() {
+        wallCount.incrementAndGet();
+    }
+
+    public int getWallCount() {
+        return wallCount.get();
     }
 
     public int getWidth() {
