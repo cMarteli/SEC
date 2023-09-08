@@ -11,6 +11,7 @@ public class Wall extends GridObject {
     private boolean isDamaged;
     private int wallID;
     private static int wallCounter = 0;
+    private static final String TYPE = "wall";
 
     public Wall(double x, double y) { // TODO: might need to change to int for consistency with Bot
         super(x, y);
@@ -28,6 +29,11 @@ public class Wall extends GridObject {
 
     public int getId() {
         return wallID;
+    }
+
+    @Override
+    public String getType() {
+        return TYPE;
     }
 
 }

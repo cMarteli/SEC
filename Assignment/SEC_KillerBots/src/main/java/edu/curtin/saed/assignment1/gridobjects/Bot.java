@@ -18,6 +18,7 @@ public class Bot extends GridObject {
     private Point nextPosition;
     private double animationProgress; // 0.0 to 1.0
     private static Random random = new Random();
+    private static final String TYPE = "bot";
 
     public Bot(int x, int y) {
         super(x, y); // Storing location in parent class GridObject
@@ -48,6 +49,11 @@ public class Bot extends GridObject {
 
     public double getAnimationProgress() {
         return animationProgress;
+    }
+
+    @Override
+    public String getType() {
+        return TYPE;
     }
 
 }

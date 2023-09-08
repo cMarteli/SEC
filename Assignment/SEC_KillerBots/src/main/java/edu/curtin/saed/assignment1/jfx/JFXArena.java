@@ -28,8 +28,6 @@ public class JFXArena extends Pane {
     private Image wallImg;
     private Image walldmgImg;
 
-    private Grid grid;
-    // Holds grid dimension values
     private int gridWidth;
     private int gridHeight;
     // Center coordinates of the grid
@@ -51,18 +49,17 @@ public class JFXArena extends Pane {
      */
     public JFXArena(Grid g, TextArea log) {
         logger = log; // passes the logger to the arena
-        grid = g;
         // Load images
         citadelImg = loadImage(Graphics.CITADEL_IMAGE);
         botImg = loadImage(Graphics.ROBOT_IMAGE);
         wallImg = loadImage(Graphics.WALL_IMAGE);
         walldmgImg = loadImage(Graphics.WALLDMG_IMAGE);
 
-        gridWidth = grid.getWidth();
-        gridHeight = grid.getHeight();
+        gridWidth = g.getWidth();
+        gridHeight = g.getHeight();
 
-        citadelX = grid.getCitadelLocation().getX();
-        citadelY = grid.getCitadelLocation().getY();
+        citadelX = g.getCitadelLocation().getX();
+        citadelY = g.getCitadelLocation().getY();
 
         canvas = new Canvas();
         canvas.widthProperty().bind(widthProperty());
@@ -144,28 +141,19 @@ public class JFXArena extends Pane {
         int id = b.getId() + 1;
         logger.appendText("Bot_" + id + " has been destroyed!\n");
         robotPositions.remove(b);
+        requestLayout();
     }
 
-    // /**
-    // * Adds a new wall on click.
-    // *
-    // * @param x y mouse click coordinates
-    // */
-    // public void buildWall(double x, double y) {
-    // int intx = (int) x;
-    // int inty = (int) y;
-
-    // GridObject obj = grid.getGridObj(x, y);
-    // if (grid.isCellEmpty(intx, inty)) {
-    // obj = new Wall(x, y);
-    // wallPositions.add(new Wall(x, y));
-    // grid.updateObjectPosition(obj, x, y); // TODO: this makes bots avoid the
-    // walls
-    // logger.appendText("Wall built at position (" + intx + ", " + inty + ")\n");
-    // } else {
-    // logger.appendText("There's something there...\n");
-    // }
-    // }
+    /**
+     * Clears and resets the arena.
+     */
+    public void clearAndResetArena() {
+        robotPositions.clear();
+        wallPositions.clear();
+        logger.clear(); // clear the logger
+        logger.appendText("Arena has been cleared and reset.\n");
+        requestLayout(); // Force a redraw
+    }
 
     public void addListener(ArenaListener newListener) {
         if (listeners.isEmpty()) {
@@ -253,15 +241,13 @@ public class JFXArena extends Pane {
             drawLabel(gfx, "Bot_" + (i + 1), renderX, renderY);
         }
         /* Draw the walls based on damage status */
-        for (int i = 0; i < wallPositions.size(); i++) {
-            Wall w = wallPositions.get(i);
+        for (Wall w : wallPositions) {
             if (w.isDamaged()) {
                 drawImage(gfx, walldmgImg, w.getX(), w.getY());
             } else {
                 drawImage(gfx, wallImg, w.getX(), w.getY());
             }
         }
-
     }
 
     /**

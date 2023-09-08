@@ -9,7 +9,7 @@ package edu.curtin.saed.assignment1.gridobjects;
 
 import java.awt.Point;
 
-public class GridObject {
+public abstract class GridObject {
     protected Point position;
 
     /* Constructor takes in x and y coordinates as an int */
@@ -50,4 +50,6 @@ public class GridObject {
     public int getX() {
         return (int) this.position.getX();
     }
+
+    public abstract String getType();
 }

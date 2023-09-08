@@ -31,9 +31,10 @@ public class App extends Application {
     /* Class variables */
     protected Game game;
     protected Grid grid;
+    protected JFXArena arena;
     private TextArea logger;
     private Label scoreLbl;
-    // private Label queue; //TODO: Implement queue
+    private Label queueLbl;
 
     /* Animation Timer for Game Loop */
     private AnimationTimer gameLoop = new AnimationTimer() {
@@ -47,13 +48,15 @@ public class App extends Application {
             /* Screen Update */
             if (game.isRunning() && (currentTimeInMilli - lastUpdateTime >= UPDATE_INTERVAL)) {
                 game.updateJFX();
+                scoreLbl.setText("Score: " + game.getScore());
+                queueLbl.setText("Walls Queued: " + game.getQueueCount());
                 lastUpdateTime = currentTimeInMilli;
             }
 
             /* Score Update */
             if (game.isRunning() && (currentTimeInMilli - lastScoreUpdateTime >= SCORE_UPDATE_INTERVAL)) {
                 game.updateScore(10);
-                scoreLbl.setText("Score: " + game.getScore());
+                // scoreLbl.setText("Score: " + game.getScore());
                 lastScoreUpdateTime = currentTimeInMilli;
             }
         }
@@ -66,22 +69,41 @@ public class App extends Application {
     /* Stops the game and frees resources */
     @Override
     public void stop() {
+        // Debug message
+        System.out.println("Stopping game.");
+
         if (game.isRunning()) {
-            logger.appendText("\nEnd of game\n Final Score:" + game.getScore() + "\n");
             game.stopGame();
             gameLoop.stop();
-            // grid.clearGrid();
-            // Platform.exit();
+            arena.clearAndResetArena();
+            grid.clearGrid();
         }
     }
 
     /* Application entry point */
     @Override
     public void start(Stage stage) {
+        newGame();
         setupUI(stage);
+
+    }
+
+    public void newGame() {
+        // Debug message
+        System.out.println("Starting new game.");
+
+        logger = new TextArea();
+        grid = new Grid(GRID_SIZE_X, GRID_SIZE_Y);
+        arena = new JFXArena(grid, logger);
+        game = new Game(arena, grid);
         game.initGame();
         gameLoop.start();
     }
+
+    // public void newGameBtnClick() {
+    // stop();
+    // newGame();
+    // }
 
     /* Initializes the user interface */
     private void setupUI(Stage stage) {
@@ -90,17 +112,7 @@ public class App extends Application {
         stage.getIcons().add(icon);
         stage.setTitle(APP_TITLE);
 
-        logger = new TextArea();
-        grid = new Grid(GRID_SIZE_X, GRID_SIZE_Y);
-        JFXArena arena = new JFXArena(grid, logger);
-        game = new Game(arena, grid);
-
         arena.addListener(game); // adds a listener to the arena
-
-        // /* Button click listener */
-        // arena.addListener((x, y) -> {
-        // // System.out.println("Arena click at (" + x + "," + y + ")"); // DEBUG
-        // });
 
         /* Toolbar */
         ToolBar toolbar = setupToolbar(stage);
@@ -117,18 +129,19 @@ public class App extends Application {
     /* Creates and returns a configured toolbar */
     private ToolBar setupToolbar(Stage stage) { // Add Stage stage parameter
         scoreLbl = new Label("Score: 0");
-        // queue = new Label("Walls Queued: 0"); // TODO: Implement queue
+        queueLbl = new Label("Walls Queued: 0");
         Button fullScreenBtn = new Button("Fullscreen");
-        Button stopGameBtn = new Button("Stop Game");
+        // Button newGameBtn = new Button("New Game");
 
         fullScreenBtn.setOnAction(event -> toggleFullscreen(stage)); // Pass stage here
-        stopGameBtn.setOnAction(event -> stop());
+        // newGameBtn.setOnAction(event -> newGameBtnClick());
 
-        // return new ToolBar(scoreLbl, new Separator(), queue, new Separator(),
+        // return new ToolBar(scoreLbl, new Separator(), queueLbl, new Separator(),
         // fullScreenBtn, new Separator(),
-        // stopGameBtn);
-        return new ToolBar(scoreLbl, new Separator(), new Separator(), fullScreenBtn, new Separator(),
-                stopGameBtn); // TODO: Implement queue
+        // newGameBtn);
+
+        return new ToolBar(scoreLbl, new Separator(), queueLbl, new Separator(),
+                fullScreenBtn, new Separator());
     }
 
     /* Toggles the fullscreen mode */

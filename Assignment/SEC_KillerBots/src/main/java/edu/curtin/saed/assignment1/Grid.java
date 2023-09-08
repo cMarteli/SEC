@@ -9,8 +9,6 @@
 package edu.curtin.saed.assignment1;
 
 import java.awt.Point;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import edu.curtin.saed.assignment1.gridobjects.*;
 
 public class Grid {
@@ -20,8 +18,6 @@ public class Grid {
     private int height;
     private Point citadelLocation;
     private Point[] corners;
-
-    private AtomicInteger wallCount = new AtomicInteger(0);
 
     /**
      * Constructor to initialize the grid.
@@ -92,7 +88,7 @@ public class Grid {
      * @param b   The GridObject to update.
      * @param x,y The new coordinates in double format.
      */
-    public synchronized void updateObjectPosition(GridObject obj, double x, double y) {
+    public void updateObjectPosition(GridObject obj, double x, double y) {
         Point newCoords = new Point();
         newCoords.setLocation(x, y);
         gridObjArray[obj.getY()][obj.getX()] = null; // Clear old position
@@ -115,8 +111,12 @@ public class Grid {
         return cellHasWall;
     }
 
+    public GridObject getGridObj(Point p) {
+        return gridObjArray[p.y][p.x];
+    }
+
     /* Removes a GridObject from the grid */
-    public synchronized void removeObj(GridObject obj) {
+    public void removeObj(GridObject obj) {
         gridObjArray[obj.getY()][obj.getX()] = null;
     }
 
@@ -126,7 +126,7 @@ public class Grid {
      * @param p The point to check.
      * @return True if the cell is empty, false otherwise.
      */
-    public synchronized boolean isCellEmpty(Point p) {
+    public boolean isCellEmpty(Point p) {
         return gridObjArray[p.y][p.x] == null;
     }
 
@@ -144,24 +144,6 @@ public class Grid {
         return gridObjArray;
     }
 
-    /* Returns null if no objects found */
-    public GridObject getGridObj(double x, double y) {
-        Point p = new Point();
-        p.setLocation(x, y);
-        if (!isCellEmpty(p)) { // if there's something there
-
-        }
-        return null;
-    }
-
-    public void incrementWallCount() {
-        wallCount.incrementAndGet();
-    }
-
-    public int getWallCount() {
-        return wallCount.get();
-    }
-
     public int getWidth() {
         return width;
     }
@@ -176,5 +158,9 @@ public class Grid {
 
     public Point[] getCorners() {
         return corners;
+    }
+
+    public void clearGrid() {
+        gridObjArray = new GridObject[height][width];
     }
 }

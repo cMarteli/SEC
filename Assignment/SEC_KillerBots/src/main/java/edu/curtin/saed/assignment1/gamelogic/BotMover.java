@@ -1,5 +1,5 @@
 /**
- * BotHandler.java
+ * BotMover.java
  * Class to handle the movements of bots on the grid.
  * Calculates shortest path from center.
  * 2023/SEC Assignment 1
@@ -13,18 +13,19 @@ import edu.curtin.saed.assignment1.gridobjects.Bot;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-public class BotHandler implements Runnable {
+public class BotMover implements Runnable {
     private Grid grid;
     private Bot bot;
     private Game game;
 
     /* ConcurrentHashMap is thread-safe */
-    private static final ConcurrentHashMap<Point, Boolean> occupiedCells = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Point, Boolean> NON_EMPTY_CELLS = new ConcurrentHashMap<>();
 
-    public BotHandler(Grid inGrid, Bot inBot, Game inGame) {
+    public BotMover(Grid inGrid, Bot inBot, Game inGame) {
         grid = inGrid;
         bot = inBot;
         game = inGame;
@@ -34,16 +35,29 @@ public class BotHandler implements Runnable {
     public void run() {
         try {
             while (!Thread.currentThread().isInterrupted() && game.isRunning()) {
-                decideNextMove();
+                if (isAtCitadel()) { // if bot is at citadel
+                    game.stopGame(); // Game over
+                } else {
+                    decideNextMove(); // move bot
+                }
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
 
+    /**
+     * Returns true if bot is at citadel.
+     *
+     * @return
+     */
+    private boolean isAtCitadel() {
+        return bot.getPosition().equals(grid.getCitadelLocation());
+    }
+
     /* Returns map of occupied cells */
     public static ConcurrentHashMap<Point, Boolean> getOccupiedCells() {
-        return occupiedCells;
+        return NON_EMPTY_CELLS;
     }
 
     /**
@@ -73,10 +87,10 @@ public class BotHandler implements Runnable {
     /**
      * Finds the distance from center for each possible move and sorts them.
      *
-     * @param possibleMoves ArrayList of possible moves
+     * @param possibleMoves List of possible moves
      * @param center        point we're finding shortest distance to
      */
-    private void sortMovesByClosest(ArrayList<Point> possibleMoves, Point center) {
+    private void sortMovesByClosest(List<Point> possibleMoves, Point center) {
         possibleMoves.sort((a, b) -> {
             int distanceA = calculateDistance(a, center);
             int distanceB = calculateDistance(b, center);
@@ -95,7 +109,7 @@ public class BotHandler implements Runnable {
      */
     private void decideNextMove() throws InterruptedException {
         /* Get a list of all possible moves */
-        ArrayList<Point> possibleMoves = getPossibleMoves();
+        ArrayList<Point> possibleMoves = (ArrayList<Point>) getPossibleMoves();
         /* If no possible moves, wait instead */
         if (possibleMoves.isEmpty()) {
             TimeUnit.MILLISECONDS.sleep(bot.getDelayValue());
@@ -106,17 +120,18 @@ public class BotHandler implements Runnable {
         for (Point newCoords : possibleMoves) {
             /* Check for collision with Wall */
             if (grid.cellHasWall(newCoords)) {
+                game.wallCollision(newCoords); // do wall collision
                 killBot(); // TODO: Getting a race condition here, bots are not disappearing
                 // TODO: Also animation needs to finish before bot is removed
                 return; // Exit the function
             }
-            /* putIfAbsent() is atomic */
-            if (occupiedCells.putIfAbsent(newCoords, true) == null) {
+            /* Complete the move */
+            if (NON_EMPTY_CELLS.putIfAbsent(newCoords, true) == null) { // putIfAbsent() is atomic
                 try {
                     bot.setNextPosition(newCoords); // Set the next position
                     animateBotMovement(newCoords); // Animate the move
                 } finally {
-                    occupiedCells.remove(newCoords); // Removes the in-use flag
+                    NON_EMPTY_CELLS.remove(newCoords); // Removes the in-use flag
                 }
                 break; // Successfully moved, break out of loop
             }
@@ -126,7 +141,7 @@ public class BotHandler implements Runnable {
     /**
      * Get all possible moves for the bot
      */
-    private ArrayList<Point> getPossibleMoves() {
+    private List<Point> getPossibleMoves() {
         ArrayList<Point> possibleMoves = new ArrayList<>();
         // Check Up
         Point up = new Point(bot.getX(), bot.getY() - 1);
@@ -147,7 +162,7 @@ public class BotHandler implements Runnable {
     /**
      * Add point to possible moves if within bounds and has no bot
      */
-    private void addIfValidMove(Point point, ArrayList<Point> possibleMoves) {
+    private void addIfValidMove(Point point, List<Point> possibleMoves) {
         if (grid.isWithinBounds(point) && !grid.cellHasBot(point)) {
             possibleMoves.add(point);
         }

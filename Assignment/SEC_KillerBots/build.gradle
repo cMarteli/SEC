@@ -29,3 +29,10 @@ pmd {
     ruleSets = []
     ruleSetFiles = files('saed-pmd-rules.xml')
 }
+
+dependencies {
+    /* Add JUnit 5 for unit testing */
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.0'
+    testImplementation 'org.mockito:mockito-core:3.12.4'
+}
