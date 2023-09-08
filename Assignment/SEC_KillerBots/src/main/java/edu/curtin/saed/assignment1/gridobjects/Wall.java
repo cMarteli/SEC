@@ -9,9 +9,13 @@ package edu.curtin.saed.assignment1.gridobjects;
 public class Wall extends GridObject {
 
     private boolean isDamaged;
+    private int wallID;
+    private static int wallCounter = 0;
 
     public Wall(double x, double y) { // TODO: might need to change to int for consistency with Bot
         super(x, y);
+        wallID = wallCounter++;
+        isDamaged = false;
     }
 
     public boolean isDamaged() {
@@ -20,6 +24,10 @@ public class Wall extends GridObject {
 
     public void damageWall() {
         isDamaged = true;
+    }
+
+    public int getId() {
+        return wallID;
     }
 
 }

@@ -18,6 +18,7 @@ import javafx.scene.text.TextAlignment;
 import java.io.*;
 import java.util.*;
 
+import edu.curtin.saed.assignment1.Grid;
 import edu.curtin.saed.assignment1.gridobjects.*;
 
 public class JFXArena extends Pane {
@@ -27,17 +28,16 @@ public class JFXArena extends Pane {
     private Image wallImg;
     private Image walldmgImg;
 
+    private Grid grid;
     // Holds grid dimension values
     private int gridWidth;
     private int gridHeight;
-
-    // list of robot positions
-    private List<Bot> robotPositions = new ArrayList<>();
-    private List<Wall> wallPositions = new ArrayList<>();
-
     // Center coordinates of the grid
     private double citadelX;
     private double citadelY;
+
+    private List<Bot> robotPositions = new ArrayList<>();// list of robot positions
+    private List<Wall> wallPositions = new ArrayList<>();// list of wall positions
 
     private double gridSquareSize; // Auto-calculated
     private Canvas canvas; // Used to provide a 'drawing surface'.
@@ -49,33 +49,25 @@ public class JFXArena extends Pane {
      * Creates a new arena object, loading the robot image and initialising a
      * drawing surface.
      */
-    public JFXArena(TextArea log) {
+    public JFXArena(Grid g, TextArea log) {
         logger = log; // passes the logger to the arena
+        grid = g;
         // Load images
         citadelImg = loadImage(Graphics.CITADEL_IMAGE);
         botImg = loadImage(Graphics.ROBOT_IMAGE);
         wallImg = loadImage(Graphics.WALL_IMAGE);
         walldmgImg = loadImage(Graphics.WALLDMG_IMAGE);
 
-        gridWidth = 0;
-        gridHeight = 0;
-        citadelX = 0;
-        citadelY = 0;
+        gridWidth = grid.getWidth();
+        gridHeight = grid.getHeight();
+
+        citadelX = grid.getCitadelLocation().getX();
+        citadelY = grid.getCitadelLocation().getY();
 
         canvas = new Canvas();
         canvas.widthProperty().bind(widthProperty());
         canvas.heightProperty().bind(heightProperty());
         getChildren().add(canvas);
-    }
-
-    public void setGridSize(int width, int height) {
-        gridWidth = width;
-        gridHeight = height;
-    }
-
-    public void setCitadelPosition(Double x, Double y) {
-        citadelX = x;
-        citadelY = y;
     }
 
     /**
@@ -117,13 +109,29 @@ public class JFXArena extends Pane {
         requestLayout();
     }
 
-    // TODO: Wall should be added to list only not drawn here
-    public void setWallPosition(Double x, Double y, boolean isDamaged) {
-        double gridX = x;
-        double gridY = y;
-        // TODO: Check if wall is already in list
-        wallPositions.add(new Wall(x, y));
-        logger.appendText("Wall built at position (" + gridX + ", " + gridY + ")\n");
+    public void clearRobotPosition(Bot b) {
+        robotPositions.remove(b);
+    }
+
+    /**
+     * Adds a new wall on click.
+     *
+     * @param x y mouse click coordinates
+     */
+    public void buildWall(double x, double y) {
+        int intx = (int) x;
+        int inty = (int) y;
+
+        GridObject obj = grid.getGridObj(x, y);
+        if (grid.isCellEmpty(intx, inty)) {
+            obj = new Wall(x, y);
+            wallPositions.add(new Wall(x, y));
+            grid.updateObjectPosition(obj, x, y); // TODO: this makes bots avoid the walls
+            logger.appendText("Wall built at position (" + intx + ", " + inty + ")\n");
+        } else {
+            logger.appendText("There's something there...\n");
+        }
+
     }
 
     public void addListener(ArenaListener newListener) {
@@ -135,7 +143,7 @@ public class JFXArena extends Pane {
                 if (gridX < gridWidth && gridY < gridHeight) {
                     for (ArenaListener listener : listeners) {
                         listener.squareClicked(gridX, gridY);
-                        setWallPosition((double) gridX, (double) gridY, false);
+                        buildWall((double) gridX, (double) gridY);
                     }
                 }
             });
@@ -191,11 +199,11 @@ public class JFXArena extends Pane {
             gfx.strokeLine(0.0, y, arenaPixelWidth, y);
         }
 
-        // Draws the citadel at the center
+        /* Draws the citadel at the center */
         drawImage(gfx, citadelImg, citadelX, citadelY);
         // drawLabel(gfx, "Citadel", citadelX, citadelY);
 
-        // Loop through the list of robot positions and draw each one
+        /* Loop through the list of robot positions and draw each one */
         for (int i = 0; i < robotPositions.size(); i++) {
             Bot bot = robotPositions.get(i);
             double x = bot.getX();
@@ -210,6 +218,15 @@ public class JFXArena extends Pane {
 
             drawImage(gfx, botImg, renderX, renderY);
             drawLabel(gfx, "Bot_" + (i + 1), renderX, renderY);
+        }
+        /* Draw the walls based on damage status */
+        for (int i = 0; i < wallPositions.size(); i++) {
+            Wall w = wallPositions.get(i);
+            if (w.isDamaged()) {
+                drawImage(gfx, walldmgImg, w.getX(), w.getY());
+            } else {
+                drawImage(gfx, wallImg, w.getX(), w.getY());
+            }
         }
 
     }

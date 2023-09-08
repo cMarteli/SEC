@@ -83,6 +83,35 @@ public class Grid {
     }
 
     /**
+     * Updates a GridObject's coordinates in the grid.
+     *
+     * @param b   The GridObject to update.
+     * @param x,y The new coordinates in double format.
+     */
+    public void updateObjectPosition(GridObject b, double x, double y) {
+        Point newCoords = new Point();
+        newCoords.setLocation(x, y);
+        gridObjArray[b.getY()][b.getX()] = null; // Clear old position
+        gridObjArray[newCoords.y][newCoords.x] = b; // Set new position
+    }
+
+    /**
+     * Checks if a has a robot in it.
+     *
+     * @param p The point to check.
+     * @return True if the cell has bot, false otherwise.
+     */
+    public boolean cellHasBot(Point p) {
+        boolean cellHasBot = gridObjArray[p.y][p.x] instanceof Bot;
+        return cellHasBot;
+    }
+
+    public boolean cellHasWall(Point p) {
+        boolean cellHasWall = gridObjArray[p.y][p.x] instanceof Wall;
+        return cellHasWall;
+    }
+
+    /**
      * Checks if a cell is empty.
      *
      * @param p The point to check.
@@ -92,8 +121,28 @@ public class Grid {
         return gridObjArray[p.y][p.x] == null;
     }
 
+    /**
+     * Checks if a cell is empty.
+     *
+     * @param p The point to check.
+     * @return True if the cell is empty, false otherwise.
+     */
+    public boolean isCellEmpty(int x, int y) {
+        return gridObjArray[y][x] == null;
+    }
+
     public GridObject[][] getGridObjArray() {
         return gridObjArray;
+    }
+
+    /* Returns null if no objects found */
+    public GridObject getGridObj(double x, double y) {
+        Point p = new Point();
+        p.setLocation(x, y);
+        if (!isCellEmpty(p)) { // if there's something there
+
+        }
+        return null;
     }
 
     public int getWidth() {

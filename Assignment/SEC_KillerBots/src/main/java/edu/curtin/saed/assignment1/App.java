@@ -91,14 +91,13 @@ public class App extends Application {
         stage.setTitle(APP_TITLE);
 
         logger = new TextArea();
-        JFXArena arena = new JFXArena(logger);
         grid = new Grid(GRID_SIZE_X, GRID_SIZE_Y);
+        JFXArena arena = new JFXArena(grid, logger);
         game = new Game(arena, grid);
 
         /* Button click listener */
         arena.addListener((x, y) -> {
             System.out.println("Arena click at (" + x + "," + y + ")"); // DEBUG
-            // TODO: Add build wall here
         });
 
         /* Toolbar */

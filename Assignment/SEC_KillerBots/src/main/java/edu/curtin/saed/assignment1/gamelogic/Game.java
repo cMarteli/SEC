@@ -24,18 +24,16 @@ public class Game {
     /* Class variables */
     private final Grid grid;
     private final JFXArena arena;
-    private final Point citadel;
     private final ExecutorService botThreadPool = Executors.newFixedThreadPool(20);
     private final Random random = new Random();
     private final AtomicInteger score = new AtomicInteger(0); // atomic integer for thread safety
 
     private volatile boolean running = false; // Flag for game status
 
-    public Game(JFXArena arena, Grid grid) {
-        this.arena = arena;
-        this.grid = grid;
-        this.citadel = grid.getCitadelLocation();
-        initializeArena();
+    public Game(JFXArena a, Grid g) {
+        arena = a;
+        grid = g;
+        // initializeArena();
     }
 
     /**
@@ -92,19 +90,9 @@ public class Game {
                 if (gridObject instanceof Bot) {
                     arena.setRobotPosition((Bot) gridObject);
                 }
-                // else if (gridObject instanceof Wall) {
-                // arena.setWallPosition((Wall) gridObject); } TODO: Update wall here
             }
         }
         arena.requestLayout();
-    }
-
-    /**
-     * Initializes the arena by setting its size and citadel position.
-     */
-    private void initializeArena() {
-        arena.setGridSize(grid.getWidth(), grid.getHeight());
-        arena.setCitadelPosition(citadel.getX(), citadel.getY());
     }
 
     /**
@@ -134,8 +122,20 @@ public class Game {
             Point chosenCorner = freeCorners.get(random.nextInt(freeCorners.size()));
             Bot newBot = new Bot(chosenCorner.x, chosenCorner.y);
             grid.getGridObjArray()[chosenCorner.y][chosenCorner.x] = newBot;
-            botThreadPool.submit(new BotMover(grid, newBot)); // Add new bot to thread pool
+            botThreadPool.submit(new BotMover(grid, newBot, this)); // Add new bot to thread pool
         }
+    }
+
+    /**
+     * Removes a bot from the game after it collides with a wall.
+     *
+     * @param bot The bot to be removed.
+     */
+    public void removeBot(Bot bot) {
+        Point botPosition = bot.getNextPosition();
+        grid.getGridObjArray()[botPosition.y][botPosition.x] = null; // Remove bot from grid
+        arena.clearRobotPosition(bot); // Assume you have this method to remove bot from JFXArena
+        updateScore(50); // TODO: check the assignment spec for the score
     }
 
     /**
