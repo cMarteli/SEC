@@ -27,6 +27,7 @@ public class App extends Application {
     private static final int GRID_SIZE_Y = 9;
     private static final long UPDATE_INTERVAL = 40; // In milliseconds
     private static final long SCORE_UPDATE_INTERVAL = 1000; // In milliseconds
+    private static final int POINTS_PER_SEC = 10;
 
     /* Class variables */
     protected Game game;
@@ -53,10 +54,9 @@ public class App extends Application {
                 lastUpdateTime = currentTimeInMilli;
             }
 
-            /* Score Update */
+            /* Add to score every second */
             if (game.isRunning() && (currentTimeInMilli - lastScoreUpdateTime >= SCORE_UPDATE_INTERVAL)) {
-                game.updateScore(10);
-                // scoreLbl.setText("Score: " + game.getScore());
+                game.updateScore(POINTS_PER_SEC);
                 lastScoreUpdateTime = currentTimeInMilli;
             }
         }
@@ -75,7 +75,7 @@ public class App extends Application {
         if (game.isRunning()) {
             game.stopGame();
             gameLoop.stop();
-            arena.clearAndResetArena();
+            // arena.clearAndResetArena();
             grid.clearGrid();
         }
     }
@@ -85,6 +85,7 @@ public class App extends Application {
     public void start(Stage stage) {
         newGame();
         setupUI(stage);
+        toggleFullscreen(stage); // TODO: remove this
 
     }
 

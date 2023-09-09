@@ -11,16 +11,12 @@ import java.awt.Point;
 
 public abstract class GridObject {
     protected Point position;
+    private boolean destroyed;
 
     /* Constructor takes in x and y coordinates as an int */
     public GridObject(int x, int y) {
         position = new Point(x, y);
-    }
-
-    /* Constructor takes in x and y coordinates as a double */
-    public GridObject(double x, double y) {
-        position = new Point();
-        position.setLocation(x, y);
+        destroyed = false; // default
     }
 
     /* Alternate Constructor takes in point */
@@ -51,5 +47,12 @@ public abstract class GridObject {
         return (int) this.position.getX();
     }
 
-    public abstract String getType();
+    public boolean isDestroyed() {
+        return destroyed;
+    }
+
+    public void destroy() {
+        destroyed = true;
+    }
+
 }

@@ -12,7 +12,8 @@ import edu.curtin.saed.assignment1.gridobjects.*;
 import edu.curtin.saed.assignment1.jfx.ArenaListener;
 import edu.curtin.saed.assignment1.jfx.JFXArena;
 import java.awt.Point;
-
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Game implements ArenaListener {
@@ -74,20 +75,29 @@ public class Game implements ArenaListener {
      */
     @Override
     public void squareClicked(int x, int y) {
-        if (grid.isCellEmpty(x, y)) {
-            Wall w = new Wall(x, y);
-            wallScheduler.addToQueue(w);
-            arena.printToLogger("New wall queued at: " + x + ", " + y);
-        } else {
-            arena.printToLogger("Can't build here.");
+        if (wallScheduler.isQueueFull()) {
+            arena.printToLogger("Building queue is full.");
+            return;
         }
+        if (!grid.isCellEmpty(new Point(x, y))) {
+            arena.printToLogger("You cannot build here.");
+            return;
+        }
+        if (wallScheduler.isAlreadyInQueue(x, y)) {
+            arena.printToLogger("This area is already in queue.");
+            return;
+        }
+        Wall w = new Wall(x, y);
+        wallScheduler.addToQueue(w);
+        arena.printToLogger("Building Wall at: " + x + ", " + y);
     }
 
     /**
      * Adds a wall to the grid and updates its graphical representation.
      */
     public void buildWall(Wall w) {
-        grid.updateObjectPosition(w, w.getX(), w.getY());
+        arena.printToLogger("Wall built at: " + w.getX() + ", " + w.getY());
+        grid.updateObjectPosition(w, w.getPosition());
         arena.updateWallPosition(w);
     }
 
@@ -99,8 +109,9 @@ public class Game implements ArenaListener {
     public void wallCollision(Point newCoords) {
         Wall w = (Wall) grid.getGridObj(newCoords);
         if (w.isDamaged()) {
+            w.destroy(); // if wall is already damaged destroy it
             grid.removeObj(w);
-            // arena.clearWallPosition(w);
+            arena.clearWallPosition(w);
         } else {
             w.damageWall();
         }
@@ -133,19 +144,37 @@ public class Game implements ArenaListener {
         return wallScheduler.getQueueCount();
     }
 
+    // /**
+    // * Updates the graphical representation on the JFXArena.
+    // */
+    // public void updateJFX() {
+    // GridObject[][] gridArray = grid.getGridObjArray();
+    // for (GridObject[] row : gridArray) {
+    // for (GridObject gridObject : row) {
+    // if (gridObject instanceof Bot) {
+    // arena.updateBotPosition((Bot) gridObject);
+    // }
+    // if (gridObject instanceof Wall) {
+    // arena.updateWallPosition((Wall) gridObject);
+    // }
+    // }
+    // }
+    // arena.requestLayout();
+    // }
+
     /**
      * Updates the graphical representation on the JFXArena.
      */
     public void updateJFX() {
-        GridObject[][] gridArray = grid.getGridObjArray();
-        for (GridObject[] row : gridArray) {
-            for (GridObject gridObject : row) {
-                if (gridObject instanceof Bot) {
-                    arena.updateBotPosition((Bot) gridObject);
-                }
-                if (gridObject instanceof Wall) {
-                    arena.updateWallPosition((Wall) gridObject);
-                }
+        ConcurrentHashMap<Point, GridObject> gridMap = grid.getGridObjMap(); // Assuming you have a getter for the
+                                                                             // ConcurrentHashMap
+        for (Map.Entry<Point, GridObject> entry : gridMap.entrySet()) {
+            GridObject gridObject = entry.getValue();
+            if (gridObject instanceof Bot) {
+                arena.updateBotPosition((Bot) gridObject);
+            }
+            if (gridObject instanceof Wall) {
+                arena.updateWallPosition((Wall) gridObject);
             }
         }
         arena.requestLayout();

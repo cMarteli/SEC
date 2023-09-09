@@ -22,7 +22,9 @@ public class BotMover implements Runnable {
     private Bot bot;
     private Game game;
 
-    /* ConcurrentHashMap is thread-safe */
+    /*
+     * This is used to store the cells the bot is currently taking up whilst moving
+     */
     private static final ConcurrentHashMap<Point, Boolean> NON_EMPTY_CELLS = new ConcurrentHashMap<>();
 
     public BotMover(Grid inGrid, Bot inBot, Game inGame) {
@@ -34,7 +36,7 @@ public class BotMover implements Runnable {
     @Override
     public void run() {
         try {
-            while (!Thread.currentThread().isInterrupted() && game.isRunning()) {
+            while (!bot.isDestroyed() && game.isRunning()) {
                 if (isAtCitadel()) { // if bot is at citadel
                     game.stopGame(); // Game over
                 } else {
@@ -42,7 +44,9 @@ public class BotMover implements Runnable {
                 }
             }
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            System.out.println("BotMover: Interrupted");
+        } finally {
+            Thread.currentThread().interrupt(); // Re-interrupt the thread
         }
     }
 
@@ -69,8 +73,18 @@ public class BotMover implements Runnable {
             bot.setAnimationProgress(progress);
             TimeUnit.MILLISECONDS.sleep(40);
         }
-        /* Update the bot's position on the grid */
-        grid.updateObjectPosition(bot, newCoords);
+
+        /* Check for collision with Wall */
+        if (grid.cellHasWall(newCoords)) { // Updated to use new method
+            game.wallCollision(newCoords); // do wall collision
+            killBot();
+            return; // Exit the function
+        } else {
+            /* Update the bot's position on the grid */
+            grid.updateObjectPosition(bot, newCoords);
+
+        }
+
         /* Complete the move */
         bot.setPosition(newCoords);
         bot.setAnimationProgress(0.0); // Reset animation progress
@@ -100,8 +114,9 @@ public class BotMover implements Runnable {
 
     /* Kills bot thread and removes it from grid */
     private void killBot() {
+        bot.destroy();
         game.removeBot(bot);
-        Thread.currentThread().interrupt();
+        // Thread.currentThread().interrupt();
     }
 
     /**
@@ -118,13 +133,6 @@ public class BotMover implements Runnable {
         sortMovesByClosest(possibleMoves, grid.getCitadelLocation()); // Sorts in-place
 
         for (Point newCoords : possibleMoves) {
-            /* Check for collision with Wall */
-            if (grid.cellHasWall(newCoords)) {
-                game.wallCollision(newCoords); // do wall collision
-                killBot(); // TODO: Getting a race condition here, bots are not disappearing
-                // TODO: Also animation needs to finish before bot is removed
-                return; // Exit the function
-            }
             /* Complete the move */
             if (NON_EMPTY_CELLS.putIfAbsent(newCoords, true) == null) { // putIfAbsent() is atomic
                 try {

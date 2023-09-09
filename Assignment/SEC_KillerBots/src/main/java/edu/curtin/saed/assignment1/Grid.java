@@ -9,11 +9,13 @@
 package edu.curtin.saed.assignment1;
 
 import java.awt.Point;
+import java.util.concurrent.ConcurrentHashMap;
 import edu.curtin.saed.assignment1.gridobjects.*;
 
 public class Grid {
 
-    private GridObject[][] gridObjArray;
+    /* ConcurrentHashMap to store GridObjects in a thread-safe manner */
+    private ConcurrentHashMap<Point, GridObject> gridObjMap;
     private int width;
     private int height;
     private Point citadelLocation;
@@ -28,7 +30,7 @@ public class Grid {
     public Grid(int w, int h) {
         width = w;
         height = h;
-        gridObjArray = new GridObject[height][width];
+        gridObjMap = new ConcurrentHashMap<>();
         initializeGrid();
     }
 
@@ -78,46 +80,51 @@ public class Grid {
      * @param newCoords The new coordinates.
      */
     public void updateObjectPosition(GridObject b, Point newCoords) {
-        gridObjArray[b.getY()][b.getX()] = null; // Clear old position
-        gridObjArray[newCoords.y][newCoords.x] = b; // Set new position
+        /* Clear old position */
+        gridObjMap.remove(new Point(b.getX(), b.getY()));
+        /* Set new position */
+        gridObjMap.put(newCoords, b);
     }
 
     /**
-     * Updates a GridObject's coordinates in the grid.
-     *
-     * @param b   The GridObject to update.
-     * @param x,y The new coordinates in double format.
-     */
-    public void updateObjectPosition(GridObject obj, double x, double y) {
-        Point newCoords = new Point();
-        newCoords.setLocation(x, y);
-        gridObjArray[obj.getY()][obj.getX()] = null; // Clear old position
-        gridObjArray[newCoords.y][newCoords.x] = obj; // Set new position
-    }
-
-    /**
-     * Checks if a has a robot in it.
+     * Checks if a cell has a robot in it.
      *
      * @param p The point to check.
      * @return True if the cell has bot, false otherwise.
      */
     public boolean cellHasBot(Point p) {
-        boolean cellHasBot = gridObjArray[p.y][p.x] instanceof Bot;
-        return cellHasBot;
+        GridObject obj = gridObjMap.get(p);
+        return obj instanceof Bot;
     }
 
+    /**
+     * Checks if a cell has a wall in it.
+     *
+     * @param p The point to check.
+     * @return True if the cell has a wall, false otherwise.
+     */
     public boolean cellHasWall(Point p) {
-        boolean cellHasWall = gridObjArray[p.y][p.x] instanceof Wall;
-        return cellHasWall;
+        GridObject obj = gridObjMap.get(p);
+        return obj instanceof Wall;
     }
 
+    /**
+     * Gets the GridObject at a specific point.
+     *
+     * @param p The point to check.
+     * @return The GridObject at the point, or null if empty.
+     */
     public GridObject getGridObj(Point p) {
-        return gridObjArray[p.y][p.x];
+        return gridObjMap.get(p);
     }
 
-    /* Removes a GridObject from the grid */
+    /**
+     * Removes a GridObject from the grid.
+     *
+     * @param obj The GridObject to remove.
+     */
     public void removeObj(GridObject obj) {
-        gridObjArray[obj.getY()][obj.getX()] = null;
+        gridObjMap.remove(new Point(obj.getX(), obj.getY()));
     }
 
     /**
@@ -127,40 +134,59 @@ public class Grid {
      * @return True if the cell is empty, false otherwise.
      */
     public boolean isCellEmpty(Point p) {
-        return gridObjArray[p.y][p.x] == null;
+        return !gridObjMap.containsKey(p);
     }
 
     /**
-     * Checks if a cell is empty.
+     * Gets the width of the grid.
      *
-     * @param p The point to check.
-     * @return True if the cell is empty, false otherwise.
+     * @return The grid width.
      */
-    public boolean isCellEmpty(int x, int y) {
-        return gridObjArray[y][x] == null;
-    }
-
-    public GridObject[][] getGridObjArray() {
-        return gridObjArray;
-    }
-
     public int getWidth() {
         return width;
     }
 
+    /**
+     * Gets the height of the grid.
+     *
+     * @return The grid height.
+     */
     public int getHeight() {
         return height;
     }
 
+    /**
+     * Gets the citadel location.
+     *
+     * @return The citadel location.
+     */
     public Point getCitadelLocation() {
         return citadelLocation;
     }
 
+    /**
+     * Gets the corners of the grid.
+     *
+     * @return An array of corner points.
+     */
     public Point[] getCorners() {
         return corners;
     }
 
+    /**
+     * Clears the grid.
+     */
     public void clearGrid() {
-        gridObjArray = new GridObject[height][width];
+        gridObjMap.clear();
     }
+
+    /**
+     * Gets the ConcurrentHashMap representing the grid.
+     *
+     * @return The ConcurrentHashMap of the grid.
+     */
+    public ConcurrentHashMap<Point, GridObject> getGridObjMap() {
+        return gridObjMap;
+    }
+
 }

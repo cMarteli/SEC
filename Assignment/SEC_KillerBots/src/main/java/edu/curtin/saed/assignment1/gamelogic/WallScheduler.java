@@ -34,7 +34,7 @@ public class WallScheduler {
             synchronized (grid) {
                 if (wallQueue.size() > 0 && wallCount.get() < 10) {
                     Wall w = wallQueue.poll();
-                    if (grid.isCellEmpty(w.getX(), w.getY())) {
+                    if (grid.isCellEmpty(w.getPosition())) {
                         game.buildWall(w);
                         wallCount.incrementAndGet();
                     }
@@ -49,6 +49,20 @@ public class WallScheduler {
         } catch (InterruptedException e) {
             System.out.println("WallScheduler: Interrupted while adding wall to queue." + e.getMessage());
         }
+    }
+
+    public boolean isQueueFull() {
+        return wallQueue.remainingCapacity() == 0;
+    }
+
+    /* Checks if that location is already in queue */
+    public boolean isAlreadyInQueue(int x, int y) {
+        for (Wall w : wallQueue) {
+            if (w.getX() == x && w.getY() == y) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void shutdown() {

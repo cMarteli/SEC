@@ -100,17 +100,11 @@ public class JFXArena extends Pane {
      */
     public void updateWallPosition(Wall w) {
         int id = w.getId();
-        boolean isNew = false;
 
         if (id < wallPositions.size()) {
             wallPositions.set(id, w);
         } else {
             wallPositions.add(w);
-            isNew = true; // Marks as a new wall
-        }
-
-        if (isNew) {
-            logger.appendText("New wall built at position (" + w.getX() + ", " + w.getY() + ")\n");
         }
         requestLayout();
     }
@@ -122,37 +116,23 @@ public class JFXArena extends Pane {
      */
     public void updateBotPosition(Bot b) {
         int id = b.getId();
-        boolean isNewBot = false;
 
         if (id < robotPositions.size()) {
             robotPositions.set(id, b);
         } else {
             robotPositions.add(b);
-            isNewBot = true; // Marks as a new bot for logger
-        }
-
-        if (isNewBot) {
-            logger.appendText("New bot spawned at position (" + b.getX() + ", " + b.getY() + ")\n");
         }
         requestLayout();
     }
 
     public void clearRobotPosition(Bot b) {
-        int id = b.getId() + 1;
-        logger.appendText("Bot_" + id + " has been destroyed!\n");
-        robotPositions.remove(b);
-        requestLayout();
+        robotPositions.remove(b); // TODO: this might not be working
+        requestLayout(); // TODO: is this needed?
     }
 
-    /**
-     * Clears and resets the arena.
-     */
-    public void clearAndResetArena() {
-        robotPositions.clear();
-        wallPositions.clear();
-        logger.clear(); // clear the logger
-        logger.appendText("Arena has been cleared and reset.\n");
-        requestLayout(); // Force a redraw
+    public void clearWallPosition(Wall w) {
+        wallPositions.remove(w);
+        requestLayout();
     }
 
     public void addListener(ArenaListener newListener) {
@@ -237,15 +217,21 @@ public class JFXArena extends Pane {
             double renderX = x + (nextX - x) * progress;
             double renderY = y + (nextY - y) * progress;
 
-            drawImage(gfx, botImg, renderX, renderY);
-            drawLabel(gfx, "Bot_" + (i + 1), renderX, renderY);
+            if (!bot.isDestroyed()) {
+                drawImage(gfx, botImg, renderX, renderY);
+                drawLabel(gfx, bot.name(), renderX, renderY);
+            }
+
         }
-        /* Draw the walls based on damage status */
-        for (Wall w : wallPositions) {
-            if (w.isDamaged()) {
-                drawImage(gfx, walldmgImg, w.getX(), w.getY());
-            } else {
-                drawImage(gfx, wallImg, w.getX(), w.getY());
+
+        for (Wall wall : wallPositions) {
+            if (!wall.isDestroyed()) {
+                /* Draw the walls based on damage status */
+                if (wall.isDamaged()) {
+                    drawImage(gfx, walldmgImg, wall.getX(), wall.getY());
+                } else {
+                    drawImage(gfx, wallImg, wall.getX(), wall.getY());
+                }
             }
         }
     }
