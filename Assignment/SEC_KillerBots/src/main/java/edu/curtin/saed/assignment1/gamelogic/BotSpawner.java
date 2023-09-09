@@ -42,7 +42,7 @@ public class BotSpawner {
                     Thread.currentThread().interrupt();
                 }
             }
-            botThreadPool.shutdown();
+            botThreadPool.shutdown(); // if game is over, shutdown thread pool
         });
     }
 
