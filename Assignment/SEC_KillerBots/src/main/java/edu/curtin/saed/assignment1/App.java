@@ -22,17 +22,19 @@ import javafx.stage.Stage;
 public class App extends Application {
 
     /* Class constants */
-    private static final String APP_TITLE = "Revenge of the Killer Bots";
+    private static final String APP_TITLE = "Revenge of the Killer Bots"; // Application title
+    /* Can be changed to dinamically resize the grid */
     private static final int GRID_SIZE_X = 9;
     private static final int GRID_SIZE_Y = 9;
+    /* Time related values */
     private static final long UPDATE_INTERVAL = 40; // In milliseconds
     private static final long SCORE_UPDATE_INTERVAL = 1000; // In milliseconds
-    private static final int POINTS_PER_SEC = 10;
+    private static final int POINTS_PER_SEC = 10; // Points added to score per second
 
     /* Class variables */
-    protected Game game;
-    protected Grid grid;
-    protected JFXArena arena;
+    private Game game;
+    private Grid grid;
+    private JFXArena arena;
     private TextArea logger;
     private Label scoreLbl;
     private Label queueLbl;
@@ -69,8 +71,7 @@ public class App extends Application {
     /* Stops the game and frees resources */
     @Override
     public void stop() {
-        // Debug message
-        System.out.println("Stopping game.");
+        System.out.println("Stopping game."); // Debug message
 
         if (game.isRunning()) {
             game.stopGame();
@@ -85,13 +86,11 @@ public class App extends Application {
     public void start(Stage stage) {
         newGame();
         setupUI(stage);
-        toggleFullscreen(stage); // TODO: remove this
-
+        // toggleFullscreen(stage); // Uncomment to start game in fullscreen
     }
 
     public void newGame() {
-        // Debug message
-        System.out.println("Starting new game.");
+        System.out.println("Starting new game."); // Debug message
 
         logger = new TextArea();
         grid = new Grid(GRID_SIZE_X, GRID_SIZE_Y);

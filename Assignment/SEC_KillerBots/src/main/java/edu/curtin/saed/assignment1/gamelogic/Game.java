@@ -1,6 +1,6 @@
 /**
  * Game.java
- * Game class to manage game logic
+ * Manages game logic and state.
  * 2023/SEC Assignment 1
  * @author Victor Marteli (19598552)
  */
@@ -17,7 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Game implements ArenaListener {
-
     /* Class constants */
     private static final int BOT_POINTS = 100; // Amount of points won per bot destroyed
 
@@ -25,10 +24,8 @@ public class Game implements ArenaListener {
     private final Grid grid;
     private final JFXArena arena;
 
-    private volatile boolean running = false; // Game state
-
     private WallScheduler wallScheduler; // Scheduler for adding walls
-
+    private volatile boolean running = false; // Game state
     private final AtomicInteger score = new AtomicInteger(0); // atomic integer for score
 
     public Game(JFXArena inArena, Grid inGrid) {
@@ -48,7 +45,7 @@ public class Game implements ArenaListener {
         Thread addBotThread = botSpawner.createBotSpawningThread();
         addBotThread.start();
 
-        wallScheduler = new WallScheduler(grid, this);
+        wallScheduler = new WallScheduler(this);
     }
 
     /**
@@ -59,6 +56,17 @@ public class Game implements ArenaListener {
         running = false;
         arena.printToLogger("\n*GAME OVER*\nFinal Score:" + getScore() + "\n");
         wallScheduler.shutdown();
+    }
+
+    /**
+     * Stops the game and cleans up threads.
+     */
+    public void stopGame(Bot b) {
+        System.out.println("StopGame: Stopping game...");
+        running = false;
+        arena.printToLogger("Citadel raided by: " + b.name() + "...\n");
+        arena.printToLogger("\n*GAME OVER*\nFinal Score:" + getScore() + "\n");
+        wallScheduler.shutdown(); // Shutdown wall scheduler thread
     }
 
     /**
@@ -75,16 +83,22 @@ public class Game implements ArenaListener {
      */
     @Override
     public void squareClicked(int x, int y) {
-        if (wallScheduler.isQueueFull()) {
-            arena.printToLogger("Building queue is full.");
+        int maxWalls = wallScheduler.getMaxTotalWalls();
+        if (wallScheduler.getWallCount().get() >= maxWalls) {
+            arena.printToLogger("You can only build a maximum of " + maxWalls + " walls.");
             return;
         }
         if (!grid.isCellEmpty(new Point(x, y))) {
-            arena.printToLogger("You cannot build here.");
+            arena.printToLogger("There's already something there.");
             return;
         }
         if (wallScheduler.isAlreadyInQueue(x, y)) {
             arena.printToLogger("This area is already in queue.");
+            return;
+        }
+        int maxQueueSize = wallScheduler.maxQueueSize();
+        if (wallScheduler.getQueueCount() >= maxQueueSize) {
+            arena.printToLogger("You can only queue " + maxQueueSize + " walls at a time.");
             return;
         }
         Wall w = new Wall(x, y);
@@ -92,13 +106,22 @@ public class Game implements ArenaListener {
         arena.printToLogger("Building Wall at: " + x + ", " + y);
     }
 
-    /**
-     * Adds a wall to the grid and updates its graphical representation.
-     */
+    /* Builds wall */
     public void buildWall(Wall w) {
         arena.printToLogger("Wall built at: " + w.getX() + ", " + w.getY());
         grid.updateObjectPosition(w, w.getPosition());
         arena.updateWallPosition(w);
+    }
+
+    /**
+     * Get next wall in queue from ArrayBlockingQueue in WallScheduler.
+     */
+    public void queueWall() {
+        Wall w = wallScheduler.getNextWallinQueue();
+        if (grid.isCellEmpty(w.getPosition())) { // if cell is empty
+            buildWall(w); // build wall
+            wallScheduler.getWallCount().incrementAndGet(); // increment wall count
+        }
     }
 
     /**
@@ -109,7 +132,9 @@ public class Game implements ArenaListener {
     public void wallCollision(Point newCoords) {
         Wall w = (Wall) grid.getGridObj(newCoords);
         if (w.isDamaged()) {
+            arena.printToLogger("Wall destroyed at: " + w.getX() + ", " + w.getY());
             w.destroy(); // if wall is already damaged destroy it
+            wallScheduler.getWallCount().decrementAndGet(); // decrement wall count
             grid.removeObj(w);
             arena.clearWallPosition(w);
         } else {
@@ -144,30 +169,13 @@ public class Game implements ArenaListener {
         return wallScheduler.getQueueCount();
     }
 
-    // /**
-    // * Updates the graphical representation on the JFXArena.
-    // */
-    // public void updateJFX() {
-    // GridObject[][] gridArray = grid.getGridObjArray();
-    // for (GridObject[] row : gridArray) {
-    // for (GridObject gridObject : row) {
-    // if (gridObject instanceof Bot) {
-    // arena.updateBotPosition((Bot) gridObject);
-    // }
-    // if (gridObject instanceof Wall) {
-    // arena.updateWallPosition((Wall) gridObject);
-    // }
-    // }
-    // }
-    // arena.requestLayout();
-    // }
-
     /**
-     * Updates the graphical representation on the JFXArena.
+     * Updates the graphical representation on the JFXArena using the
+     * concurrent hashmap from the grid.
      */
     public void updateJFX() {
-        ConcurrentHashMap<Point, GridObject> gridMap = grid.getGridObjMap(); // Assuming you have a getter for the
-                                                                             // ConcurrentHashMap
+        ConcurrentHashMap<Point, GridObject> gridMap = grid.getGridObjMap();
+
         for (Map.Entry<Point, GridObject> entry : gridMap.entrySet()) {
             GridObject gridObject = entry.getValue();
             if (gridObject instanceof Bot) {

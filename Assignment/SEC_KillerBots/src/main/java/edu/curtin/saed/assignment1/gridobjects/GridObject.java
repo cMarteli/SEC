@@ -1,7 +1,7 @@
 /**
  * GridObject.java
+ * Abstract class to manage shared attributes for Bot and Wall
  * 2023/SEC Assignment 1
- * Parent class to manage shared attributes for Bot, Citadel, and Wall
  * @author Victor Marteli (19598552)
  */
 
@@ -10,8 +10,9 @@ package edu.curtin.saed.assignment1.gridobjects;
 import java.awt.Point;
 
 public abstract class GridObject {
+    /* Class variables */
     protected Point position;
-    private boolean destroyed;
+    protected boolean destroyed;
 
     /* Constructor takes in x and y coordinates as an int */
     public GridObject(int x, int y) {

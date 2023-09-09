@@ -1,3 +1,9 @@
+/**
+ * BotSpawner.java
+ * Class responsible for spawning bots at regular intervals.
+ * 2023/SEC Assignment 1
+ * @author Victor Marteli (19598552)
+ */
 package edu.curtin.saed.assignment1.gamelogic;
 
 import edu.curtin.saed.assignment1.Grid;
@@ -14,10 +20,11 @@ import java.util.concurrent.TimeUnit;
 public class BotSpawner {
     /* Class constants */
     private static final int SPAWN_RATE_MS = 1500; // In milliseconds
+    private static final int MAX_THREADS = 20; // Max number of bot threads
 
     /* Class variables */
+    private final ExecutorService botThreadPool = Executors.newFixedThreadPool(MAX_THREADS); // max 20 bot threads
     private final Grid grid;
-    private final ExecutorService botThreadPool = Executors.newFixedThreadPool(20); // max 20 bot threads
     private final Random random;
     private final Game game;
 

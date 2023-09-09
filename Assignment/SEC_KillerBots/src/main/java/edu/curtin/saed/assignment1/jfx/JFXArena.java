@@ -3,7 +3,7 @@
  * A JavaFX GUI element that displays a grid on which you can draw images, text and lines.
  * 2023/SEC Assignment 1
  * Code adapted from: Software Engineering Concepts JavaFXDemo by David Cooper
- * Modified: September, 2023 by Victor Marteli
+ * Modified by Victor Marteli in September, 2023.
  */
 
 package edu.curtin.saed.assignment1.jfx;
@@ -94,7 +94,7 @@ public class JFXArena extends Pane {
     }
 
     /**
-     * Adds a new wall on click. TODO: check method
+     * Update the position of a wall.
      *
      * @param w the wall to add or update
      */
@@ -125,11 +125,21 @@ public class JFXArena extends Pane {
         requestLayout();
     }
 
+    /**
+     * Removes a robot from the arena.
+     *
+     * @param b The bot to remove.
+     */
     public void clearRobotPosition(Bot b) {
-        robotPositions.remove(b); // TODO: this might not be working
-        requestLayout(); // TODO: is this needed?
+        robotPositions.remove(b);
+        requestLayout();
     }
 
+    /**
+     * Removes a wall from the arena.
+     *
+     * @param w The wall to remove.
+     */
     public void clearWallPosition(Wall w) {
         wallPositions.remove(w);
         requestLayout();
@@ -144,7 +154,6 @@ public class JFXArena extends Pane {
                 if (gridX < gridWidth && gridY < gridHeight) {
                     for (ArenaListener listener : listeners) {
                         listener.squareClicked(gridX, gridY);
-                        // buildWall((double) gridX, (double) gridY); TODO: remove this
                     }
                 }
             });

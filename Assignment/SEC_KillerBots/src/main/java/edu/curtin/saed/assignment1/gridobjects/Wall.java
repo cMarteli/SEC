@@ -1,5 +1,6 @@
 /**
  * Wall.java
+ * Class representing a wall
  * 2023/SEC Assignment 1
  * @author Victor Marteli (19598552)
  */
@@ -12,7 +13,7 @@ public class Wall extends GridObject {
     private int wallID;
     private static int wallCounter = 0;
 
-    public Wall(int x, int y) { // TODO: might need to change to int for consistency with Bot
+    public Wall(int x, int y) {
         super(x, y);
         wallID = wallCounter++;
         isDamaged = false;

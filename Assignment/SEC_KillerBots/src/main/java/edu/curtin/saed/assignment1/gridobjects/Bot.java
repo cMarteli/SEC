@@ -1,7 +1,7 @@
 /**
  * Bot.java
+ * Class representing a bot
  * 2023/SEC Assignment 1
- * GridObject parent class stores coordinates
  * @author Victor Marteli (19598552)
  */
 

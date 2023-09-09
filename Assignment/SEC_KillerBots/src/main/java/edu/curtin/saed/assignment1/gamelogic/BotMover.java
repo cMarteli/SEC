@@ -18,10 +18,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public class BotMover implements Runnable {
-    private Grid grid;
-    private Bot bot;
-    private Game game;
 
+    /* Class variables */
+    private final Grid grid;
+    private final Bot bot;
+    private final Game game;
     /*
      * This is used to store the cells the bot is currently taking up whilst moving
      */
@@ -37,16 +38,12 @@ public class BotMover implements Runnable {
     public void run() {
         try {
             while (!bot.isDestroyed() && game.isRunning()) {
-                if (isAtCitadel()) { // if bot is at citadel
-                    game.stopGame(); // Game over
-                } else {
-                    decideNextMove(); // move bot
-                }
+                decideNextMove(); // move bot
             }
         } catch (InterruptedException e) {
             System.out.println("BotMover: Interrupted");
         } finally {
-            Thread.currentThread().interrupt(); // Re-interrupt the thread
+            Thread.currentThread().interrupt(); // Interrupt thread if it's not already
         }
     }
 
@@ -55,8 +52,8 @@ public class BotMover implements Runnable {
      *
      * @return
      */
-    private boolean isAtCitadel() {
-        return bot.getPosition().equals(grid.getCitadelLocation());
+    private boolean isAtCitadel(Point newCoords) {
+        return newCoords.equals(grid.getCitadelLocation());
     }
 
     /* Returns map of occupied cells */
@@ -73,9 +70,11 @@ public class BotMover implements Runnable {
             bot.setAnimationProgress(progress);
             TimeUnit.MILLISECONDS.sleep(40);
         }
-
+        if (isAtCitadel(newCoords)) { // if bot is at citadel
+            game.stopGame(bot); // Game over
+        }
         /* Check for collision with Wall */
-        if (grid.cellHasWall(newCoords)) { // Updated to use new method
+        else if (grid.cellHasWall(newCoords)) { // Updated to use new method
             game.wallCollision(newCoords); // do wall collision
             killBot();
             return; // Exit the function
@@ -86,20 +85,24 @@ public class BotMover implements Runnable {
         }
 
         /* Complete the move */
-        bot.setPosition(newCoords);
+        bot.setPosition(newCoords); // Set the new position
         bot.setAnimationProgress(0.0); // Reset animation progress
         TimeUnit.MILLISECONDS.sleep(bot.getDelayValue()); // Add delay after moving
     }
 
     /**
      * Helper function to calculate the manhattan distance between two points.
+     * Uses the formula: |x1 - x2| + |y1 - y2|
+     *
+     * @param a Point a, the first point
+     * @param b Point b, the second point
      */
     private int calculateDistance(Point a, Point b) {
         return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
     }
 
     /**
-     * Finds the distance from center for each possible move and sorts them.
+     * Sorts a list of points by their distance to a center point.
      *
      * @param possibleMoves List of possible moves
      * @param center        point we're finding shortest distance to
@@ -116,7 +119,6 @@ public class BotMover implements Runnable {
     private void killBot() {
         bot.destroy();
         game.removeBot(bot);
-        // Thread.currentThread().interrupt();
     }
 
     /**

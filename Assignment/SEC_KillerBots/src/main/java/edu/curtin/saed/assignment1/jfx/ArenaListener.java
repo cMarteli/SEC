@@ -2,7 +2,7 @@
  * ArenaListener.java
  * 2023/SEC Assignment 1
  * Code adapted from: Software Engineering Concepts JavaFXDemo by David Cooper
- * Modified: September, 2023 by Victor Marteli
+ * Modified by Victor Marteli in September, 2023.
  */
 package edu.curtin.saed.assignment1.jfx;
 

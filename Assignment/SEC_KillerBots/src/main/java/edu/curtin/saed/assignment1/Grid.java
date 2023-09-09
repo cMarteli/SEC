@@ -2,6 +2,7 @@
  * Grid.java
  * Stores grid information, performs boundary checks
  * and GridObjects positions.
+ * Uses a concurrent HashMap to store GridObjects in a thread-safe manner.
  * 2023/SEC Assignment 1
  * @author Victor Marteli (19598552)
  */
@@ -13,13 +14,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import edu.curtin.saed.assignment1.gridobjects.*;
 
 public class Grid {
-
-    /* ConcurrentHashMap to store GridObjects in a thread-safe manner */
-    private ConcurrentHashMap<Point, GridObject> gridObjMap;
-    private int width;
-    private int height;
+    /* Class variables */
+    private final int width;
+    private final int height;
     private Point citadelLocation;
     private Point[] corners;
+    /* ConcurrentHashMap to store GridObjects in a thread-safe manner */
+    private ConcurrentHashMap<Point, GridObject> gridObjMap;
 
     /**
      * Constructor to initialize the grid.
