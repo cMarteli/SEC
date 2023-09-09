@@ -1,6 +1,7 @@
 /**
  * BotSpawner.java
- * Class responsible for spawning bots at regular intervals.
+ * Runnable thread that manages the scheduling of bot spawns.
+ * Uses a ThreadPoolExecutor to manage bot threads.
  * 2023/SEC Assignment 1
  * @author Victor Marteli (19598552)
  */
@@ -17,7 +18,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class BotSpawner {
+public class BotSpawner implements Runnable {
     /* Class constants */
     private static final int SPAWN_RATE_MS = 1500; // In milliseconds
     private static final int MAX_THREADS = 20; // Max number of bot threads
@@ -34,23 +35,21 @@ public class BotSpawner {
         random = new Random();
     }
 
-    /**
-     * Creates a thread responsible for spawning bots at regular intervals.
-     *
-     * @return The bot-spawning Thread.
-     */
-    public Thread createBotSpawningThread() {
-        return new Thread(() -> {
+    @Override
+    public void run() {
+        try {
             while (game.isRunning()) {
                 try {
-                    TimeUnit.MILLISECONDS.sleep(SPAWN_RATE_MS);
-                    spawnBot();
+                    TimeUnit.MILLISECONDS.sleep(SPAWN_RATE_MS); // wait 1.5 seconds
+                    spawnBot(); // spawn bot
                 } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
+                    System.out.println("BotSpawner: Interrupted while spawning bot.");
                 }
             }
-            botThreadPool.shutdown(); // if game is over, shutdown thread pool
-        });
+        } finally {
+            Thread.currentThread().interrupt(); // Interrupt thread if it's not already
+            botThreadPool.shutdown(); // if the game is over, shutdown thread pool
+        }
     }
 
     /**

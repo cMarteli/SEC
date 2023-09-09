@@ -25,6 +25,7 @@ public class Bot extends GridObject {
         delayValue = random.nextInt(1501) + 500; // generates a delay value between 500 and 2000 ms
     }
 
+    @Override
     public int getId() {
         return id + 1;
     }
@@ -45,7 +46,38 @@ public class Bot extends GridObject {
         return nextPosition;
     }
 
+    public double getNextPositionX() {
+        return nextPosition.getX();
+    }
+
+    public double getNextPositionY() {
+        return nextPosition.getY();
+    }
+
     /* Animation helper methods */
+
+    /**
+     * Calculates the in between frame x position for the bot.
+     *
+     * @return The in between frame x position for the bot.
+     */
+    public double getInterPointX() {
+        double x = super.position.getX();
+        double nextX = getNextPositionX();
+        return (x + (nextX - x) * animationProgress);
+    }
+
+    /**
+     * Calculates the in between frame y position for the bot.
+     *
+     * @return The in between frame y position for the bot.
+     */
+    public double getInterPointY() {
+        double y = super.position.getY();
+        double nextY = getNextPositionY();
+        return (y + (nextY - y) * animationProgress);
+    }
+
     public void setAnimationProgress(double aProg) {
         animationProgress = aProg;
     }

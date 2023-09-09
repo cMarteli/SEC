@@ -48,7 +48,7 @@ public class App extends Application {
         public void handle(long currentTimeInNano) {
             long currentTimeInMilli = currentTimeInNano / 1_000_000; // Convert to milliseconds
 
-            /* Screen Update */
+            /* Screen Updates every 40ms (25fps) */
             if (game.isRunning() && (currentTimeInMilli - lastUpdateTime >= UPDATE_INTERVAL)) {
                 game.updateJFX();
                 scoreLbl.setText("Score: " + game.getScore());
@@ -86,7 +86,7 @@ public class App extends Application {
     public void start(Stage stage) {
         newGame();
         setupUI(stage);
-        // toggleFullscreen(stage); // Uncomment to start game in fullscreen
+        toggleFullscreen(stage); // Uncomment to start game in fullscreen
     }
 
     public void newGame() {

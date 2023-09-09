@@ -1,6 +1,6 @@
 /**
  * BotMover.java
- * Class to handle the movements of bots on the grid.
+ * Runnable thread that handle the movements of a single bot on the grid.
  * Calculates shortest path from center.
  * 2023/SEC Assignment 1
  * @author Victor Marteli (19598552)

@@ -27,10 +27,10 @@ public class JFXArena extends Pane {
     private Image citadelImg;
     private Image wallImg;
     private Image walldmgImg;
-
+    /* Grid dimensions */
     private int gridWidth;
     private int gridHeight;
-    // Center coordinates of the grid
+    /* Center coordinates of the grid */
     private double citadelX;
     private double citadelY;
 
@@ -214,23 +214,13 @@ public class JFXArena extends Pane {
         // drawLabel(gfx, "Citadel", citadelX, citadelY);
 
         /* Loop through the list of robot positions and draw each one */
-        for (int i = 0; i < robotPositions.size(); i++) {
-            Bot bot = robotPositions.get(i);
-            double x = bot.getX();
-            double y = bot.getY();
-            double nextX = bot.getNextPosition().getX();
-            double nextY = bot.getNextPosition().getY();
-            double progress = bot.getAnimationProgress();
-
-            // Calculate the interpolated position for the bot
-            double renderX = x + (nextX - x) * progress;
-            double renderY = y + (nextY - y) * progress;
-
+        for (Bot bot : robotPositions) {
             if (!bot.isDestroyed()) {
+                double renderX = bot.getInterPointX(); // Interpolated x position
+                double renderY = bot.getInterPointY(); // Interpolated y position
                 drawImage(gfx, botImg, renderX, renderY);
                 drawLabel(gfx, bot.name(), renderX, renderY);
             }
-
         }
 
         for (Wall wall : wallPositions) {

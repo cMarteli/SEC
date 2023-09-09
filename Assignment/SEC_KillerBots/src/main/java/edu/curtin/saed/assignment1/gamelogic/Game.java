@@ -33,19 +33,20 @@ public class Game implements ArenaListener {
         grid = inGrid;
     }
 
-    /**
-     * Initializes the game and starts the bot spawning thread.
-     */
     public void initGame() {
         System.out.println("InitGame: Initializing game...");
         running = true;
 
         /* Initialize and start BotSpawner */
-        BotSpawner botSpawner = new BotSpawner(grid, this);
-        Thread addBotThread = botSpawner.createBotSpawningThread();
-        addBotThread.start();
+        // BotSpawner botSpawner = new BotSpawner(grid, this);
+        Thread botSpawnerThread = new Thread(new BotSpawner(grid, this));
+        botSpawnerThread.start();
 
         wallScheduler = new WallScheduler(this);
+
+        // Initialize and start WallScheduler
+        Thread wallSchedulerThread = new Thread(wallScheduler);
+        wallSchedulerThread.start();
     }
 
     /**
@@ -55,18 +56,18 @@ public class Game implements ArenaListener {
         System.out.println("StopGame: Stopping game...");
         running = false;
         arena.printToLogger("\n*GAME OVER*\nFinal Score:" + getScore() + "\n");
-        wallScheduler.shutdown();
     }
 
     /**
      * Stops the game and cleans up threads.
      */
     public void stopGame(Bot b) {
-        System.out.println("StopGame: Stopping game...");
+        // if (b.isDestroyed())
+        // return; // if bot is already destroyed, don't stop game (this is a bug fix
+        // System.out.println("StopGame: Stopping game..."); // Debug
         running = false;
         arena.printToLogger("Citadel raided by: " + b.name() + "...\n");
         arena.printToLogger("\n*GAME OVER*\nFinal Score:" + getScore() + "\n");
-        wallScheduler.shutdown(); // Shutdown wall scheduler thread
     }
 
     /**
@@ -83,12 +84,13 @@ public class Game implements ArenaListener {
      */
     @Override
     public void squareClicked(int x, int y) {
+        Point click = new Point(x, y);
         int maxWalls = wallScheduler.getMaxTotalWalls();
         if (wallScheduler.getWallCount().get() >= maxWalls) {
             arena.printToLogger("You can only build a maximum of " + maxWalls + " walls.");
             return;
         }
-        if (!grid.isCellEmpty(new Point(x, y))) {
+        if (!grid.isCellEmpty(click) || grid.getCitadelLocation().equals(click)) { // if cell is not empty or is citadel
             arena.printToLogger("There's already something there.");
             return;
         }

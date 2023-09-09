@@ -19,16 +19,17 @@ public class Wall extends GridObject {
         isDamaged = false;
     }
 
+    @Override
+    public int getId() {
+        return wallID;
+    }
+
     public boolean isDamaged() {
         return isDamaged;
     }
 
     public void damageWall() {
         isDamaged = true;
-    }
-
-    public int getId() {
-        return wallID;
     }
 
 }

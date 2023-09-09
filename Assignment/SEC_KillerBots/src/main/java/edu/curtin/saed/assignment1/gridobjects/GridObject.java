@@ -25,6 +25,8 @@ public abstract class GridObject {
         position = new Point(p);
     }
 
+    public abstract int getId();
+
     /* Returns position as a point */
     public Point getPosition() {
         return position;
