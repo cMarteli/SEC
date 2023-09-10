@@ -61,11 +61,6 @@ public class GameTest {
         when(mockGrid.isCellEmpty(anyInt(), anyInt())).thenReturn(true);
 
         game.squareClicked(1, 1);
-
-        // Validate that addToQueue in wallScheduler gets called
-        // Here we assume that your WallScheduler has a method called addToQueue
-        // Uncomment this line if it is applicable
-        // verify(game.getWallScheduler(), times(1)).addToQueue(any(Wall.class));
     }
 
     /**
@@ -78,8 +73,6 @@ public class GameTest {
         when(mockGrid.getGridObj(any(Point.class))).thenReturn(wall);
 
         game.wallCollision(new Point(1, 1));
-
-        // Here, add your validations to check if the wall was removed or damaged correctly
     }
 
     /**
