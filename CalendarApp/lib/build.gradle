@@ -1,0 +1,25 @@
+plugins {
+    id 'java-library'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.fusesource.jansi:jansi:2.4.0'
+    implementation 'org.apache.commons:commons-text:1.10.0'
+    
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+}
+
+compileJava {
+    options.compilerArgs << '-Xlint:all,-serial'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    testLogging.showStandardStreams = true
+}
