@@ -15,12 +15,10 @@ import java.util.Locale;
 public class CalendarApp {
 
     public static void main(String[] args) {
-        // Initialize variables
         String filePath = null;
         String localeTag = null;
 
-        // Parse command line arguments
-        for (String arg : args) {
+        for (String arg : args) { // Parse command line arguments
             if (arg.startsWith("--locale=")) {
                 localeTag = arg.substring("--locale=".length());
             } else if (filePath == null) {
@@ -31,27 +29,22 @@ public class CalendarApp {
                 return;
             }
         }
-
-        // Check for required arguments
-        if (filePath == null) {
+        if (filePath == null) { // Check for required arguments
             help();
             return;
         }
-
-        // Set locale if provided
-        if (localeTag != null) {
+        if (localeTag != null) { // Set locale if provided
             try {
                 Locale.setDefault(Locale.forLanguageTag(localeTag));
                 System.out.println("Locale set to: " + Locale.getDefault().toLanguageTag());
-                // Get the labels for the current locale
-                ResourceStrings.getInstance();
             } catch (Exception e) {
                 System.out.println("Error setting locale: " + e.getMessage());
             }
         }
+        /* Get the labels for the current locale */
+        ResourceStrings.getInstance();
 
-        try {
-            // Load the calendar file
+        try { // Load the calendar file
             InputReader ir = new InputReader();
             ir.readCalendarFile(filePath);
         } catch (Exception e) {
