@@ -1,0 +1,15 @@
+event 2023-10-29 15:00:00 90 "Meeting 1"
+event 2023-10-31 08:30:45 45 "Meeting 2"
+plugin com.example.pluginpkg.ExamplePlugin
+{
+    key1: "value 1",
+    key2: "value 2"
+}
+event 2023-12-25
+    all-day "Christmas Day"
+plugin com.example.plugin2pkg.DemoPlugin { keyA: "X", keyB: "Y", keyC: "Z" }
+
+script "
+# I'm a Python script!
+print(""hello world"")
+"

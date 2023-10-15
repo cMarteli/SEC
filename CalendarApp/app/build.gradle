@@ -23,7 +23,7 @@ dependencies {
 
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:31.1-jre'
-    
+
     implementation project(':lib')
 }
 
@@ -36,7 +36,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = 'marteli.calendar.calendarapp.App'
+    mainClass = 'marteli.calendar.calendarapp.CalendarApp'
 }
 
 tasks.named('test') {

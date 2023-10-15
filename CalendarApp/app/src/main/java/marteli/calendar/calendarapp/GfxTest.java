@@ -1,14 +1,13 @@
-/**
- * App.java
- */
 package marteli.calendar.calendarapp;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import edu.curtin.terminalgrid.TerminalGrid;
 
-import java.util.*;
+public class GfxTest {
 
-public class App {
-    public static void main(String[] args) {
+    public static void gfxTest() {
         // Demonstration data
         String[][] messages = { { "one two three", "four five six", "seven eight nine" },
                 { "ten eleven twelve", "thirteen fourteen fifteen", "sixteen seventeen eighteen" } };

@@ -1,0 +1,51 @@
+Core Application
+    1. Data Storage: Use a text file (calendarfile.cal) to store calendar events.
+    2. Event Types: Support all-day events and timed events.
+    3. Event Details: Store details like title, start date, start time, duration, and location.
+    4. Event Parsing: Parse events from the calendar file and load them into the application.
+User Interface
+    1. TerminalGrid: Use TerminalGrid for the user interface.
+    2. Event Display: Display events in a grid format, sorted by date and time.
+Plugin and Script Mechanism
+    1. Loading Mechanisms: Load plugins and scripts dynamically.
+        ◦ Plugins: Use Java class reflection.
+        ◦ Scripts: Use Jython for Python code.
+    2. API: Provide an API for plugins and scripts to interact with the core application.
+        ◦ Access to own arguments for plugins.
+        ◦ Ability to create new calendar events.
+        ◦ Receive notifications when events occur.
+    3. Actual Plugins and Scripts: Implement specific plugins and scripts.
+        ◦ A script for adding public holidays.
+        ◦ A plugin for repeating events (edu.curtin.calplugins.Repeat).
+        ◦ A plugin for notifications (edu.curtin.calplugins.Notify).
+----------------------------------------------------------------------------
+Build Requirements
+    1. Run Commands:
+        ◦ ./gradlew run --args="calendarfile.cal" to run the application.
+        ◦ ./gradlew install to install and run the application.
+Core Application
+    1. CalendarApp: The main class to run the application.
+        ◦ Role: Initialise and manage the application flow.
+    2. Event: Represents a calendar event.
+        ◦ Role: Store details like title, start date, start time, duration, and location.
+    3. EventParser: Reads and parses calendarfile.cal.
+        ◦ Role: Convert text data into Event objects.
+User Interface
+    1. TerminalUI: Handles the TerminalGrid-based user interface.
+        ◦ Role: Display events in a grid, sorted by date and time.
+Plugin and Script Mechanism
+    1. PluginLoader: Dynamically loads Java plugins.
+        ◦ Role: Use reflection to instantiate plugin classes.
+    2. ScriptRunner: Executes Python scripts using Jython.
+        ◦ Role: Run Python code within the Java application.
+    3. PluginAPI: Interface that plugins must implement.
+        ◦ Role: Define methods that plugins can use to interact with the core application.
+    4. ScriptAPI: Interface that scripts can use.
+        ◦ Role: Define methods that scripts can use to interact with the core application.
+Actual Plugins and Scripts
+    1. PublicHolidayScript: Adds public holidays to the calendar.
+        ◦ Role: Create events for public holidays.
+    2. RepeatEventPlugin: Creates repeating events.
+        ◦ Role: Create events based on a given start date and repetition interval.
+    3. NotifyPlugin: Sends notifications for events.
+        ◦ Role: Notify the user when an event with a specific title starts.
