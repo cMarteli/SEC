@@ -4,9 +4,11 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+import marteli.calendar.calendarapp.strings.ResourceStrings;
+
 public class InputReader {
 
-    public static void readCalendarFile(String filePath) {
+    public void readCalendarFile(String filePath) {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -17,7 +19,7 @@ public class InputReader {
         }
     }
 
-    public static void processLine(String line) {
+    public void processLine(String line) {
         if (line.startsWith("event")) {
             // Process event lines
             processEvent(line);
@@ -30,18 +32,18 @@ public class InputReader {
         }
     }
 
-    public static void processEvent(String line) {
+    public void processEvent(String line) {
         // TODO: Implement parsing and storing of event details
-        System.out.println("Processing event: " + line);
+        System.out.println(ResourceStrings.processString + line);
     }
 
-    public static void processPlugin(String line) {
+    public void processPlugin(String line) {
         // TODO: Implement plugin loading using Java reflection
-        System.out.println("Processing plugin: " + line);
+        System.out.println(ResourceStrings.processString + line);
     }
 
-    public static void processScript(String line) {
+    public void processScript(String line) {
         // TODO: Implement script execution using Jython
-        System.out.println("Processing script: " + line);
+        System.out.println(ResourceStrings.processString + line);
     }
 }
