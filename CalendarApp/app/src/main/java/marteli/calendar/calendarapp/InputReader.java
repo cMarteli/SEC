@@ -1,49 +1,35 @@
 package marteli.calendar.calendarapp;
 
+/**
+ * InputReader.java
+ * Reads the calendar file
+ */
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-
-import marteli.calendar.calendarapp.strings.ResourceStrings;
+import java.util.List;
+import java.util.ArrayList;
 
 public class InputReader {
 
-    public void readCalendarFile(String filePath) {
+    EventParser eventParser = new EventParser();
+
+    /**
+     * Reads the calendar file and returns a list of lines
+     *
+     * @param filePath path to the calendar file
+     * @return list of lines
+     */
+    public List<String> readCalendarFile(String filePath) {
+        List<String> lines = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
-                processLine(line);
+                lines.add(line);
             }
         } catch (IOException e) {
             System.out.println("Error reading calendar file: " + e.getMessage());
         }
-    }
-
-    public void processLine(String line) {
-        if (line.startsWith("event")) {
-            // Process event lines
-            processEvent(line);
-        } else if (line.startsWith("plugin")) {
-            // Process plugin lines
-            processPlugin(line);
-        } else if (line.startsWith("script")) {
-            // Process script lines
-            processScript(line);
-        }
-    }
-
-    public void processEvent(String line) {
-        // TODO: Implement parsing and storing of event details
-        System.out.println(ResourceStrings.processString + line);
-    }
-
-    public void processPlugin(String line) {
-        // TODO: Implement plugin loading using Java reflection
-        System.out.println(ResourceStrings.processString + line);
-    }
-
-    public void processScript(String line) {
-        // TODO: Implement script execution using Jython
-        System.out.println(ResourceStrings.processString + line);
+        return lines;
     }
 }

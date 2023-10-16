@@ -1,9 +1,12 @@
 /**
- * App.java
+ * CalendarApp.java
  */
 package marteli.calendar.calendarapp;
 
+import marteli.calendar.calendarapp.models.Event;
 import marteli.calendar.calendarapp.strings.ResourceStrings;
+
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -29,7 +32,7 @@ public class CalendarApp {
                 return;
             }
         }
-        if (filePath == null) { // Check for required arguments
+        if (filePath == null) { // No file path provided, print help message
             help();
             return;
         }
@@ -44,9 +47,20 @@ public class CalendarApp {
         /* Get the labels for the current locale */
         ResourceStrings.getInstance();
 
-        try { // Load the calendar file
-            InputReader ir = new InputReader();
-            ir.readCalendarFile(filePath);
+        try { // Try to load the file
+            InputReader reader = new InputReader();
+            EventParser parser = new EventParser();
+
+            // Read lines from file
+            List<String> lines = reader.readCalendarFile(filePath);
+
+            // Parse events
+            List<Event> events = parser.parseEvents(lines);
+
+            // Print parsed events
+            for (Event event : events) {
+                System.out.println(event);
+            }
         } catch (Exception e) {
             System.out.println("Error loading file: " + e.getMessage());
         }
@@ -59,7 +73,7 @@ public class CalendarApp {
     private static void help() {
         System.out.println("Please provide the complete path to the calendar file as an argument.");
         System.out.println("Optional: set locale with --locale=[IETF language tag]");
-        System.out.println("USAGE: ./gradlew run --args=\"input_files/calendar.utf8.cal --locale=en-US\"");
+        System.out.println("USAGE: ./gradlew run --args=\"input_files/calendar.utf8.cal --locale=pt-BR\"");
     }
 
 }
