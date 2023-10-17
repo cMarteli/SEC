@@ -10,8 +10,6 @@ import marteli.calendar.calendarapp.strings.ResourceStrings;
 import java.util.List;
 import java.util.Locale;
 
-import org.checkerframework.checker.units.qual.s;
-
 /**
  * Entry point for the calendar app.
  * User must provide the complete path to the calendar file as an argument.
@@ -77,7 +75,7 @@ public class CalendarApp {
         } catch (Exception e) {
             System.out.println("Error loading file: " + e.getMessage());
         }
-        // GfxTest.gfxTest();
+        GfxTest.gfxTest();
     }
 
     /**

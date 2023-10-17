@@ -5,7 +5,7 @@
 
 package edu.curtin.terminalgrid;
 
-import org.fusesource.jansi.*;
+//import org.fusesource.jansi.*;
 import org.apache.commons.text.WordUtils;
 import java.io.*;
 import java.nio.charset.*;
@@ -18,8 +18,38 @@ import java.util.function.Consumer;
  * TerminalGrid.create(), then call one of the print() methods.
  */
 public class TerminalGrid {
-    static {
-        AnsiConsole.systemInstall();
+    // static {
+    // AnsiConsole.systemInstall();
+    // }
+
+    public static TerminalGrid create() {
+        int terminalWidth = getTerminalWidth();
+        return new TerminalGrid(System.out, terminalWidth);
+    }
+
+    public TerminalGrid(PrintStream out, int terminalWidth) {
+        this.baseOut = out;
+        this.out = out;
+        this.terminalWidth = terminalWidth;
+    }
+
+    /**
+     * Function to get the terminal width using native shell command.
+     * Not platform-specific.
+     */
+    private static int getTerminalWidth() {
+        int width;
+        try {
+            String[] cmd = { "bash", "-c", "tput cols" };
+            Process p = Runtime.getRuntime().exec(cmd);
+            p.waitFor();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            width = Integer.parseInt(reader.readLine());
+        } catch (Exception e) {
+            // Default width if auto-detection fails
+            width = 80;
+        }
+        return width;
     }
 
     private enum Box {
@@ -55,21 +85,21 @@ public class TerminalGrid {
     private int terminalWidth;
     private BoxChars boxChars = UNICODE_BOX_CHARS;
 
-    public static TerminalGrid create() {
-        var ansiOut = AnsiConsole.out();
-        ansiOut.setMode(AnsiMode.Force);
-        int terminalWidth = AnsiConsole.getTerminalWidth();
-        if (terminalWidth < 1) {
-            terminalWidth = 80;
-        }
-        return new TerminalGrid(ansiOut, terminalWidth);
-    }
+    // public static TerminalGrid create() {
+    // var ansiOut = AnsiConsole.out();
+    // ansiOut.setMode(AnsiMode.Force);
+    // int terminalWidth = AnsiConsole.getTerminalWidth();
+    // if (terminalWidth < 1) {
+    // terminalWidth = 80;
+    // }
+    // return new TerminalGrid(ansiOut, terminalWidth);
+    // }
 
-    public TerminalGrid(PrintStream out, int terminalWidth) {
-        this.baseOut = out;
-        this.out = out;
-        this.terminalWidth = terminalWidth;
-    }
+    // public TerminalGrid(PrintStream out, int terminalWidth) {
+    // this.baseOut = out;
+    // this.out = out;
+    // this.terminalWidth = terminalWidth;
+    // }
 
     /**
      * Sets the terminal width explicitly, rather than using any automatically
