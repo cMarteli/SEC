@@ -1,8 +1,9 @@
-package marteli.calendar.calendarapp;
-
 /*
  * GfxTest.java
  */
+
+package marteli.calendar.calendarapp;
+
 import java.util.ArrayList;
 import java.util.List;
 

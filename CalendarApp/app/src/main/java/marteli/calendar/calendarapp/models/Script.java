@@ -1,9 +1,10 @@
-package marteli.calendar.calendarapp.models;
-
 /**
  * Script.java
  * Holds script content
  */
+
+package marteli.calendar.calendarapp.models;
+
 public class Script {
     private String content;
 

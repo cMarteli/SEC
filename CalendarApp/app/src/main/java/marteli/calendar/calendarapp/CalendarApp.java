@@ -3,11 +3,14 @@
  */
 package marteli.calendar.calendarapp;
 
-import marteli.calendar.calendarapp.models.Event;
+import marteli.calendar.calendarapp.models.CalendarData;
+import marteli.calendar.calendarapp.models.*;
 import marteli.calendar.calendarapp.strings.ResourceStrings;
 
 import java.util.List;
 import java.util.Locale;
+
+import org.checkerframework.checker.units.qual.s;
 
 /**
  * Entry point for the calendar app.
@@ -49,18 +52,28 @@ public class CalendarApp {
 
         try { // Try to load the file
             InputReader reader = new InputReader();
-            EventParser parser = new EventParser();
 
-            // Read lines from file
-            List<String> lines = reader.readCalendarFile(filePath);
+            CalendarData calendar = reader.readCalendarFile(filePath);
 
-            // Parse events
-            List<Event> events = parser.parseEvents(lines);
+            // Process events
+            List<Event> events = calendar.getEvents();
+            // Process scripts
+            List<Script> scripts = calendar.getScripts();
 
             // Print parsed events
             for (Event event : events) {
                 System.out.println(event);
             }
+
+            // Print parsed scripts
+            for (Script script : scripts) {
+                System.out.println(script);
+            }
+
+            // TODO: DEBUG ONLY
+            System.out.println("Running the first script...");
+            ScriptRunner scriptRunner = new ScriptRunner();
+            scriptRunner.runScript(scripts.get(0));
         } catch (Exception e) {
             System.out.println("Error loading file: " + e.getMessage());
         }

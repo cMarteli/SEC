@@ -1,6 +1,4 @@
-from scriptrunner import Canvas, CanvasClickHandler
-
-import CanvasClickHandler
+from q4 import CanvasClickHandler
 
 print("Python script running...")
 

@@ -2,6 +2,7 @@
  * TerminalGrid.java
  * A library for printing 2D arrays of Strings in a tabular form to the console.
  */
+
 package edu.curtin.terminalgrid;
 
 import org.fusesource.jansi.*;

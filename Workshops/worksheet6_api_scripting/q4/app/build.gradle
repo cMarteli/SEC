@@ -16,16 +16,13 @@ repositories {
 }
 
 dependencies {
-    // Use JUnit Jupiter for testing.
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
-
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // Use JUnit test framework.
+    testImplementation 'junit:junit:4.13.2'
 
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:31.1-jre'
-
-    // Jython
-    implementation 'org.python:jython-standalone:2.7.1'
+	//Jython
+	implementation 'org.python:jython-standalone:2.7.3'
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -37,15 +34,9 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = 'scriptrunner.App'
-}
-
-tasks.named('test') {
-    // Use JUnit Platform for unit tests.
-    useJUnitPlatform()
+    mainClass = 'q4.App'
 }
 
 run {
     standardInput = System.in
 }
-

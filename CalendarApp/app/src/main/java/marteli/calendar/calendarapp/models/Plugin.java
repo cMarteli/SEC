@@ -1,9 +1,9 @@
-package marteli.calendar.calendarapp.models;
-
 /**
  * Plugin.java
  * Holds plugin details
  */
+
+package marteli.calendar.calendarapp.models;
 
 import java.util.Map;
 

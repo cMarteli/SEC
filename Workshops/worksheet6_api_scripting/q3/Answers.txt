@@ -1,0 +1,21 @@
+Q3
+
+(a) Create CalendarDate.java, containing the declaration for this annotation type:
+
+CalendarDate.java
+
+This defines the CalendarDate annotation with the specified retention policy and target type.
+
+(b) Write a Java program to find all methods in a given Java class (specified by the user) that have a @CalendarDate annotation:
+
+This program takes the fully qualified class name as a command-line argument and uses reflection to find methods with the @CalendarDate annotation in the specified class.
+
+(c) For each method, output the method name, and the day, month, and name annotation details:
+
+The code in part (b) already accomplishes this. It prints the method name, day, month, and name annotation details for each method with the @CalendarDate annotation found in the specified class.
+
+Provided is class named SampleCalendarEvents to test with.
+
+Usage: 
+javac *.java
+java CalendarDateFinder SampleCalendarEvents

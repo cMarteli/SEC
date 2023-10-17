@@ -1,9 +1,10 @@
-package marteli.calendar.calendarapp.models;
-
 /**
  * Event.java
  * Holds event details such as date, duration, description and if it's an all-day event
  */
+
+package marteli.calendar.calendarapp.models;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -55,6 +56,13 @@ public class Event {
 
     @Override
     public String toString() {
+        if (allDay) {
+            return "Event{" +
+                    "dateTime=" + dateTime +
+                    ", description='" + description + '\'' +
+                    ", allDay=" + allDay +
+                    '}';
+        }
         return "Event{" +
                 "dateTime=" + dateTime +
                 ", duration=" + duration +
