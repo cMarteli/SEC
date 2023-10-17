@@ -13,7 +13,7 @@ public final class ResourceStrings {
 
     // Strings
     public static String processString;
-    public static String languageString;
+    public static String eventString;
 
     // Private constructor
     private ResourceStrings() {
@@ -21,7 +21,7 @@ public final class ResourceStrings {
 
         // Initialize Tab fields after bundle is set
         processString = bundle.getString("processing_str");
-        languageString = bundle.getString("language_str");
+        eventString = bundle.getString("event_str");
     }
 
     // Static method to create an instance of the Singleton class

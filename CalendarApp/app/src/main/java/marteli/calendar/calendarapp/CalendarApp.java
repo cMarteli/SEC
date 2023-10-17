@@ -52,30 +52,19 @@ public class CalendarApp {
             InputReader reader = new InputReader();
 
             CalendarData calendar = reader.readCalendarFile(filePath);
-
-            // Process events
-            List<Event> events = calendar.getEvents();
             // Process scripts
             List<Script> scripts = calendar.getScripts();
-
-            // Print parsed events
-            for (Event event : events) {
-                System.out.println(event);
-            }
-
-            // Print parsed scripts
-            for (Script script : scripts) {
-                System.out.println(script);
-            }
 
             // TODO: DEBUG ONLY
             System.out.println("Running the first script...");
             ScriptRunner scriptRunner = new ScriptRunner();
             scriptRunner.runScript(scripts.get(0));
+
+            DrawCalendar.draw(calendar);
         } catch (Exception e) {
             System.out.println("Error loading file: " + e.getMessage());
         }
-        GfxTest.gfxTest();
+
     }
 
     /**
