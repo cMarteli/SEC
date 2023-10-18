@@ -25,4 +25,25 @@ public class CalendarData {
     public List<Plugin> getPlugins() {
         return plugins;
     }
+
+    public void printData() {
+        if (!events.isEmpty()) {
+            System.out.println("Events:");
+            for (Event e : events) {
+                System.out.println(e);
+            }
+        }
+        if (!scripts.isEmpty()) {
+            System.out.println("Scripts:");
+            for (Script s : scripts) {
+                System.out.println(s);
+            }
+        }
+        if (!plugins.isEmpty()) {
+            System.out.println("Plugins:");
+            for (Plugin p : plugins) {
+                System.out.println(p);
+            }
+        }
+    }
 }

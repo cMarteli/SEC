@@ -4,8 +4,8 @@
 package marteli.calendar.calendarapp;
 
 import marteli.calendar.calendarapp.models.CalendarData;
-import marteli.calendar.calendarapp.models.*;
 import marteli.calendar.calendarapp.strings.ResourceStrings;
+import marteli.calendar.calendarapp.models.*;
 
 import java.util.List;
 import java.util.Locale;
