@@ -1,8 +1,9 @@
-package marteli.calendar.calendarapp;
+package marteli.calendar.calendarapp.scripting;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import marteli.calendar.calendarapp.fileio.LineParser;
 import marteli.calendar.calendarapp.models.Script;
 
 public class ScriptParser implements LineParser<Script> {

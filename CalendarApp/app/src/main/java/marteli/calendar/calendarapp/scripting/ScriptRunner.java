@@ -1,4 +1,4 @@
-package marteli.calendar.calendarapp;
+package marteli.calendar.calendarapp.scripting;
 
 import org.python.util.PythonInterpreter;
 
@@ -6,7 +6,7 @@ import marteli.calendar.calendarapp.models.Script;
 
 public class ScriptRunner {
 
-    public void runScript(Script script) {
+    public static void runScript(Script script) {
 
         // Initialize the PythonInterpreter
         try (PythonInterpreter pyInterp = new PythonInterpreter()) {

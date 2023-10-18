@@ -3,11 +3,11 @@
  */
 package marteli.calendar.calendarapp;
 
-import marteli.calendar.calendarapp.models.CalendarData;
-import marteli.calendar.calendarapp.strings.ResourceStrings;
+import marteli.calendar.calendarapp.strings.OutStrings;
+import marteli.calendar.calendarapp.userInput.Keyboard;
+import marteli.calendar.calendarapp.fileio.InputReader;
 import marteli.calendar.calendarapp.models.*;
 
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -17,6 +17,9 @@ import java.util.Locale;
  * Example: ./gradlew run --args="input_files/calendar.utf8.cal --locale=pt-BR"
  */
 public class CalendarApp {
+
+    private static CalendarData calendar;
+    private static boolean loaded = false; // Flag to check if the calendar file was loaded
 
     public static void main(String[] args) {
         String filePath = null;
@@ -46,23 +49,29 @@ public class CalendarApp {
             }
         }
         /* Get the labels for the current locale */
-        ResourceStrings.getInstance();
+        OutStrings.getInstance();
 
         try { // Try to load the file
-            InputReader reader = new InputReader();
+            calendar = InputReader.readCalendarFile(filePath);
+            loaded = true;
 
-            CalendarData calendar = reader.readCalendarFile(filePath);
-            // Process scripts
-            List<Script> scripts = calendar.getScripts();
-
-            // TODO: DEBUG ONLY
-            System.out.println("Running the first script...");
-            ScriptRunner scriptRunner = new ScriptRunner();
-            scriptRunner.runScript(scripts.get(0));
-
-            DrawCalendar.draw(calendar);
         } catch (Exception e) {
             System.out.println("Error loading file: " + e.getMessage());
+        }
+
+        if (!loaded) { // If the file was not loaded, exit
+
+            return;
+        }
+
+        // initialise application
+        try {
+            MainMenu home = new MainMenu(calendar);
+            home.Start();
+        } catch (Exception e) {
+            System.out.println("Error starting application: " + e.getMessage());
+        } finally {
+            Keyboard.close();
         }
 
     }

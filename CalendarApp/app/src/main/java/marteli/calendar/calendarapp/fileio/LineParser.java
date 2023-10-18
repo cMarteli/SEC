@@ -1,4 +1,4 @@
-package marteli.calendar.calendarapp;
+package marteli.calendar.calendarapp.fileio;
 
 import java.util.List;
 

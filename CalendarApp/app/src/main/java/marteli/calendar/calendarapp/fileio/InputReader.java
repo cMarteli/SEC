@@ -3,7 +3,7 @@
  * Reads the calendar file
  */
 
-package marteli.calendar.calendarapp;
+package marteli.calendar.calendarapp.fileio;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -11,17 +11,18 @@ import java.io.IOException;
 import java.util.List;
 
 import marteli.calendar.calendarapp.models.*;
+import marteli.calendar.calendarapp.scripting.ScriptParser;
 
 import java.util.ArrayList;
 
 public class InputReader {
 
-    private LineParser<Event> eventParser = new EventParser();
-    private LineParser<Script> scriptParser = new ScriptParser();
+    private static LineParser<Event> eventParser = new EventParser();
+    private static LineParser<Script> scriptParser = new ScriptParser();
     // TODO: Implement PluginParser
     // private LineParser<Plugin> pluginParser = new PluginParser();
 
-    public CalendarData readCalendarFile(String filePath) {
+    public static CalendarData readCalendarFile(String filePath) {
         List<String> lines = new ArrayList<>();
         List<Event> events = new ArrayList<>();
         List<Script> scripts = new ArrayList<>();

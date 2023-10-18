@@ -85,22 +85,6 @@ public class TerminalGrid {
     private int terminalWidth;
     private BoxChars boxChars = UNICODE_BOX_CHARS;
 
-    // public static TerminalGrid create() {
-    // var ansiOut = AnsiConsole.out();
-    // ansiOut.setMode(AnsiMode.Force);
-    // int terminalWidth = AnsiConsole.getTerminalWidth();
-    // if (terminalWidth < 1) {
-    // terminalWidth = 80;
-    // }
-    // return new TerminalGrid(ansiOut, terminalWidth);
-    // }
-
-    // public TerminalGrid(PrintStream out, int terminalWidth) {
-    // this.baseOut = out;
-    // this.out = out;
-    // this.terminalWidth = terminalWidth;
-    // }
-
     /**
      * Sets the terminal width explicitly, rather than using any automatically
      * pre-determined

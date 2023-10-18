@@ -2,7 +2,7 @@
  * GfxTest.java
  */
 
-package marteli.calendar.calendarapp;
+package marteli.calendar.calendarapp.graphics;
 
 import java.util.ArrayList;
 import java.util.List;
