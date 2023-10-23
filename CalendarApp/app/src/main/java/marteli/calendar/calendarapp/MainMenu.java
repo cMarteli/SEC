@@ -2,98 +2,103 @@ package marteli.calendar.calendarapp;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.Locale;
+import java.util.StringJoiner;
 
 import marteli.calendar.calendarapp.graphics.DrawCalendar;
 import marteli.calendar.calendarapp.models.*;
-import marteli.calendar.calendarapp.scripting.ScriptRunner;
-import marteli.calendar.calendarapp.strings.OutStrings;
+import marteli.calendar.calendarapp.scripting.*;
+import marteli.calendar.calendarapp.strings.UIStrings;
 import marteli.calendar.calendarapp.userInput.Keyboard;
 
 public class MainMenu {
     private CalendarData calendar;
-    ArrayList<Script> scripts;
-    LocalDate currentDate;
+    private ArrayList<Script> scripts;
+    private LocalDate currentDate;
+    private ScriptAPI scriptRunner;
 
     public MainMenu(CalendarData c) {
+        scriptRunner = new ScriptRunner();
         calendar = c;
-        scripts = (ArrayList<Script>) calendar.getScripts();
+        // Clone or copy scripts to ensure encapsulation
+        scripts = new ArrayList<>(calendar.getScripts());
         currentDate = LocalDate.now();
     }
 
     public void Start() {
-        System.out.println(OutStrings.welcomeString);
-        // TODO: DEBUG ONLY
-        System.out.println(OutStrings.runningFirstScriptString);
-        ScriptRunner.runScript(scripts.get(0));
-        // GfxTest.gfxTest();
-        while (true) { // TODO: Change while (true) when done debugging
+        System.out.println(UIStrings.welcomeStr);
+        System.out.println(UIStrings.runningFirstScriptStr);
+        scriptRunner.runScript(scripts.get(0)); // Consider replacing with a menu to select script
+        while (true) {
             DrawCalendar.draw(calendar, currentDate);
             changeDate();
         }
     }
 
     private void changeDate() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // TODO: Change this so it uses locale
-        System.out.println(OutStrings.currentDateString + currentDate.format(formatter));
-        System.out.println(OutStrings.optionsString);
-        System.out.println(OutStrings.forwardOneDayString);
-        System.out.println(OutStrings.forwardOneWeekString);
-        System.out.println(OutStrings.forwardOneMonthString);
-        System.out.println(OutStrings.forwardOneYearString);
-        System.out.println(OutStrings.backwardOneDayString);
-        System.out.println(OutStrings.backwardOneWeekString);
-        System.out.println(OutStrings.backwardOneMonthString);
-        System.out.println(OutStrings.backwardOneYearString);
-        System.out.println(OutStrings.returnToTodayString);
-        System.out.println(OutStrings.quitString);
-        System.out.print(OutStrings.enterChoiceString);
-        String choice = Keyboard.nextLine();
+        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+                .withLocale(Locale.getDefault());
+        StringJoiner output = new StringJoiner("\n");
+
+        output.add(UIStrings.currentDateStr + currentDate.format(formatter));
+
+        for (String option : UIStrings.menuOptionsArray()) {
+            output.add(option);
+        }
+
+        output.add(UIStrings.enterChoiceStr);
+        System.out.print(output.toString());
+
+        // Input validation loop
+        while (true) {
+            String choice = Keyboard.nextLine();
+            if (processChoice(choice, formatter)) {
+                break;
+            }
+        }
+    }
+
+    // Returns true if the choice was valid and processed, otherwise false
+    private boolean processChoice(String choice, DateTimeFormatter formatter) {
         switch (choice) {
             case "+d":
                 currentDate = currentDate.plusDays(1);
                 break;
-
             case "+w":
                 currentDate = currentDate.plusWeeks(1);
                 break;
-
             case "+m":
                 currentDate = currentDate.plusMonths(1);
                 break;
-
             case "+y":
                 currentDate = currentDate.plusYears(1);
                 break;
-
             case "-d":
                 currentDate = currentDate.minusDays(1);
                 break;
-
             case "-w":
                 currentDate = currentDate.minusWeeks(1);
                 break;
-
             case "-m":
                 currentDate = currentDate.minusMonths(1);
                 break;
-
             case "-y":
                 currentDate = currentDate.minusYears(1);
                 break;
-
             case "t":
                 currentDate = LocalDate.now();
                 break;
-
             case "q":
-                System.out.println("Quitting...");
-                System.exit(0); // TODO: might need to change this
+                System.out.println(UIStrings.closingAppStr);
+                System.exit(0);
                 break;
-
             default:
-                System.out.println("Invalid option");
+                System.out.println(UIStrings.invalidChoiceStr);
+                return false;
         }
-        System.out.println("New date: " + currentDate.format(formatter));
+        System.out.println(UIStrings.newDateStr + currentDate.format(formatter));
+        return true;
     }
 }

@@ -12,7 +12,7 @@ import java.util.*;
 import edu.curtin.terminalgrid.TerminalGrid;
 import marteli.calendar.calendarapp.models.CalendarData;
 import marteli.calendar.calendarapp.models.Event;
-import marteli.calendar.calendarapp.strings.OutStrings;
+import marteli.calendar.calendarapp.strings.UIStrings;
 
 public class DrawCalendar {
 
@@ -80,7 +80,7 @@ public class DrawCalendar {
      */
     private static List<String> createRowHeadings() {
         List<String> rowHeadings = new ArrayList<>();
-        rowHeadings.add(OutStrings.alldayString);
+        rowHeadings.add(UIStrings.alldayStr);
         for (int i = 0; i < 24; i++) {
             rowHeadings.add(String.format("%02d:00", i));
         }
