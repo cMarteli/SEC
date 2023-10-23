@@ -1,0 +1,56 @@
+SEC CALENDAR APP
+-----------------------------
+
+TODO:
+
+[ ] Plugin Support
+[ * ] Script Support
+	- create a  script for  adding    public  holidays    and/or   notable  dates  to  the calendar.  It    should  simply    create   various  appropriately-described,  all-day  events on  various    specific  dates.    (It’s   up  to  you  to choose  which    dates  you’d    like   to  recognise.)
+	
+A  script has  no    arguments,  as    it’s   assumed  that  all  the information  it    needs  can    be   hard-coded  within  it.  
+
+
+-------------------------------------
+KNOWN BUGS:
+
+
+-------------------------------------
+NEED TO TEST:
+
+[ ] UTF16 + UTF32 Input file Support
+
+_____________________________________
+DONE:
+
+[X] Simple Event Display
+[X] Internationalisation Framework
+[X] Internationalisation Choice
+
+[X] Navigation
+
+
+
+*********** Marking key ***********
+
+Code Quality - 4 Marks
+Internationalisation - 9 Marks
+
+Calendar File Domain-Specific Language {
+	> Event, plugin and script declarations - 6 Marks
+	> Common syntax - 2 Marks
+}
+
+Plugin and Scripts {
+	> Loading Mechanisms - 2 Marks
+	> API - 5 Marks
+	> Actual Plugin and Scripts - 7 Marks
+}
+
+Build Requirements - 5 Marks
+
+*********************************
+
+
+NOTES:
+
+
