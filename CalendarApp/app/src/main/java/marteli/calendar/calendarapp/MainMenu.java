@@ -17,7 +17,7 @@ public class MainMenu {
     private CalendarData calendar;
     private ArrayList<Script> scripts;
     private LocalDate currentDate;
-    private ScriptAPI scriptRunner;
+    private ScriptRunner scriptRunner;
 
     public MainMenu(CalendarData c) {
         scriptRunner = new ScriptRunner();
