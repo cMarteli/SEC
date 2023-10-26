@@ -1,72 +1,91 @@
 package marteli.calendar.calendarapp.scripting;
 
-import org.python.core.PyObject;
-import org.python.icu.text.SimpleDateFormat;
-import org.python.util.PythonInterpreter;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Date;
-
+import marteli.calendar.calendarapp.API.CoreAPI;
+import marteli.calendar.calendarapp.API.NotificationHandler;
+import marteli.calendar.calendarapp.models.CalendarData;
+import marteli.calendar.calendarapp.models.Event;
 import marteli.calendar.calendarapp.models.Script;
 
-public class ScriptRunner {
+import java.util.ArrayList;
+import java.util.Map;
+import org.python.util.PythonInterpreter;
+
+import com.kenai.jffi.Array;
+
+public class ScriptRunner implements CoreAPI {
 
     private PythonInterpreter interpreter;
+    private CalendarData calendar;
+    private CoreAPI scriptAPI = this; // TODO: Might not be needed
 
-    public ScriptRunner() {
+    public ScriptRunner(CalendarData c) {
+        calendar = c;
         // Initialize the PythonInterpreter
         interpreter = new PythonInterpreter();
-        interpreter.set("scriptAPI", this); // Expose this classes API(interface) to Jython
+        interpreter.set("scriptAPI", this); // Expose this classes API(interface) to
+        // Jython
         // Use it in Python code
-        interpreter.exec("scriptAPI.test()"); // Calls the test() method
+        // interpreter.exec("scriptAPI.test()"); // Calls the test() method
     }
 
-    public void runScript(Script script) {
+    public void executeScript(Script script) {
+        System.out.println("Executing script: " + script.toString()); // DEBUG
 
-        try {
-            // Use exec() method to run the script content from Script object
-            interpreter.exec(script.getContent());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("An error occurred while running the script.");
+        ArrayList<String> scriptContent = (ArrayList<String>) script.getContent();
+        for (String line : scriptContent) {
+            executeLine(line);
         }
     }
 
-    public PyObject getVariable(String variableName) {
-        return interpreter.get(variableName);
-    }
-
-    public void setVariable(String variableName, PyObject value) {
-        interpreter.set(variableName, value);
-    }
-
-    public void deleteVariable(String variableName) {
-        interpreter.exec("del " + variableName);
-    }
-
-    public void setHolidays() {
-        // Create a SimpleDateFormat to parse date strings
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-        // Create a HashMap to store the holidays
-        Map<String, Date> publicHolidays = new HashMap<>();
-
+    private void executeLine(String line) {
         try {
-            publicHolidays.put("New Year's Day", dateFormat.parse("2023-01-01"));
-            publicHolidays.put("Australia Day", dateFormat.parse("2023-01-26"));
-            publicHolidays.put("Labour Day", dateFormat.parse("2023-03-06"));
-            publicHolidays.put("Good Friday", dateFormat.parse("2023-04-07"));
-            publicHolidays.put("Easter Sunday", dateFormat.parse("2023-04-09"));
-            publicHolidays.put("Easter Monday", dateFormat.parse("2023-04-10"));
-            publicHolidays.put("Anzac Day", dateFormat.parse("2023-04-25"));
-            publicHolidays.put("Western Australia Day", dateFormat.parse("2023-06-05"));
-            publicHolidays.put("King's Birthday", dateFormat.parse("2023-09-25"));
-            publicHolidays.put("Christmas Day", dateFormat.parse("2023-12-25"));
-            publicHolidays.put("Boxing Day", dateFormat.parse("2023-12-26"));
+            interpreter.exec("scriptAPI." + line);
         } catch (Exception e) {
-            // TODO: handle exception
+            System.out.println("Error executing script" + e.getLocalizedMessage());
+        }
+    }
+
+    @Override
+    public Map<String, String> getArguments(String pluginID) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getArguments'");
+    }
+
+    @Override
+    public void createEvent(String inDes, String inDate, Integer inDur) {
+        // Get the default date format for the desired locale
+        Event event;
+        try {
+            event = new Event(inDes, inDate, inDur); // DATE NEEDS TO INCLUDE A START TIME
+        } catch (Exception e) {
+            System.out.println(e.getLocalizedMessage());
+            return; // Don't add the event if it's invalid
+        }
+        calendar.addEvent(event);
+    }
+
+    @Override
+    public void createEvent(String inDes, String inDate) {
+        // Get the default date format for the desired locale
+        Event event;
+        try {
+            event = new Event(inDes, inDate);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return; // Don't add the event if it's invalid
+        }
+        calendar.addEvent(event);
+    }
+
+    @Override
+    public void registerForNotifications(NotificationHandler handler) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'registerForNotifications'");
+    }
+
+    public void closeInterpreter() {
+        if (interpreter != null) {
+            interpreter.close();
         }
     }
 

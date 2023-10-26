@@ -1,9 +1,8 @@
-package marteli.calendar.calendarapp.scripting;
+package marteli.calendar.calendarapp.fileio;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import marteli.calendar.calendarapp.fileio.LineParser;
 import marteli.calendar.calendarapp.models.Script;
 
 public class ScriptParser implements LineParser<Script> {
@@ -15,15 +14,20 @@ public class ScriptParser implements LineParser<Script> {
         // Flag to track if we are inside a script block
         boolean insideScriptBlock = false;
 
-        // StringBuilder to accumulate lines of a single script
-        StringBuilder scriptContent = new StringBuilder();
+        // List to accumulate lines of a single script
+        List<String> scriptLines = new ArrayList<>();
 
         for (String line : lines) {
+            // If the line is a comment, skip it
+            if (line.trim().startsWith("#")) {
+                continue;
+            }
+
             if (line.startsWith("script")) {
                 // Entering a script block
                 insideScriptBlock = true;
                 // Reset content for a new script
-                scriptContent = new StringBuilder();
+                scriptLines = new ArrayList<>();
                 continue; // Skip to the next line
             }
 
@@ -34,19 +38,13 @@ public class ScriptParser implements LineParser<Script> {
                     insideScriptBlock = false;
 
                     // Create a Script object and add it to the list
-                    // Replace escaped double quotes with a single double quote before creating
-                    // Script object
-                    String adjustedScriptContent = scriptContent.toString().replace("\"\"", "\"");
-                    Script script = new Script(adjustedScriptContent);
-
-                    if (script != null) {
-                        scripts.add(script);
-                    }
+                    Script script = new Script(new ArrayList<>(scriptLines));
+                    scripts.add(script);
                     continue;
                 }
 
-                // Append the current line to the script content
-                scriptContent.append(line).append("\n");
+                // Add the current line to the script lines list
+                scriptLines.add(line);
             }
         }
 

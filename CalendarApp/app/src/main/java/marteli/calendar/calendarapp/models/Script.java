@@ -5,26 +5,30 @@
 
 package marteli.calendar.calendarapp.models;
 
-public class Script {
-    private String content;
+import java.util.List;
 
-    public Script(String c) {
-        content = c;
+public class Script {
+    private List<String> content;
+
+    public Script(List<String> content) {
+        this.content = content;
     }
 
-    // Getters and setters
-    public String getContent() {
+    public List<String> getContent() {
         return content;
     }
 
-    public void setContent(String c) {
-        content = c;
+    public void setContent(List<String> content) {
+        this.content = content;
     }
 
     @Override
     public String toString() {
-        return "Script{" +
-                "content='" + content + '\'' +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        for (String line : content) {
+            sb.append(line);
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 }

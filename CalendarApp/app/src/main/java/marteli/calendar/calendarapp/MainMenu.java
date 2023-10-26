@@ -20,8 +20,8 @@ public class MainMenu {
     private ScriptRunner scriptRunner;
 
     public MainMenu(CalendarData c) {
-        scriptRunner = new ScriptRunner();
         calendar = c;
+        scriptRunner = new ScriptRunner(calendar);
         // Clone or copy scripts to ensure encapsulation
         scripts = new ArrayList<>(calendar.getScripts());
         currentDate = LocalDate.now();
@@ -30,7 +30,9 @@ public class MainMenu {
     public void Start() {
         System.out.println(UIStrings.welcomeStr);
         System.out.println(UIStrings.runningFirstScriptStr);
-        scriptRunner.runScript(scripts.get(0)); // Consider replacing with a menu to select script
+        scriptRunner.executeScript(scripts.get(0)); // TODO: Only executing first script
+        // select script
+        // scriptRunner.createEvent("New Year's Day", "2023-01-01");
         while (true) {
             DrawCalendar.draw(calendar, currentDate);
             changeDate();

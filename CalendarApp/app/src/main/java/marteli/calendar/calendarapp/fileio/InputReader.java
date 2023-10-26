@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.util.List;
 
 import marteli.calendar.calendarapp.models.*;
-import marteli.calendar.calendarapp.scripting.ScriptParser;
 
 import java.util.ArrayList;
 

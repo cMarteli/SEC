@@ -22,7 +22,7 @@ public class CalendarApp {
 
     private static final String USAGE_STR1 = "Please provide the complete path to the calendar file as an argument.";
     private static final String USAGE_STR2 = "Optional: set locale with --locale=[IETF language tag]";
-    private static final String USAGE_STR3 = "USAGE: \"./gradlew run --args=\\\"input_files/calendar.utf8.cal --locale=pt-BR\\\"\"";
+    private static final String USAGE_STR3 = "USAGE: ./gradlew run --args=\"input_files/calendar.utf8.cal --locale=pt-BR\"";
 
     private static CalendarData calendar;
     private static boolean loaded = false; // Flag to check if the calendar file was loaded

@@ -11,5 +11,5 @@ plugin com.example.plugin2pkg.DemoPlugin { keyA: "X", keyB: "Y", keyC: "Z" }
 
 script "
 # I'm a Python script!
-print(""hello world"")
+createEvent("New Year's Day", "2023-01-01")
 "

@@ -5,7 +5,10 @@
 
 package marteli.calendar.calendarapp.models;
 
+import java.text.ParseException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
 public class Event {
@@ -14,11 +17,42 @@ public class Event {
     private String description;
     private boolean allDay;
 
+    // Constructor used by FileReader
     public Event(LocalDateTime inDate, Integer inDur, String inDes, boolean inAll) {
         dateTime = inDate;
         duration = inDur;
         description = inDes;
         allDay = inAll;
+    }
+
+    // Constructor used by API
+    public Event(String inDes, String inDate, Integer inDur) throws ParseException {
+        LocalDateTime date;
+        try {
+            date = LocalDateTime.parse(inDate);
+            System.out.println("Converted Date: " + date);
+        } catch (DateTimeParseException e) {
+            throw new ParseException("Error parsing date: " + e.getMessage(), 0);
+        }
+        dateTime = date;
+        duration = inDur;
+        description = inDes;
+        allDay = false;
+    }
+
+    // Alternate Constructor for all-day events used by API
+    public Event(String inDes, String inDate) throws ParseException {
+        LocalDate date;
+        try {
+            date = LocalDate.parse(inDate);
+            System.out.println("Converted Date: " + date);
+        } catch (DateTimeParseException e) {
+            throw new ParseException("Error parsing date: " + e.getMessage(), 0);
+        }
+        dateTime = date.atStartOfDay();
+        duration = 0;
+        description = inDes;
+        allDay = true;
     }
 
     /* Getters and setters */

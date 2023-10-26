@@ -26,6 +26,10 @@ public class CalendarData {
         return plugins;
     }
 
+    public void addEvent(Event e) {
+        events.add(e);
+    }
+
     public void printData() {
         if (!events.isEmpty()) {
             System.out.println("Events:");
