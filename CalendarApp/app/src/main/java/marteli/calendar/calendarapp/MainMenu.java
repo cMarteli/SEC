@@ -30,9 +30,9 @@ public class MainMenu {
     public void Start() {
         System.out.println(UIStrings.welcomeStr);
         System.out.println(UIStrings.runningFirstScriptStr);
-        scriptRunner.executeScript(scripts.get(0)); // TODO: Only executing first script
-        // select script
-        // scriptRunner.createEvent("New Year's Day", "2023-01-01");
+        for (Script script : scripts) { // Run all scripts
+            scriptRunner.executeScript(script);
+        }
         while (true) {
             DrawCalendar.draw(calendar, currentDate);
             changeDate();
