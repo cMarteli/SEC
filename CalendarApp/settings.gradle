@@ -12,4 +12,4 @@ plugins {
 
 rootProject.name = 'CalendarApp'
 
-include ':lib', ':app'
+include ':lib', ':app', ':calplugins'

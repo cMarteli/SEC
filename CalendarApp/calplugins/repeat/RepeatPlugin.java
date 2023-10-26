@@ -1,8 +1,8 @@
-package marteli.calendar.calendarapp.plugins;
+package calplugins.repeat;
 
 import java.util.Map;
 
-import marteli.calendar.calendarapp.API.CoreAPI;
+import marteli.calendar.calendarapp.api.CoreAPI;
 
 // Example plugin with ID "edu.curtin.calplugins.Repeat"
 public class RepeatPlugin {

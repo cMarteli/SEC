@@ -3,6 +3,7 @@ package marteli.calendar.calendarapp;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.StringJoiner;
@@ -15,9 +16,10 @@ import marteli.calendar.calendarapp.userInput.Keyboard;
 
 public class MainMenu {
     private CalendarData calendar;
-    private ArrayList<Script> scripts;
+    private List<Script> scripts;
     private LocalDate currentDate;
     private ScriptRunner scriptRunner;
+    private boolean isRunning = true;
 
     public MainMenu(CalendarData c) {
         calendar = c;
@@ -27,13 +29,12 @@ public class MainMenu {
         currentDate = LocalDate.now();
     }
 
-    public void Start() {
-        System.out.println(UIStrings.welcomeStr);
-        System.out.println(UIStrings.runningFirstScriptStr);
+    public void start() {
+        System.out.println(UIStrings.welcomeStr + "\n" + UIStrings.runningScriptStr);
         for (Script script : scripts) { // Run all scripts
             scriptRunner.executeScript(script);
         }
-        while (true) {
+        while (isRunning) {
             DrawCalendar.draw(calendar, currentDate);
             changeDate();
         }
@@ -94,7 +95,7 @@ public class MainMenu {
                 break;
             case "q":
                 System.out.println(UIStrings.closingAppStr);
-                System.exit(0);
+                isRunning = false;
                 break;
             default:
                 System.out.println(UIStrings.invalidChoiceStr);

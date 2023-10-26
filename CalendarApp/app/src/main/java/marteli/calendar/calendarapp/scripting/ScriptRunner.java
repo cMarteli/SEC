@@ -1,7 +1,7 @@
 package marteli.calendar.calendarapp.scripting;
 
-import marteli.calendar.calendarapp.API.CoreAPI;
-import marteli.calendar.calendarapp.API.NotificationHandler;
+import marteli.calendar.calendarapp.api.CoreAPI;
+import marteli.calendar.calendarapp.api.NotificationHandler;
 import marteli.calendar.calendarapp.models.CalendarData;
 import marteli.calendar.calendarapp.models.Event;
 import marteli.calendar.calendarapp.models.Script;

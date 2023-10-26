@@ -1,7 +1,7 @@
 /**
  * CalendarApp.java
  * Starting point for the Application.
- * NOTE: This class is not fully translated as user needs to provide the language tag as an argument.
+ * User must provide the complete path to the calendar file as an argument.
  */
 package marteli.calendar.calendarapp;
 
@@ -11,6 +11,13 @@ import marteli.calendar.calendarapp.fileio.InputReader;
 import marteli.calendar.calendarapp.models.*;
 
 import java.util.Locale;
+import java.util.logging.Logger;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+
+@SuppressWarnings("PMD.AvoidCatchingGenericException") // See line 77
 
 /**
  * Entry point for the calendar app.
@@ -19,13 +26,14 @@ import java.util.Locale;
  * Example: ./gradlew run --args="input_files/calendar.utf8.cal --locale=pt-BR"
  */
 public class CalendarApp {
-
+    /*
+     * Usage strings can't be translated, they must display even without a locale
+     */
     private static final String USAGE_STR1 = "Please provide the complete path to the calendar file as an argument.";
     private static final String USAGE_STR2 = "Optional: set locale with --locale=[IETF language tag]";
     private static final String USAGE_STR3 = "USAGE: ./gradlew run --args=\"input_files/calendar.utf8.cal --locale=pt-BR\"";
 
     private static CalendarData calendar;
-    private static boolean loaded = false; // Flag to check if the calendar file was loaded
     private static Locale locale = Locale.getDefault();
 
     /**
@@ -54,41 +62,50 @@ public class CalendarApp {
             return;
         }
         if (localeTag != null) { // Set a new locale if provided as an argument
-            try {
-                locale = Locale.forLanguageTag(localeTag);
-                Locale.setDefault(locale);
-            } catch (Exception e) {
-                System.out.println(e.getLocalizedMessage()); // Invalid tag
-            }
+            locale = Locale.forLanguageTag(localeTag);
+            Locale.setDefault(locale);
         }
         /*
          * Get the labels for the current locale App is fully translated from this point
          */
         UIStrings.getInstance(locale);
 
-        try { // Try to load the file
-            calendar = InputReader.readCalendarFile(filePath);
-            loaded = true;
-
-        } catch (Exception e) {
-            System.out.println(UIStrings.errorStr + e.getLocalizedMessage());
-        }
-
-        if (!loaded) { // If the file was not loaded, exit
-
-            return;
-        }
-
         // initialise application
         try {
+            setupLogger();// sets up logging to file
+            calendar = InputReader.readCalendarFile(filePath);
             MainMenu home = new MainMenu(calendar);
-            home.Start();
-        } catch (Exception e) {
-            System.out.println(UIStrings.errorStr + e.getLocalizedMessage());
+            home.start();
+        } catch (Exception e) { // only generic exception to let program "fail gracefully" still returns error
+                                // to user and is logged
+            if (LOGR.isLoggable(Level.SEVERE)) {
+                LOGR.log(Level.SEVERE, "Total Crash: " + e);
+            }
+            System.out.println(UIStrings.errorStr + e);
         } finally {
-            Keyboard.close(); // Close the scanner
+            Keyboard.close(); // Close the scanner to satisfy PMD
         }
-
     }
 
+    /**
+     * Logger
+     */
+    private final static Logger LOGR = Logger.getLogger(CalendarApp.class.getName());
+
+    private static void setupLogger() {
+        LogManager.getLogManager().reset();
+        LOGR.setLevel(Level.ALL);
+
+        ConsoleHandler ch = new ConsoleHandler();
+        ch.setLevel(Level.SEVERE);
+        LOGR.addHandler(ch);
+
+        try {
+            FileHandler fh = new FileHandler("Mylog.log", true);
+            fh.setLevel(Level.FINE);
+            LOGR.addHandler(fh);
+        } catch (java.io.IOException e) {
+            LOGR.log(Level.SEVERE, "Logger broke.", e);
+        }
+    }
 }

@@ -7,7 +7,9 @@
 
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
+    id 'java'
     id 'application'
+    id 'pmd'
 }
 
 repositories {
@@ -49,4 +51,12 @@ tasks.named('test') {
 
 run {
     standardInput = System.in
+}
+
+pmd {
+    consoleOutput = true
+    toolVersion = '6.55.0'
+    rulesMinimumPriority = 5
+    ruleSets = []
+    ruleSetFiles = files('saed-pmd-rules.xml')
 }

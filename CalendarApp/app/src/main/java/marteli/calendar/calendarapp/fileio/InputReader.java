@@ -10,11 +10,23 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
+import org.python.jline.internal.Log;
+
+import marteli.calendar.calendarapp.CalendarApp;
 import marteli.calendar.calendarapp.models.*;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+/**
+ * Reads the calendar file
+ * Returns null in case of error
+ */
 public class InputReader {
+
+    /* Logger from CalendarApp.java */
+    private final static Logger LOGR = Logger.getLogger(CalendarApp.class.getName());
 
     private static LineParser<Event> eventParser = new EventParser();
     private static LineParser<Script> scriptParser = new ScriptParser();
@@ -23,23 +35,25 @@ public class InputReader {
 
     public static CalendarData readCalendarFile(String filePath) {
         List<String> lines = new ArrayList<>();
-        List<Event> events = new ArrayList<>();
-        List<Script> scripts = new ArrayList<>();
-        List<Plugin> plugins = new ArrayList<>();
+        List<Event> events;
+        List<Script> scripts;
+        List<Plugin> plugins = new ArrayList<>(); // TODO: Implement PluginParser
 
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
             String line;
-            while ((line = br.readLine()) != null) {
+            while ((line = bufferedReader.readLine()) != null) {
                 lines.add(line);
             }
             events = eventParser.parseLines(lines);
             scripts = scriptParser.parseLines(lines);
             // plugins = pluginParser.parseLines(lines);
 
+            return new CalendarData(events, scripts, plugins);
+
         } catch (IOException e) {
-            System.out.println("Error reading calendar file: " + e.getMessage());
+            LOGR.log(Level.FINE, "Error reading file: " + filePath);
         }
 
-        return new CalendarData(events, scripts, plugins);
+        return null;
     }
 }

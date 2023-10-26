@@ -7,6 +7,10 @@ import marteli.calendar.calendarapp.models.Script;
 
 public class ScriptParser implements LineParser<Script> {
 
+    private static final String SCRIPT_START = "script";
+    private static final String SCRIPT_END = "\"";
+    private static final String COMMENT_PREFIX = "#";
+
     @Override
     public List<Script> parseLines(List<String> lines) {
         List<Script> scripts = new ArrayList<>();
@@ -19,11 +23,11 @@ public class ScriptParser implements LineParser<Script> {
 
         for (String line : lines) {
             // If the line is a comment, skip it
-            if (line.trim().startsWith("#")) {
+            if (line.trim().startsWith(COMMENT_PREFIX)) {
                 continue;
             }
 
-            if (line.startsWith("script")) {
+            if (line.startsWith(SCRIPT_START)) {
                 // Entering a script block
                 insideScriptBlock = true;
                 // Reset content for a new script
@@ -33,7 +37,7 @@ public class ScriptParser implements LineParser<Script> {
 
             if (insideScriptBlock) {
                 // Check if line is the end of the script block
-                if (line.equals("\"")) {
+                if (line.equals(SCRIPT_END)) {
                     // Exiting a script block
                     insideScriptBlock = false;
 

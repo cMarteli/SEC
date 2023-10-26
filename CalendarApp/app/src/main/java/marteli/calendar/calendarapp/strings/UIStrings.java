@@ -20,7 +20,7 @@ public final class UIStrings {
 
     //
     public static String welcomeStr;
-    public static String runningFirstScriptStr;
+    public static String runningScriptStr;
     public static String currentDateStr;
     public static String optionsStr;
 
@@ -59,7 +59,7 @@ public final class UIStrings {
         durationStr = bundle.getString("duration_str");
 
         welcomeStr = bundle.getString("welcome_str");
-        runningFirstScriptStr = bundle.getString("running_first_script_str");
+        runningScriptStr = bundle.getString("running_first_script_str");
         currentDateStr = bundle.getString("current_date_str");
         optionsStr = bundle.getString("options_str");
         closingAppStr = bundle.getString("closing_app_str");

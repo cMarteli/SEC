@@ -18,12 +18,18 @@ import java.util.regex.Pattern;
 
 public class EventParser implements LineParser<Event> {
 
+    private static final Pattern TIMED_EVENT_PATTERN = Pattern
+            .compile("event (\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}) (\\d+) \"(.*)\"");
+    private static final Pattern ALL_DAY_EVENT_PATTERN = Pattern
+            .compile("event (\\d{4}-\\d{2}-\\d{2}) all-day \"(.*)\"");
+    private static final String EVENT_START = "event";
+
     @Override
     public List<Event> parseLines(List<String> lines) {
         List<Event> events = new ArrayList<>();
 
         for (String line : lines) {
-            if (line.startsWith("event")) {
+            if (line.startsWith(EVENT_START)) {
                 Event event = parseEvent(line);
                 if (event != null) {
                     events.add(event);
@@ -43,26 +49,22 @@ public class EventParser implements LineParser<Event> {
      * @return
      */
     private Event parseEvent(String line) {
-        // Timed event pattern
-        Pattern pattern1 = Pattern.compile("event (\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}) (\\d+) \"(.*)\"");
-        // Pattern for all-day events
-        Pattern pattern2 = Pattern.compile("event (\\d{4}-\\d{2}-\\d{2}) all-day \"(.*)\"");
 
-        Matcher matcher1 = pattern1.matcher(line);
-        Matcher matcher2 = pattern2.matcher(line);
+        Matcher timedMatcher = TIMED_EVENT_PATTERN.matcher(line);
+        Matcher allDayMatcher = ALL_DAY_EVENT_PATTERN.matcher(line);
 
-        if (matcher1.matches()) {
-            String dateTimeStr = matcher1.group(1);
-            int duration = Integer.parseInt(matcher1.group(2));
-            String description = matcher1.group(3);
+        if (timedMatcher.matches()) {
+            String dateTimeStr = timedMatcher.group(1);
+            int duration = Integer.parseInt(timedMatcher.group(2));
+            String description = timedMatcher.group(3);
 
             LocalDateTime dateTime = LocalDateTime.parse(dateTimeStr,
                     DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
             return new Event(dateTime, duration, description, false);
-        } else if (matcher2.matches()) { // if it's an all-day event
-            String dateStr = matcher2.group(1);
-            String description = matcher2.group(2);
+        } else if (allDayMatcher.matches()) { // if it's an all-day event
+            String dateStr = allDayMatcher.group(1);
+            String description = allDayMatcher.group(2);
 
             LocalDate date = LocalDate.parse(dateStr,
                     DateTimeFormatter.ofPattern("yyyy-MM-dd"));
