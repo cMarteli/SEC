@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.StringJoiner;
 
+import marteli.calendar.calendarapp.api.*;
 import marteli.calendar.calendarapp.graphics.DrawCalendar;
 import marteli.calendar.calendarapp.models.*;
-import marteli.calendar.calendarapp.scripting.*;
 import marteli.calendar.calendarapp.strings.UIStrings;
 import marteli.calendar.calendarapp.userInput.Keyboard;
 
@@ -19,25 +19,44 @@ public class MainMenu {
     private List<Script> scripts;
     private LocalDate currentDate;
     private ScriptRunner scriptRunner;
+    private PluginLoader pluginLoader;
     private boolean isRunning = true;
 
     public MainMenu(CalendarData c) {
         calendar = c;
         scriptRunner = new ScriptRunner(calendar);
-        // Clone or copy scripts to ensure encapsulation
-        scripts = new ArrayList<>(calendar.getScripts());
-        currentDate = LocalDate.now();
+        pluginLoader = new PluginLoader(calendar);
+        scripts = new ArrayList<>(calendar.getScripts()); // Copy scripts from calendar
+        currentDate = LocalDate.now(); // Set current date to today
     }
 
     public void start() {
-        System.out.println(UIStrings.welcomeStr + "\n" + UIStrings.runningScriptStr);
-        for (Script script : scripts) { // Run all scripts
-            scriptRunner.executeScript(script);
-        }
+        System.out.println(UIStrings.welcomeStr);
+
+        initScripts();
+        initPlugins();
         while (isRunning) {
             DrawCalendar.draw(calendar, currentDate);
             changeDate();
         }
+    }
+
+    private void initPlugins() {
+        System.out.println("Initializing plugins...");// TODO: Translate
+        calendar.printData();
+        for (Plugin plugin : calendar.getPlugins()) {
+            pluginLoader.loadPlugin(plugin);
+        }
+    }
+
+    /* Runs all scripts */
+    private void initScripts() {
+        System.out.println(UIStrings.runningScriptStr);
+        for (Script script : scripts) {
+            scriptRunner.executeScript(script);
+        }
+        // Close the interpreter
+        scriptRunner.close();
     }
 
     private void changeDate() {

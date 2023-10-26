@@ -4,20 +4,18 @@ SEC CALENDAR APP
 TODO:
 
 [ ] Plugin Support
-[ * ] Script Support
-	- create a  script for  adding    public  holidays    and/or   notable  dates  to  the calendar.  It    should  simply    create   various  appropriately-described,  all-day  events on  various    specific  dates.    (It’s   up  to  you  to choose  which    dates  you’d    like   to  recognise.)
-	
-A  script has  no    arguments,  as    it’s   assumed  that  all  the information  it    needs  can    be   hard-coded  within  it.  
-
+[ ] Implement Example plugin classes
+[ ] UTF16 + UTF32 Input file Support
 
 -------------------------------------
 KNOWN BUGS:
-
+Error when loading plugins:
+java.lang.ClassNotFoundException: calplugins.repeat.RepeatPlugin
 
 -------------------------------------
 NEED TO TEST:
 
-[ ] UTF16 + UTF32 Input file Support
+[*] PMD Linting
 
 _____________________________________
 DONE:
@@ -25,7 +23,7 @@ DONE:
 [X] Simple Event Display
 [X] Internationalisation Framework
 [X] Internationalisation Choice
-
+[X] Script Support
 [X] Navigation
 
 

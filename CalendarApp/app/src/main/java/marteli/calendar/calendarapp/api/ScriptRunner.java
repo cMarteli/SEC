@@ -1,7 +1,5 @@
-package marteli.calendar.calendarapp.scripting;
+package marteli.calendar.calendarapp.api;
 
-import marteli.calendar.calendarapp.api.CoreAPI;
-import marteli.calendar.calendarapp.api.NotificationHandler;
 import marteli.calendar.calendarapp.models.CalendarData;
 import marteli.calendar.calendarapp.models.Event;
 import marteli.calendar.calendarapp.models.Script;
@@ -10,13 +8,10 @@ import java.util.ArrayList;
 import java.util.Map;
 import org.python.util.PythonInterpreter;
 
-import com.kenai.jffi.Array;
-
 public class ScriptRunner implements CoreAPI {
 
     private PythonInterpreter interpreter;
     private CalendarData calendar;
-    private CoreAPI scriptAPI = this; // TODO: Might not be needed
 
     public ScriptRunner(CalendarData c) {
         calendar = c;
@@ -83,7 +78,7 @@ public class ScriptRunner implements CoreAPI {
         throw new UnsupportedOperationException("Unimplemented method 'registerForNotifications'");
     }
 
-    public void closeInterpreter() {
+    public void close() {
         if (interpreter != null) {
             interpreter.close();
         }

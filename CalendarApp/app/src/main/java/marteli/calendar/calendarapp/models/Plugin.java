@@ -29,8 +29,8 @@ public class Plugin {
         return config;
     }
 
-    public void setConfig(Map<String, String> config) {
-        this.config = config;
+    public void setConfig(Map<String, String> c) {
+        config = c;
     }
 
     @Override

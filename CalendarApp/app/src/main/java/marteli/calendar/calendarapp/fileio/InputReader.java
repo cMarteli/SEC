@@ -30,15 +30,13 @@ public class InputReader {
 
     private static LineParser<Event> eventParser = new EventParser();
     private static LineParser<Script> scriptParser = new ScriptParser();
-    // TODO: Implement PluginParser
-    // private LineParser<Plugin> pluginParser = new PluginParser();
+    private static LineParser<Plugin> pluginParser = new PluginParser();
 
     public static CalendarData readCalendarFile(String filePath) {
         List<String> lines = new ArrayList<>();
         List<Event> events;
         List<Script> scripts;
-        List<Plugin> plugins = new ArrayList<>(); // TODO: Implement PluginParser
-
+        List<Plugin> plugins;
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
@@ -46,7 +44,7 @@ public class InputReader {
             }
             events = eventParser.parseLines(lines);
             scripts = scriptParser.parseLines(lines);
-            // plugins = pluginParser.parseLines(lines);
+            plugins = pluginParser.parseLines(lines);
 
             return new CalendarData(events, scripts, plugins);
 

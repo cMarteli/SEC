@@ -6,21 +6,36 @@ import marteli.calendar.calendarapp.api.CoreAPI;
 
 // Example plugin with ID "edu.curtin.calplugins.Repeat"
 public class RepeatPlugin {
-    private final CoreAPI api;
+    private CoreAPI coreAPI;
+    private String id = "RepeatPlugin"; // Plugin ID
 
-    public RepeatPlugin(CoreAPI api) {
-        this.api = api;
+    // Constructor accepting CoreAPI
+    public RepeatPlugin(CoreAPI coreAPI) {
+        this.coreAPI = coreAPI;
+
+        // Register for notifications
+        coreAPI.registerForNotifications(this);
     }
 
-    public void init() {
-        // Access own arguments
-        Map<String, String> args = api.getArguments("edu.curtin.calplugins.Repeat");
-        String title = args.get("title");
-        String startDate = args.get("startDate");
-        String startTime = args.getOrDefault("startTime", "00:00:00");
-        String duration = args.getOrDefault("duration", "60");
+    @Override
+    public void handleEvent(String eventName, Map<String, String> eventData) {
+        // Logic to handle the event and perform repetition
 
-        // Do something with these arguments, like creating events
-        // ...
+        // Fetch the plugin-specific arguments
+        Map<String, String> args = coreAPI.getArguments(id);
+
+        // For demonstration, let's assume there's a "repeatCount" argument
+        String repeatCountStr = args.getOrDefault("repeatCount", "1");
+        int repeatCount = Integer.parseInt(repeatCountStr);
+
+        // Now create the same event 'repeatCount' times
+        for (int i = 0; i < repeatCount; ++i) {
+            String description = eventData.get("description");
+            String date = eventData.get("date");
+            String durationStr = eventData.get("duration");
+            Integer duration = Integer.parseInt(durationStr);
+
+            coreAPI.createEvent(description, date, duration);
+        }
     }
 }

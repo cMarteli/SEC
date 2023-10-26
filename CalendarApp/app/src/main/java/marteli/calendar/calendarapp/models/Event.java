@@ -30,7 +30,6 @@ public class Event {
         LocalDateTime date;
         try {
             date = LocalDateTime.parse(inDate);
-            System.out.println("Converted Date: " + date);
         } catch (DateTimeParseException e) {
             throw new ParseException("Error parsing date: " + e.getMessage(), 0);
         }
@@ -45,7 +44,6 @@ public class Event {
         LocalDate date;
         try {
             date = LocalDate.parse(inDate);
-            System.out.println("Converted Date: " + date);
         } catch (DateTimeParseException e) {
             throw new ParseException("Error parsing date: " + e.getMessage(), 0);
         }

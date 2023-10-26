@@ -1,13 +1,12 @@
 event 2023-10-18 15:00:00 90 "Meeting 1"
 event 2023-10-20 08:30:45 45 "Meeting 2"
-plugin com.example.pluginpkg.ExamplePlugin
+plugin calplugins.repeat.RepeatPlugin
 {
     key1: "value 1",
     key2: "value 2"
 }
-event 2023-12-25
-    all-day "Christmas Day"
-plugin com.example.plugin2pkg.DemoPlugin { keyA: "X", keyB: "Y", keyC: "Z" }
+event 2023-12-21
+    all-day "My Birthday"
 
 script "
 # Python Script to add dates

@@ -31,7 +31,7 @@ public class CalendarApp {
      */
     private static final String USAGE_STR1 = "Please provide the complete path to the calendar file as an argument.";
     private static final String USAGE_STR2 = "Optional: set locale with --locale=[IETF language tag]";
-    private static final String USAGE_STR3 = "USAGE: ./gradlew run --args=\"input_files/calendar.utf8.cal --locale=pt-BR\"";
+    private static final String USAGE_STR3 = "eg: ./gradlew run --args=\"input_files/calendar.utf8.cal --locale=pt-BR\"";
 
     private static CalendarData calendar;
     private static Locale locale = Locale.getDefault();
@@ -79,7 +79,7 @@ public class CalendarApp {
         } catch (Exception e) { // only generic exception to let program "fail gracefully" still returns error
                                 // to user and is logged
             if (LOGR.isLoggable(Level.SEVERE)) {
-                LOGR.log(Level.SEVERE, "Total Crash: " + e);
+                LOGR.log(Level.SEVERE, "Unhandled Exception", e);
             }
             System.out.println(UIStrings.errorStr + e);
         } finally {
