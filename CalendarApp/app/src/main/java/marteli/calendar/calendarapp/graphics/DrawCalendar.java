@@ -16,6 +16,8 @@ import marteli.calendar.calendarapp.strings.UIStrings;
 
 public class DrawCalendar {
 
+    private static final int TERMINAL_WIDTH = 120; // 120+ to avoid wrapping
+
     /**
      * Public method to draw the calendar.
      *
@@ -26,16 +28,14 @@ public class DrawCalendar {
         // Use LinkedHashMap to maintain insertion order
         Map<LocalDate, Map<LocalTime, List<Event>>> weekMap = new LinkedHashMap<>();
 
-        // LocalDate currentDate = LocalDate.now();
         populateWeekMap(weekMap, currentDate);
-
         groupEventsByDateAndHour(calendar, weekMap);
 
         List<String> rowHeadings = createRowHeadings(uiStrings.allDayStr);
         List<String> colHeadings = createColumnHeadings(weekMap);
 
         List<List<String>> listMessages = populateRows(weekMap);
-        terminalGrid.setTerminalWidth(200); // To avoid wrapping
+        terminalGrid.setTerminalWidth(TERMINAL_WIDTH);
         terminalGrid.print(listMessages, rowHeadings, colHeadings);
         System.out.println();
     }
@@ -64,7 +64,7 @@ public class DrawCalendar {
             Map<LocalDate, Map<LocalTime, List<Event>>> weekMap) {
         for (Event ev : calendar.getEvents()) {
             LocalDate date = ev.getDateTime().toLocalDate();
-            LocalTime time = ev.getDateTime().toLocalTime();
+            LocalTime time = ev.getDateTime().toLocalTime().withSecond(0); // Strips seconds
 
             if (weekMap.containsKey(date)) {
                 weekMap.get(date).putIfAbsent(time, new ArrayList<>());
@@ -143,20 +143,26 @@ public class DrawCalendar {
      *
      * @param listMessages The 2D list to populate.
      * @param weekMap      The map containing events grouped by date and time.
-     * @param rowHeadings  The list of row headings.
      */
     private static void populateHourlyRows(List<List<String>> listMessages,
             Map<LocalDate, Map<LocalTime, List<Event>>> weekMap) {
         for (int i = 0; i < 24; i++) {
             List<String> hourRow = new ArrayList<>();
-            LocalTime time = LocalTime.of(i, 0);
+            LocalTime startHour = LocalTime.of(i, 0);
+
             for (LocalDate day : weekMap.keySet()) {
                 StringBuilder cell = new StringBuilder();
-                if (weekMap.get(day).containsKey(time)) {
-                    for (Event ev : weekMap.get(day).get(time)) {
-                        if (!ev.isAllDay()) {
-                            String duration = " (" + Integer.toString(ev.getDuration()) + "min)";
-                            cell.append(ev.getDescription()).append(duration);
+                /* Loop through each minute within the hour */
+                for (int minute = 0; minute < 60; minute++) {
+                    LocalTime currentMinute = startHour.plusMinutes(minute);
+                    /* If an even starts at minute but not on the dot append cell with :minutes */
+                    if (weekMap.get(day).containsKey(currentMinute)) {
+                        for (Event ev : weekMap.get(day).get(currentMinute)) {
+                            if (!ev.isAllDay()) {
+                                String duration = " [" + Integer.toString(ev.getDuration()) + "min]";
+                                String timeIndicator = minute != 0 ? ":" + Integer.toString(minute) + " " : " ";
+                                cell.append(timeIndicator).append(ev.getDescription()).append(duration);
+                            }
                         }
                     }
                 }
@@ -165,4 +171,5 @@ public class DrawCalendar {
             listMessages.add(hourRow);
         }
     }
+
 }
