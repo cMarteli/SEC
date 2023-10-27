@@ -27,41 +27,45 @@ public class PluginParser implements LineParser<Plugin> {
         Map<String, String> pluginAttrs = new HashMap<>();
 
         for (String line : lines) {
-            line = line.trim(); // Trim the line to remove leading and trailing spaces
+            String trimmedLine = line.trim(); // Create a new variable to hold the trimmed line
 
-            if (line.startsWith(PLUGIN_START)) {
-                // Entering a plugin block
-                insidePluginBlock = true;
-
-                // Parse the plugin name
-                Matcher matcher = PLUGIN_START_PATTERN.matcher(line);
+            // Detect the start of a plugin block
+            if (trimmedLine.startsWith(PLUGIN_START)) {
+                // Validate the line using regex
+                Matcher matcher = PLUGIN_START_PATTERN.matcher(trimmedLine);
                 if (matcher.matches()) {
                     pluginName = matcher.group(1);
+                    insidePluginBlock = true; // Mark that we're inside a plugin block
+                } else {
+                    // Handle invalid line format
+                    System.err.println("Invalid plugin start line: " + line);
                 }
-                continue; // Skip to the next line
+                continue;
             }
 
+            // If we are inside a plugin block
             if (insidePluginBlock) {
-                if (line.equals(PLUGIN_END)) {
-                    // Exiting a plugin block
-                    insidePluginBlock = false;
-
-                    // Create a Plugin object and add it to the list
+                // Detect the end of a plugin block
+                if (trimmedLine.equals(PLUGIN_END)) {
+                    // Create a Plugin object
                     Plugin plugin = new Plugin(pluginName, new HashMap<>(pluginAttrs));
                     plugins.add(plugin);
 
-                    // Reset temporary storage
+                    // Reset state
+                    insidePluginBlock = false;
                     pluginName = null;
                     pluginAttrs.clear();
-                    continue;
-                }
-
-                // Parse plugin attributes
-                String[] parts = line.split(":");
-                if (parts.length == 2) {
-                    String key = parts[0].trim();
-                    String value = parts[1].trim().replaceAll("^\"|\"$", "");
-                    pluginAttrs.put(key, value);
+                } else {
+                    // Parse plugin attributes, e.g., "key: value"
+                    String[] parts = trimmedLine.split(":");
+                    if (parts.length == 2) {
+                        String key = parts[0].trim();
+                        String value = parts[1].trim().replaceAll("^\"|\"$", "");
+                        pluginAttrs.put(key, value);
+                    } else {
+                        // Handle invalid attribute line
+                        System.err.println("Invalid attribute line: " + line);
+                    }
                 }
             }
         }

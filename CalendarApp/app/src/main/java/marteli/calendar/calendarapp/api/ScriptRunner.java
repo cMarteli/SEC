@@ -1,14 +1,23 @@
 package marteli.calendar.calendarapp.api;
 
+import marteli.calendar.calendarapp.CalendarApp;
 import marteli.calendar.calendarapp.models.CalendarData;
 import marteli.calendar.calendarapp.models.Event;
 import marteli.calendar.calendarapp.models.Script;
 
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.python.core.PyException;
 import org.python.util.PythonInterpreter;
 
 public class ScriptRunner implements CoreAPI {
+
+    /* Logger from CalendarApp.java */
+    private final static Logger LOGR = Logger.getLogger(CalendarApp.class.getName());
 
     private PythonInterpreter interpreter;
     private CalendarData calendar;
@@ -35,8 +44,10 @@ public class ScriptRunner implements CoreAPI {
     private void executeLine(String line) {
         try {
             interpreter.exec("scriptAPI." + line);
-        } catch (Exception e) {
-            System.out.println("Error executing script" + e.getLocalizedMessage());
+        } catch (PyException | IllegalArgumentException e) {
+            if (LOGR.isLoggable(Level.FINE)) {
+                LOGR.log(Level.FINE, "Error executing script: ", e);
+            }
         }
     }
 
@@ -52,8 +63,10 @@ public class ScriptRunner implements CoreAPI {
         Event event;
         try {
             event = new Event(inDes, inDate, inDur); // DATE NEEDS TO INCLUDE A START TIME
-        } catch (Exception e) {
-            System.out.println(e.getLocalizedMessage());
+        } catch (IllegalArgumentException | DateTimeParseException e) {
+            if (LOGR.isLoggable(Level.FINE)) {
+                LOGR.log(Level.FINE, "Error creating event: ", e);
+            }
             return; // Don't add the event if it's invalid
         }
         calendar.addEvent(event);
@@ -65,8 +78,10 @@ public class ScriptRunner implements CoreAPI {
         Event event;
         try {
             event = new Event(inDes, inDate);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (IllegalArgumentException | DateTimeParseException e) {
+            if (LOGR.isLoggable(Level.FINE)) {
+                LOGR.log(Level.FINE, "Error creating event: ", e);
+            }
             return; // Don't add the event if it's invalid
         }
         calendar.addEvent(event);

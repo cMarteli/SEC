@@ -4,7 +4,7 @@
  * and closed
  * @author Victor Marteli (19598552)
  */
-package marteli.calendar.calendarapp.userInput;
+package marteli.calendar.calendarapp.userinput;
 
 import java.util.Scanner;
 

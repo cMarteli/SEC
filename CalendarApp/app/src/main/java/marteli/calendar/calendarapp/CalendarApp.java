@@ -6,7 +6,7 @@
 package marteli.calendar.calendarapp;
 
 import marteli.calendar.calendarapp.strings.UIStrings;
-import marteli.calendar.calendarapp.userInput.Keyboard;
+import marteli.calendar.calendarapp.userinput.Keyboard;
 import marteli.calendar.calendarapp.fileio.InputReader;
 import marteli.calendar.calendarapp.models.*;
 
@@ -68,7 +68,7 @@ public class CalendarApp {
         /*
          * Get the labels for the current locale App is fully translated from this point
          */
-        UIStrings.getInstance(locale);
+        UIStrings uiStrings = new UIStrings(locale);
 
         // initialise application
         try {
@@ -81,7 +81,7 @@ public class CalendarApp {
             if (LOGR.isLoggable(Level.SEVERE)) {
                 LOGR.log(Level.SEVERE, "Unhandled Exception", e);
             }
-            System.out.println(UIStrings.errorStr + e);
+            System.out.println(uiStrings.errorStr + e);
         } finally {
             Keyboard.close(); // Close the scanner to satisfy PMD
         }

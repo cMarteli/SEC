@@ -1,8 +1,3 @@
-/**
- * UIStrings.java
- * Singleton class used to stored references to UI strings.
- */
-
 package marteli.calendar.calendarapp.strings;
 
 import java.util.Locale;
@@ -10,50 +5,23 @@ import java.util.ResourceBundle;
 
 public final class UIStrings {
 
-    private static UIStrings single_instance = null;
     private static ResourceBundle bundle;
 
-    // CalendarApp.java
-    public static String errorStr;
-    // labels
-    public static String eventStr, alldayStr, descriptionStr, datetimeStr, durationStr;
+    // All UI strings
+    public String errorStr, initPluStr;
+    public String eventStr, allDayStr, descriptionStr, datetimeStr, durationStr;
+    public String welcomeStr, runningScriptStr, currentDateStr, optionsStr;
+    public String forwardOneDayStr, forwardOneWeekStr, forwardOneMonthStr, forwardOneYearStr;
+    public String backwardOneDayStr, backwardOneWeekStr, backwardOneMonthStr, backwardOneYearStr;
+    public String returnToTodayStr, quitStr, enterChoiceStr, closingAppStr, invalidChoiceStr, newDateStr;
 
-    //
-    public static String welcomeStr;
-    public static String runningScriptStr;
-    public static String currentDateStr;
-    public static String optionsStr;
-
-    // Menu
-    public static String forwardOneDayStr;
-    public static String forwardOneWeekStr;
-    public static String forwardOneMonthStr;
-    public static String forwardOneYearStr;
-    public static String backwardOneDayStr;
-    public static String backwardOneWeekStr;
-    public static String backwardOneMonthStr;
-    public static String backwardOneYearStr;
-    public static String returnToTodayStr;
-    public static String quitStr;
-    public static String enterChoiceStr;
-    public static String closingAppStr;
-    public static String invalidChoiceStr;
-    public static String newDateStr;
-
-    // Private constructor
-    private UIStrings(Locale locale) {
+    public UIStrings(Locale locale) {
         bundle = ResourceBundle.getBundle("bundle", locale);
 
-        // Initialise Tab fields after bundle is set
-
-        // CalendarApp.java
         errorStr = bundle.getString("error_str");
-        // usage1Str = bundle.getString("usage_str1");
-        // usage2Str = bundle.getString("usage_str2");
-        // usage3Str = bundle.getString("usage_str3");
-
+        initPluStr = bundle.getString("init_plu_str");
         eventStr = bundle.getString("event_str");
-        alldayStr = bundle.getString("allday_str");
+        allDayStr = bundle.getString("allday_str");
         descriptionStr = bundle.getString("description_str");
         datetimeStr = bundle.getString("datetime_str");
         durationStr = bundle.getString("duration_str");
@@ -79,13 +47,7 @@ public final class UIStrings {
         newDateStr = bundle.getString("new_date_str");
     }
 
-    /**
-     *
-     * Returns an array of strings for the options menu
-     *
-     * @return
-     */
-    public static String[] menuOptionsArray() {
+    public String[] menuOptionsArray() {
         return new String[] {
                 optionsStr,
                 forwardOneDayStr,
@@ -97,17 +59,7 @@ public final class UIStrings {
                 backwardOneMonthStr,
                 backwardOneYearStr,
                 returnToTodayStr,
-                quitStr };
-    }
-
-    // Static method to create an instance of the Singleton class
-    public static synchronized UIStrings getInstance(Locale locale) {
-        if (single_instance == null) {
-            if (locale == null) {
-                locale = Locale.getDefault();
-            }
-            single_instance = new UIStrings(locale);
-        }
-        return single_instance;
+                quitStr
+        };
     }
 }

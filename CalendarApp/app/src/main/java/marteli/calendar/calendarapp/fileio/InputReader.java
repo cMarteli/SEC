@@ -10,8 +10,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
-import org.python.jline.internal.Log;
-
 import marteli.calendar.calendarapp.CalendarApp;
 import marteli.calendar.calendarapp.models.*;
 
@@ -49,7 +47,9 @@ public class InputReader {
             return new CalendarData(events, scripts, plugins);
 
         } catch (IOException e) {
-            LOGR.log(Level.FINE, "Error reading file: " + filePath);
+            if (LOGR.isLoggable(Level.FINE)) {
+                LOGR.log(Level.FINE, "Error reading file: " + filePath);
+            }
         }
 
         return null;

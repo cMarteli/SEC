@@ -1,13 +1,20 @@
 package marteli.calendar.calendarapp.api;
 
+import marteli.calendar.calendarapp.CalendarApp;
 import marteli.calendar.calendarapp.models.CalendarData;
 import marteli.calendar.calendarapp.models.Event;
 import marteli.calendar.calendarapp.models.Plugin;
 
-import java.time.ZoneOffset;
+import java.time.format.DateTimeParseException;
+//import java.time.ZoneOffset;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PluginLoader implements CoreAPI {
+
+    /* Logger from CalendarApp.java */
+    private final static Logger LOGR = Logger.getLogger(CalendarApp.class.getName());
 
     private Map<String, Plugin> plugins; // Map to hold pluginID to Plugin object mapping
     private Map<String, Map<String, String>> pluginArgs; // Arguments for each plugin
@@ -38,8 +45,9 @@ public class PluginLoader implements CoreAPI {
             pluginArgs.put(plugin.getPluginID(), plugin.getConfig());
 
         } catch (ReflectiveOperationException | ClassCastException e) {
-            System.out.println("Error loading plugin: " + plugin.getPluginID()); // TODO log
-            e.printStackTrace();
+            if (LOGR.isLoggable(Level.FINE)) {
+                LOGR.log(Level.FINE, "Error loading plugin: " + plugin.getPluginID(), e);
+            }
         }
     }
 
@@ -54,8 +62,10 @@ public class PluginLoader implements CoreAPI {
         Event event;
         try {
             event = new Event(inDes, inDate, inDur); // DATE NEEDS TO INCLUDE A START TIME
-        } catch (Exception e) {
-            System.out.println(e.getLocalizedMessage());
+        } catch (IllegalArgumentException | DateTimeParseException e) {
+            if (LOGR.isLoggable(Level.FINE)) {
+                LOGR.log(Level.FINE, "Error creating event: ", e);
+            }
             return; // Don't add the event if it's invalid
         }
         calendar.addEvent(event);
@@ -67,23 +77,27 @@ public class PluginLoader implements CoreAPI {
         Event event;
         try {
             event = new Event(inDes, inDate);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (IllegalArgumentException | DateTimeParseException e) {
+            if (LOGR.isLoggable(Level.FINE)) {
+                LOGR.log(Level.FINE, "Error creating event: ", e);
+            }
             return; // Don't add the event if it's invalid
         }
         calendar.addEvent(event);
     }
 
-    // Notify all registered NotificationHandler objects
-    private void notifyHandlers(Event event) {
-        /* Get offset in seconds */
-        ZoneOffset offset = ZoneOffset.ofTotalSeconds(TimeZone.getDefault().getRawOffset() / 1000);
-        Date startDate = Date.from(event.getDateTime().toInstant(offset));
-        Date endDate = Date.from(event.getDateTime().plusMinutes(event.getDuration()).toInstant(offset));
-        for (NotificationHandler handler : notificationHandlers) {
-            handler.handleEvent(event.getDescription(), startDate, endDate);
-        }
-    }
+    // // Notify all registered NotificationHandler objects
+    // private void notifyHandlers(Event event) {
+    // /* Get offset in seconds */
+    // ZoneOffset offset =
+    // ZoneOffset.ofTotalSeconds(TimeZone.getDefault().getRawOffset() / 1000);
+    // Date startDate = Date.from(event.getDateTime().toInstant(offset));
+    // Date endDate =
+    // Date.from(event.getDateTime().plusMinutes(event.getDuration()).toInstant(offset));
+    // for (NotificationHandler handler : notificationHandlers) {
+    // handler.handleEvent(event.getDescription(), startDate, endDate);
+    // }
+    // }
 
     @Override
     public void registerForNotifications(NotificationHandler handler) {

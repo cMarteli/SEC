@@ -12,7 +12,7 @@ import marteli.calendar.calendarapp.api.*;
 import marteli.calendar.calendarapp.graphics.DrawCalendar;
 import marteli.calendar.calendarapp.models.*;
 import marteli.calendar.calendarapp.strings.UIStrings;
-import marteli.calendar.calendarapp.userInput.Keyboard;
+import marteli.calendar.calendarapp.userinput.Keyboard;
 
 public class MainMenu {
     private CalendarData calendar;
@@ -21,6 +21,7 @@ public class MainMenu {
     private ScriptRunner scriptRunner;
     private PluginLoader pluginLoader;
     private boolean isRunning = true;
+    private UIStrings uiStrings = new UIStrings(Locale.getDefault());
 
     public MainMenu(CalendarData c) {
         calendar = c;
@@ -31,18 +32,18 @@ public class MainMenu {
     }
 
     public void start() {
-        System.out.println(UIStrings.welcomeStr);
+        System.out.println(uiStrings.welcomeStr);
 
         initScripts();
         initPlugins();
         while (isRunning) {
-            DrawCalendar.draw(calendar, currentDate);
+            DrawCalendar.draw(calendar, currentDate, uiStrings);
             changeDate();
         }
     }
 
     private void initPlugins() {
-        System.out.println("Initializing plugins...");// TODO: Translate
+        System.out.println(uiStrings.initPluStr);
         calendar.printData();
         for (Plugin plugin : calendar.getPlugins()) {
             pluginLoader.loadPlugin(plugin);
@@ -51,7 +52,7 @@ public class MainMenu {
 
     /* Runs all scripts */
     private void initScripts() {
-        System.out.println(UIStrings.runningScriptStr);
+        System.out.println(uiStrings.runningScriptStr);
         for (Script script : scripts) {
             scriptRunner.executeScript(script);
         }
@@ -64,13 +65,13 @@ public class MainMenu {
                 .withLocale(Locale.getDefault());
         StringJoiner output = new StringJoiner("\n");
 
-        output.add(UIStrings.currentDateStr + currentDate.format(formatter));
+        output.add(uiStrings.currentDateStr + currentDate.format(formatter));
 
-        for (String option : UIStrings.menuOptionsArray()) {
+        for (String option : uiStrings.menuOptionsArray()) {
             output.add(option);
         }
 
-        output.add(UIStrings.enterChoiceStr);
+        output.add(uiStrings.enterChoiceStr);
         System.out.print(output.toString());
 
         // Input validation loop
@@ -113,14 +114,14 @@ public class MainMenu {
                 currentDate = LocalDate.now();
                 break;
             case "q":
-                System.out.println(UIStrings.closingAppStr);
+                System.out.println(uiStrings.closingAppStr);
                 isRunning = false;
                 break;
             default:
-                System.out.println(UIStrings.invalidChoiceStr);
+                System.out.println(uiStrings.invalidChoiceStr);
                 return false;
         }
-        System.out.println(UIStrings.newDateStr + currentDate.format(formatter));
+        System.out.println(uiStrings.newDateStr + currentDate.format(formatter));
         return true;
     }
 }

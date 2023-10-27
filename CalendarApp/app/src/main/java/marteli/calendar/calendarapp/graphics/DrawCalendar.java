@@ -21,7 +21,7 @@ public class DrawCalendar {
      *
      * @param calendar The CalendarData object containing events.
      */
-    public static void draw(CalendarData calendar, LocalDate currentDate) {
+    public static void draw(CalendarData calendar, LocalDate currentDate, UIStrings uiStrings) {
         var terminalGrid = TerminalGrid.create();
         // Use LinkedHashMap to maintain insertion order
         Map<LocalDate, Map<LocalTime, List<Event>>> weekMap = new LinkedHashMap<>();
@@ -31,10 +31,10 @@ public class DrawCalendar {
 
         groupEventsByDateAndHour(calendar, weekMap);
 
-        List<String> rowHeadings = createRowHeadings();
+        List<String> rowHeadings = createRowHeadings(uiStrings.allDayStr);
         List<String> colHeadings = createColumnHeadings(weekMap);
 
-        List<List<String>> listMessages = populateRows(weekMap, rowHeadings);
+        List<List<String>> listMessages = populateRows(weekMap);
         terminalGrid.setTerminalWidth(200); // To avoid wrapping
         terminalGrid.print(listMessages, rowHeadings, colHeadings);
         System.out.println();
@@ -78,9 +78,9 @@ public class DrawCalendar {
      *
      * @return List of row headings as strings.
      */
-    private static List<String> createRowHeadings() {
+    private static List<String> createRowHeadings(String allDayStr) {
         List<String> rowHeadings = new ArrayList<>();
-        rowHeadings.add(UIStrings.alldayStr);
+        rowHeadings.add(allDayStr);
         for (int i = 0; i < 24; i++) {
             rowHeadings.add(String.format("%02d:00", i));
         }
@@ -108,11 +108,10 @@ public class DrawCalendar {
      * @param rowHeadings The list of row headings.
      * @return A 2D list containing strings to be displayed.
      */
-    private static List<List<String>> populateRows(Map<LocalDate, Map<LocalTime, List<Event>>> weekMap,
-            List<String> rowHeadings) {
+    private static List<List<String>> populateRows(Map<LocalDate, Map<LocalTime, List<Event>>> weekMap) {
         List<List<String>> listMessages = new ArrayList<>();
         populateAllDayRow(listMessages, weekMap);
-        populateHourlyRows(listMessages, weekMap, rowHeadings);
+        populateHourlyRows(listMessages, weekMap);
         return listMessages;
     }
 
@@ -147,7 +146,7 @@ public class DrawCalendar {
      * @param rowHeadings  The list of row headings.
      */
     private static void populateHourlyRows(List<List<String>> listMessages,
-            Map<LocalDate, Map<LocalTime, List<Event>>> weekMap, List<String> rowHeadings) {
+            Map<LocalDate, Map<LocalTime, List<Event>>> weekMap) {
         for (int i = 0; i < 24; i++) {
             List<String> hourRow = new ArrayList<>();
             LocalTime time = LocalTime.of(i, 0);

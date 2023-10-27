@@ -5,13 +5,13 @@
 
 package marteli.calendar.calendarapp.models;
 
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
 public class Event {
+
     private LocalDateTime dateTime;
     private Integer duration; // Null if it's an all-day event
     private String description;
@@ -26,13 +26,9 @@ public class Event {
     }
 
     // Constructor used by API
-    public Event(String inDes, String inDate, Integer inDur) throws ParseException {
+    public Event(String inDes, String inDate, Integer inDur) throws DateTimeParseException {
         LocalDateTime date;
-        try {
-            date = LocalDateTime.parse(inDate);
-        } catch (DateTimeParseException e) {
-            throw new ParseException("Error parsing date: " + e.getMessage(), 0);
-        }
+        date = LocalDateTime.parse(inDate);
         dateTime = date;
         duration = inDur;
         description = inDes;
@@ -40,13 +36,9 @@ public class Event {
     }
 
     // Alternate Constructor for all-day events used by API
-    public Event(String inDes, String inDate) throws ParseException {
+    public Event(String inDes, String inDate) throws DateTimeParseException {
         LocalDate date;
-        try {
-            date = LocalDate.parse(inDate);
-        } catch (DateTimeParseException e) {
-            throw new ParseException("Error parsing date: " + e.getMessage(), 0);
-        }
+        date = LocalDate.parse(inDate);
         dateTime = date.atStartOfDay();
         duration = 0;
         description = inDes;
@@ -109,10 +101,12 @@ public class Event {
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
         Event event = (Event) o;
         return allDay == event.allDay && Objects.equals(dateTime, event.dateTime)
                 && Objects.equals(duration, event.duration) && Objects.equals(description, event.description);
