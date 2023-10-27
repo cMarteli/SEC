@@ -8,11 +8,11 @@ public final class UIStrings {
     private static ResourceBundle bundle;
 
     // All UI strings
-    public String errorStr, initPluStr;
+    public String errorStr, initPluStr, enterToContinueStr, enterSearchTermStr;
     public String eventStr, allDayStr, descriptionStr, datetimeStr, durationStr;
-    public String welcomeStr, runningScriptStr, currentDateStr, optionsStr;
+    public String welcomeStr, runningScriptStr, currentDateStr, optionsStr, noEventsFoundStr;
     public String forwardOneDayStr, forwardOneWeekStr, forwardOneMonthStr, forwardOneYearStr;
-    public String backwardOneDayStr, backwardOneWeekStr, backwardOneMonthStr, backwardOneYearStr;
+    public String backwardOneDayStr, backwardOneWeekStr, backwardOneMonthStr, backwardOneYearStr, search_str;
     public String returnToTodayStr, quitStr, enterChoiceStr, closingAppStr, invalidChoiceStr, newDateStr;
 
     public UIStrings(Locale locale) {
@@ -26,11 +26,14 @@ public final class UIStrings {
         datetimeStr = bundle.getString("datetime_str");
         durationStr = bundle.getString("duration_str");
 
+        enterToContinueStr = bundle.getString("enter_to_continue_str");
         welcomeStr = bundle.getString("welcome_str");
         runningScriptStr = bundle.getString("running_first_script_str");
         currentDateStr = bundle.getString("current_date_str");
         optionsStr = bundle.getString("options_str");
         closingAppStr = bundle.getString("closing_app_str");
+        enterSearchTermStr = bundle.getString("enter_search_term_str");
+        noEventsFoundStr = bundle.getString("no_events_found_str");
 
         forwardOneDayStr = bundle.getString("forward_one_day_str");
         forwardOneWeekStr = bundle.getString("forward_one_week_str");
@@ -41,6 +44,7 @@ public final class UIStrings {
         backwardOneMonthStr = bundle.getString("backward_one_month_str");
         backwardOneYearStr = bundle.getString("backward_one_year_str");
         returnToTodayStr = bundle.getString("return_to_today_str");
+        search_str = bundle.getString("search_str");
         quitStr = bundle.getString("quit_str");
         enterChoiceStr = bundle.getString("enter_choice_str");
         invalidChoiceStr = bundle.getString("invalid_choice_str");
@@ -59,6 +63,7 @@ public final class UIStrings {
                 backwardOneMonthStr,
                 backwardOneYearStr,
                 returnToTodayStr,
+                search_str,
                 quitStr
         };
     }

@@ -1,6 +1,10 @@
 package marteli.calendar.calendarapp.models;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 public class CalendarData {
 
@@ -28,6 +32,45 @@ public class CalendarData {
 
     public void addEvent(Event e) {
         events.add(e);
+    }
+
+    /* Search for events from current date up to a year in the future */
+    // public List<Event> searchEvents(String searchStr) {
+    // searchStr = searchStr.toLowerCase();
+    // String temp = "";
+    // ArrayList<Event> searchResults = new ArrayList<>();
+    // for (Event e : events) {
+    // temp = e.getDescription().toLowerCase();
+    // if (temp.contains(searchStr)) {
+    // searchResults.add(e);
+    // }
+    // }
+    // return searchResults;
+    // }
+
+    /*
+     * Search for events from current date up to a year in the future
+     * Returns the first event found that matches the search string
+     * Returns empty optional if no event is found
+     **/
+    public Optional<Event> searchEvents(String searchStr, LocalDate inDate) {
+        // Set search date range
+        LocalDateTime startDate = inDate.atStartOfDay();
+        LocalDateTime endDate = startDate.plus(1, ChronoUnit.YEARS);
+        String temp = "";
+        searchStr = searchStr.toLowerCase();
+
+        for (Event e : events) {
+            /* Check if event falls within search date range */
+            LocalDateTime eventDateTime = e.getDateTime();
+            if (eventDateTime.isAfter(startDate) && eventDateTime.isBefore(endDate)) {
+                temp = e.getDescription().toLowerCase();
+                if (temp.contains(searchStr)) {
+                    return Optional.of(e);
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     public void printData() {

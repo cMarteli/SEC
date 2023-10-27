@@ -1,6 +1,8 @@
 package marteli.calendar.calendarapp;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
@@ -37,11 +39,13 @@ public class MainMenu {
         initScripts();
         initPlugins();
         while (isRunning) {
+            waitForUser();
             DrawCalendar.draw(calendar, currentDate, uiStrings);
             changeDate();
         }
     }
 
+    /* Initialise all plugins */
     private void initPlugins() {
         System.out.println(uiStrings.initPluStr);
         calendar.printData();
@@ -60,13 +64,36 @@ public class MainMenu {
         scriptRunner.close();
     }
 
+    private void searchEvents() {
+        String searchStr = Keyboard.nextLine();
+        /* search for event with matching description */
+        if (calendar.searchEvents(searchStr, currentDate).isPresent()) {
+            Event match = calendar.searchEvents(searchStr, currentDate).get();
+            System.out.println(match);
+            // update current date to event date
+            currentDate = match.getDateTime().toLocalDate();
+        } else {
+            System.out.println(uiStrings.noEventsFoundStr);
+        }
+    }
+
+    private void waitForUser() {
+        System.out.println(uiStrings.enterToContinueStr);
+
+        try {
+            System.in.read();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void changeDate() {
         DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
                 .withLocale(Locale.getDefault());
         StringJoiner output = new StringJoiner("\n");
 
         output.add(uiStrings.currentDateStr + currentDate.format(formatter));
-
+        /* Prints menu options */
         for (String option : uiStrings.menuOptionsArray()) {
             output.add(option);
         }
@@ -113,6 +140,10 @@ public class MainMenu {
             case "t":
                 currentDate = LocalDate.now();
                 break;
+            case "s":
+                System.out.println(uiStrings.enterSearchTermStr);
+                searchEvents();
+                break;
             case "q":
                 System.out.println(uiStrings.closingAppStr);
                 isRunning = false;
@@ -121,7 +152,6 @@ public class MainMenu {
                 System.out.println(uiStrings.invalidChoiceStr);
                 return false;
         }
-        System.out.println(uiStrings.newDateStr + currentDate.format(formatter));
         return true;
     }
 }
