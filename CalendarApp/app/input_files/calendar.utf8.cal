@@ -23,4 +23,5 @@ createEvent("Western Australia Day", "2023-06-05")
 createEvent("King's Birthday", "2023-09-25")
 createEvent("Christmas Day", "2023-12-25")
 createEvent("Boxing Day", "2023-12-26")
+print("WA Public holidays loaded!")
 "

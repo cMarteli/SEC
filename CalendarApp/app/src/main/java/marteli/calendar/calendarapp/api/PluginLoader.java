@@ -28,7 +28,9 @@ public class PluginLoader implements CoreAPI {
     }
 
     public void loadPlugin(Plugin plugin) {
-        System.out.println("Loading plugin: " + plugin.toString());
+        if (LOGR.isLoggable(Level.INFO)) {
+            LOGR.log(Level.INFO, "Loading plugin: " + plugin.toString());
+        }
         try {
             // Get Class object
             Class<?> pluginClass = Class.forName(plugin.getPluginID());
@@ -45,8 +47,8 @@ public class PluginLoader implements CoreAPI {
             pluginArgs.put(plugin.getPluginID(), plugin.getConfig());
 
         } catch (ReflectiveOperationException | ClassCastException e) {
-            if (LOGR.isLoggable(Level.FINE)) {
-                LOGR.log(Level.FINE, "Error loading plugin: " + plugin.getPluginID(), e);
+            if (LOGR.isLoggable(Level.SEVERE)) {
+                LOGR.log(Level.SEVERE, "Error loading plugin: " + plugin.getPluginID(), e);
             }
         }
     }

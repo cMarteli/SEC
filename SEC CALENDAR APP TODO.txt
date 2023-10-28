@@ -6,12 +6,6 @@ TODO:
 [ ] Plugin Support
 [ ] Implement Example plugin classes
 [ ] UTF16 + UTF32 Input file Support
-[ ] Search Function
-	Add a search function where the user can input a search string. 
-	Start searching events from the current date up to one year later. 
-	Check if each event title contains the search term. 
-	If a match is found, output its details and update the current date to the date of the matching event. 
-	If no match is found, report it and keep the current date unchanged.
 
 -------------------------------------
 KNOWN BUGS:
@@ -31,6 +25,7 @@ DONE:
 [X] Internationalisation Choice
 [X] Script Support
 [X] Navigation
+[X] Search Function
 
 
 
