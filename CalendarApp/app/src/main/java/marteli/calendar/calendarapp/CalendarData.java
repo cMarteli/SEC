@@ -1,10 +1,14 @@
-package marteli.calendar.calendarapp.models;
+package marteli.calendar.calendarapp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
+
+import marteli.calendar.calendarapp.models.Event;
+import marteli.calendar.calendarapp.models.Plugin;
+import marteli.calendar.calendarapp.models.Script;
 
 public class CalendarData {
 

@@ -35,7 +35,7 @@ public class MainMenu {
 
     public void start() {
         System.out.println(uiStrings.welcomeStr);
-
+        // calendar.printData(); // TODO: DEBUG ONLY
         initScripts();
         initPlugins();
         while (isRunning) {
@@ -48,7 +48,6 @@ public class MainMenu {
     /* Initialise all plugins */
     private void initPlugins() {
         System.out.println(uiStrings.initPluStr);
-        calendar.printData();
         for (Plugin plugin : calendar.getPlugins()) {
             pluginLoader.loadPlugin(plugin);
         }

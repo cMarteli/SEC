@@ -1,7 +1,7 @@
 package marteli.calendar.calendarapp.api;
 
 import marteli.calendar.calendarapp.CalendarApp;
-import marteli.calendar.calendarapp.models.CalendarData;
+import marteli.calendar.calendarapp.CalendarData;
 import marteli.calendar.calendarapp.models.Event;
 import marteli.calendar.calendarapp.models.Script;
 
@@ -33,8 +33,9 @@ public class ScriptRunner implements CoreAPI {
     }
 
     public void executeScript(Script script) {
-        System.out.println("Executing script: " + script.toString()); // DEBUG
-
+        if (LOGR.isLoggable(Level.INFO)) {
+            LOGR.log(Level.INFO, "Executing script: " + script.toString());
+        }
         ArrayList<String> scriptContent = (ArrayList<String>) script.getContent();
         for (String line : scriptContent) {
             executeLine(line);

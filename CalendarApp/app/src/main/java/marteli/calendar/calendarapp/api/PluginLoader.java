@@ -1,7 +1,7 @@
 package marteli.calendar.calendarapp.api;
 
 import marteli.calendar.calendarapp.CalendarApp;
-import marteli.calendar.calendarapp.models.CalendarData;
+import marteli.calendar.calendarapp.CalendarData;
 import marteli.calendar.calendarapp.models.Event;
 import marteli.calendar.calendarapp.models.Plugin;
 
@@ -32,7 +32,7 @@ public class PluginLoader implements CoreAPI {
         try {
             // Get Class object
             Class<?> pluginClass = Class.forName(plugin.getPluginID());
-            /* Assuming no-arg constructor */
+            /* Imposing a no-arg constructor for the class exists */
             Plugin pluginInstance = (Plugin) pluginClass.getConstructor().newInstance();
             // Create a new instance
             // Object pluginInstance =

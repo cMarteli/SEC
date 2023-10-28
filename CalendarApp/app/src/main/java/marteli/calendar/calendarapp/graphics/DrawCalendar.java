@@ -10,7 +10,7 @@ import java.time.LocalTime;
 import java.util.*;
 
 import edu.curtin.terminalgrid.TerminalGrid;
-import marteli.calendar.calendarapp.models.CalendarData;
+import marteli.calendar.calendarapp.CalendarData;
 import marteli.calendar.calendarapp.models.Event;
 import marteli.calendar.calendarapp.strings.UIStrings;
 
