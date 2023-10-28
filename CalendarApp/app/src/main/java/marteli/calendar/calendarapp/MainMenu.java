@@ -148,7 +148,7 @@ public class MainMenu {
                 currentDate = LocalDate.now();
                 break;
             case "s":
-                System.out.println(uiStrings.enterSearchTermStr);
+                System.out.println("\n **" + uiStrings.enterSearchTermStr + "**");
                 searchEvents();
                 waitForUser(); // Lets user see the output
                 break;
