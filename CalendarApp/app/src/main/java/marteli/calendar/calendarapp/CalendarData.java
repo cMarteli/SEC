@@ -57,7 +57,7 @@ public class CalendarData {
      * Returns the first event found that matches the search string
      * Returns empty optional if no event is found
      **/
-    public Optional<Event> searchEvents(String searchStr, LocalDate inDate) {
+    public Optional<Event> searchFutureEvents(String searchStr, LocalDate inDate) {
         // Set search date range
         LocalDateTime startDate = inDate.atStartOfDay();
         LocalDateTime endDate = startDate.plus(1, ChronoUnit.YEARS);

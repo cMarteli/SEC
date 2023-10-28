@@ -11,7 +11,6 @@ import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
 public class Event {
-
     private LocalDateTime dateTime;
     private Integer duration; // Null if it's an all-day event
     private String description;
@@ -82,13 +81,13 @@ public class Event {
     public String toString() {
         if (allDay) {
             return "Event{" +
-                    "dateTime=" + dateTime +
+                    "dateTime=" + dateTime.toLocalDate() +
                     ", description='" + description + '\'' +
                     ", allDay=" + allDay +
                     '}';
         }
         return "Event{" +
-                "dateTime=" + dateTime +
+                "dateTime=" + dateTime.toLocalDate() +
                 ", duration=" + duration +
                 ", description='" + description + '\'' +
                 ", allDay=" + allDay +

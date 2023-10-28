@@ -10,7 +10,7 @@ public final class UIStrings {
     // All UI strings
     public String errorStr, initPluStr, enterToContinueStr, enterSearchTermStr;
     public String eventStr, allDayStr, descriptionStr, datetimeStr, durationStr;
-    public String welcomeStr, runningScriptStr, currentDateStr, optionsStr, noEventsFoundStr;
+    public String welcomeStr, runningScriptStr, currentDateStr, optionsStr, noEventsFoundStr, eventFoundStr;
     public String forwardOneDayStr, forwardOneWeekStr, forwardOneMonthStr, forwardOneYearStr;
     public String backwardOneDayStr, backwardOneWeekStr, backwardOneMonthStr, backwardOneYearStr, search_str;
     public String returnToTodayStr, quitStr, enterChoiceStr, closingAppStr, invalidChoiceStr, newDateStr;
@@ -34,6 +34,7 @@ public final class UIStrings {
         closingAppStr = bundle.getString("closing_app_str");
         enterSearchTermStr = bundle.getString("enter_search_term_str");
         noEventsFoundStr = bundle.getString("no_events_found_str");
+        eventFoundStr = bundle.getString("event_found_str");
 
         forwardOneDayStr = bundle.getString("forward_one_day_str");
         forwardOneWeekStr = bundle.getString("forward_one_week_str");

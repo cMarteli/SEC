@@ -2,7 +2,6 @@ package marteli.calendar.calendarapp;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
@@ -17,13 +16,19 @@ import marteli.calendar.calendarapp.strings.UIStrings;
 import marteli.calendar.calendarapp.userinput.Keyboard;
 
 public class MainMenu {
+
     private CalendarData calendar;
     private List<Script> scripts;
     private LocalDate currentDate;
     private ScriptRunner scriptRunner;
     private PluginLoader pluginLoader;
+
     private boolean isRunning = true;
-    private UIStrings uiStrings = new UIStrings(Locale.getDefault());
+
+    private Locale locale = Locale.getDefault();
+    private UIStrings uiStrings = new UIStrings(locale);
+    private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+            .withLocale(locale);
 
     public MainMenu(CalendarData c) {
         calendar = c;
@@ -38,8 +43,8 @@ public class MainMenu {
         // calendar.printData(); // TODO: DEBUG ONLY
         initScripts();
         initPlugins();
+        waitForUser(); // TODO: DEBUG Makes it easier to see the output
         while (isRunning) {
-            waitForUser();
             DrawCalendar.draw(calendar, currentDate, uiStrings);
             changeDate();
         }
@@ -66,9 +71,10 @@ public class MainMenu {
     private void searchEvents() {
         String searchStr = Keyboard.nextLine();
         /* search for event with matching description */
-        if (calendar.searchEvents(searchStr, currentDate).isPresent()) {
-            Event match = calendar.searchEvents(searchStr, currentDate).get();
-            System.out.println(match);
+        if (calendar.searchFutureEvents(searchStr, currentDate).isPresent()) {
+            Event match = calendar.searchFutureEvents(searchStr, currentDate).get();
+
+            System.out.println(uiStrings.eventFoundStr + prettyPrint(match));
             // update current date to event date
             currentDate = match.getDateTime().toLocalDate();
         } else {
@@ -76,19 +82,21 @@ public class MainMenu {
         }
     }
 
-    private void waitForUser() {
-        System.out.println(uiStrings.enterToContinueStr);
-
-        try {
-            System.in.read();
-        } catch (IOException e) {
-            e.printStackTrace();
+    /* Returns localised event information */
+    public String prettyPrint(Event event) {
+        if (event.isAllDay()) {
+            return "\n" + uiStrings.descriptionStr + event.getDescription() +
+                    "\n" + uiStrings.datetimeStr + event.getDateTime().format(formatter) +
+                    "\n" + uiStrings.allDayStr;
         }
+        return "\n" + uiStrings.descriptionStr + event.getDescription() +
+                "\n" + uiStrings.datetimeStr + event.getDateTime().format(formatter) +
+                "\n" + uiStrings.durationStr + event.getDuration();
+
     }
 
+    /* Changes date based on menu choice */
     private void changeDate() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
-                .withLocale(Locale.getDefault());
         StringJoiner output = new StringJoiner("\n");
 
         output.add(uiStrings.currentDateStr + currentDate.format(formatter));
@@ -142,6 +150,7 @@ public class MainMenu {
             case "s":
                 System.out.println(uiStrings.enterSearchTermStr);
                 searchEvents();
+                waitForUser(); // Lets user see the output
                 break;
             case "q":
                 System.out.println(uiStrings.closingAppStr);
@@ -152,5 +161,16 @@ public class MainMenu {
                 return false;
         }
         return true;
+    }
+
+    /* Ask user to press ENTER to proceed */
+    private void waitForUser() {
+        System.out.println(uiStrings.enterToContinueStr);
+
+        try {
+            System.in.read();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

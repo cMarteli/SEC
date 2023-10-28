@@ -9,13 +9,17 @@ public class RepeatPlugin {
     private CoreAPI coreAPI;
     private String id = "RepeatPlugin"; // Plugin ID
 
-    // Constructor accepting CoreAPI
-    public RepeatPlugin(CoreAPI coreAPI) {
-        this.coreAPI = coreAPI;
-
-        // Register for notifications
-        coreAPI.registerForNotifications(this);
+    // Constructor with no arguments
+    public RepeatPlugin() {
     }
+
+    // Constructor accepting CoreAPI
+    // public RepeatPlugin(CoreAPI coreAPI) {
+    // this.coreAPI = coreAPI;
+
+    // // Register for notifications
+    // coreAPI.registerForNotifications(this);
+    // }
 
     @Override
     public void handleEvent(String eventName, Map<String, String> eventData) {
