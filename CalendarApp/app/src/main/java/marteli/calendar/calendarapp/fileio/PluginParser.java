@@ -7,17 +7,17 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import marteli.calendar.calendarapp.models.Plugin;
+import marteli.calendar.calendarapp.models.PluginInfo;
 
-public class PluginParser implements LineParser<Plugin> {
+public class PluginParser implements LineParser<PluginInfo> {
 
     private static final Pattern PLUGIN_START_PATTERN = Pattern.compile("plugin\\s+(.*)");
     private static final String PLUGIN_END = "}";
     private static final String PLUGIN_START = "plugin";
 
     @Override
-    public List<Plugin> parseLines(List<String> lines) {
-        List<Plugin> plugins = new ArrayList<>();
+    public List<PluginInfo> parseLines(List<String> lines) {
+        List<PluginInfo> plugins = new ArrayList<>();
 
         // Flag to track if we are inside a plugin block
         boolean insidePluginBlock = false;
@@ -48,7 +48,7 @@ public class PluginParser implements LineParser<Plugin> {
                 // Detect the end of a plugin block
                 if (trimmedLine.equals(PLUGIN_END)) {
                     // Create a Plugin object
-                    Plugin plugin = new Plugin(pluginName, new HashMap<>(pluginAttrs));
+                    PluginInfo plugin = new PluginInfo(pluginName, new HashMap<>(pluginAttrs));
                     plugins.add(plugin);
 
                     // Reset state

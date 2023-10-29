@@ -3,15 +3,19 @@ SEC CALENDAR APP
 
 TODO:
 
-[ ] Plugin Support
-[ ] Implement Example plugin classes
+[*] Plugin Support
+    > Put the plugin in the 'classpath'?
+        export CLASSPATH=repeatplugin/build/libs/repeatplugin.jar
+    > Install Application
+        ./gradlew install
+    > Then run with plugin package
+    coreapp/build/install/coreapp/bin/coreapp edu.curtin.myplugins.pluginA.PluginA
+[*] Implement Example plugin classes
 [ ] UTF16 + UTF32 Input file Support
 
 -------------------------------------
 KNOWN BUGS:
 
- Plugins: 
-	>>Error when loading ClassNotFoundException: calplugins.repeat.RepeatPlugin
 -------------------------------------
 NEED TO TEST:
 

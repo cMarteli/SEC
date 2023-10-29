@@ -7,13 +7,20 @@ package marteli.calendar.calendarapp.models;
 
 import java.util.Map;
 
-public class Plugin {
+import marteli.calendar.calendarapp.api.CoreAPI;
+
+public class PluginInfo {
     private String pluginID;
     private Map<String, String> config;
 
-    public Plugin(String id, Map<String, String> con) {
+    public PluginInfo(String id, Map<String, String> con) {
         pluginID = id;
         config = con;
+    }
+
+    // TODO: Implement
+    public void start(CoreAPI api) {
+        System.out.println("Plugin: " + pluginID + " started");
     }
 
     // Getters and setters

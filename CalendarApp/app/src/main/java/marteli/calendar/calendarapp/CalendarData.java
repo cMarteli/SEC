@@ -7,16 +7,16 @@ import java.util.List;
 import java.util.Optional;
 
 import marteli.calendar.calendarapp.models.Event;
-import marteli.calendar.calendarapp.models.Plugin;
+import marteli.calendar.calendarapp.models.PluginInfo;
 import marteli.calendar.calendarapp.models.Script;
 
 public class CalendarData {
 
     private List<Event> events;
     private List<Script> scripts;
-    private List<Plugin> plugins;
+    private List<PluginInfo> plugins;
 
-    public CalendarData(List<Event> e, List<Script> s, List<Plugin> p) {
+    public CalendarData(List<Event> e, List<Script> s, List<PluginInfo> p) {
         events = e;
         scripts = s;
         plugins = p;
@@ -30,7 +30,7 @@ public class CalendarData {
         return scripts;
     }
 
-    public List<Plugin> getPlugins() {
+    public List<PluginInfo> getPlugins() {
         return plugins;
     }
 
@@ -61,15 +61,13 @@ public class CalendarData {
         // Set search date range
         LocalDateTime startDate = inDate.atStartOfDay();
         LocalDateTime endDate = startDate.plus(1, ChronoUnit.YEARS);
-        String temp = "";
         searchStr = searchStr.toLowerCase();
 
         for (Event e : events) {
             /* Check if event falls within search date range */
             LocalDateTime eventDateTime = e.getDateTime();
             if (eventDateTime.isAfter(startDate) && eventDateTime.isBefore(endDate)) {
-                temp = e.getDescription().toLowerCase();
-                if (temp.contains(searchStr)) {
+                if (e.getDescription().toLowerCase().contains(searchStr)) {
                     return Optional.of(e);
                 }
             }
@@ -92,7 +90,7 @@ public class CalendarData {
         }
         if (!plugins.isEmpty()) {
             System.out.println("Plugins:");
-            for (Plugin p : plugins) {
+            for (PluginInfo p : plugins) {
                 System.out.println(p);
             }
         }

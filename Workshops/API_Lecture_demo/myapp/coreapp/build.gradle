@@ -1,0 +1,15 @@
+plugins {
+    id 'application'
+}
+
+repositories{
+    mavenCentral()
+}
+
+dependencies {
+    
+}
+
+application {
+    mainClass = 'edu.curtin.myapp.MyApp'
+}

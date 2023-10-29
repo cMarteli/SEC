@@ -1,25 +1,29 @@
-package calplugins.repeat;
+package marteli.calendar.myplugins;
 
 import java.util.Map;
 
-import marteli.calendar.calendarapp.api.CoreAPI;
+import marteli.calendar.calendarapp.api.*;
 
 // Example plugin with ID "edu.curtin.calplugins.Repeat"
-public class RepeatPlugin {
+public class RepeatPlugin implements PluginInterface {
     private CoreAPI coreAPI;
     private String id = "RepeatPlugin"; // Plugin ID
 
-    // Constructor with no arguments
-    public RepeatPlugin() {
-    }
-
-    // Constructor accepting CoreAPI
-    // public RepeatPlugin(CoreAPI coreAPI) {
-    // this.coreAPI = coreAPI;
-
-    // // Register for notifications
-    // coreAPI.registerForNotifications(this);
+    // // Constructor with no arguments
+    // public RepeatPlugin() {
     // }
+
+    // // Constructor accepting CoreAPI
+
+    // public RepeatPlugin(CoreAPI api) {
+    // coreAPI = api;
+    // }
+
+    @Override
+    public void start(CoreAPI api) {
+        coreAPI = api;
+        // coreAPI.registerForNotifications(this);
+    }
 
     @Override
     public void handleEvent(String eventName, Map<String, String> eventData) {

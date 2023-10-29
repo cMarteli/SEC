@@ -160,7 +160,12 @@ public class DrawCalendar {
                         for (Event ev : weekMap.get(day).get(currentMinute)) {
                             if (!ev.isAllDay()) {
                                 String duration = " [" + Integer.toString(ev.getDuration()) + "min]";
-                                String timeIndicator = minute != 0 ? ":" + Integer.toString(minute) + " " : " ";
+                                String timeIndicator;
+                                if (minute == 0) {
+                                    timeIndicator = " ";
+                                } else {
+                                    timeIndicator = ":" + Integer.toString(minute) + " ";
+                                }
                                 cell.append(timeIndicator).append(ev.getDescription()).append(duration);
                             }
                         }

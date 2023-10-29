@@ -3,7 +3,7 @@ event 2023-10-20 08:30:45 45 "Meeting 2"
 event 2023-10-29 08:30:45 45 "Meeting 3"
 event 2023-10-29 18:30:45 20 "Birthday"
 
-plugin calplugins.repeat.RepeatPlugin
+plugin marteli.calendar.myplugins.RepeatPlugin
 {
     key1: "value 1",
     key2: "value 2"

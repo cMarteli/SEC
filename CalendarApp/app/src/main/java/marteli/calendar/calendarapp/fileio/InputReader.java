@@ -10,7 +10,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
-import marteli.calendar.calendarapp.CalendarApp;
 import marteli.calendar.calendarapp.CalendarData;
 import marteli.calendar.calendarapp.models.*;
 
@@ -24,18 +23,18 @@ import java.util.logging.Logger;
  */
 public class InputReader {
 
-    /* Logger from CalendarApp.java */
-    private final static Logger LOGR = Logger.getLogger(CalendarApp.class.getName());
+    /* Logger */
+    private final static Logger LOGR = Logger.getLogger(InputReader.class.getName());
 
     private static LineParser<Event> eventParser = new EventParser();
     private static LineParser<Script> scriptParser = new ScriptParser();
-    private static LineParser<Plugin> pluginParser = new PluginParser();
+    private static LineParser<PluginInfo> pluginParser = new PluginParser();
 
     public static CalendarData readCalendarFile(String filePath) {
         List<String> lines = new ArrayList<>();
         List<Event> events;
         List<Script> scripts;
-        List<Plugin> plugins;
+        List<PluginInfo> plugins;
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = bufferedReader.readLine()) != null) {

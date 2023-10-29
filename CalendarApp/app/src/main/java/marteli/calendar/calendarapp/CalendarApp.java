@@ -11,10 +11,8 @@ import marteli.calendar.calendarapp.fileio.InputReader;
 
 import java.util.Locale;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
-import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
@@ -34,7 +32,7 @@ public class CalendarApp {
     private static final String USAGE_STR2 = "Optional: set locale with --locale=[IETF language tag]";
     private static final String USAGE_STR3 = "eg: ./gradlew run --args=\"input_files/calendar.utf8.cal --locale=pt-BR\"";
 
-    private static final String LOG_FILE = "calendarAppLog.log";
+    private static final String LOG_FILE_NAME = "calendarApp.log";
 
     private static CalendarData calendar;
     private static Locale locale = Locale.getDefault();
@@ -90,9 +88,7 @@ public class CalendarApp {
         }
     }
 
-    /**
-     * Logger
-     */
+    /** Logger */
     private final static Logger LOGR = Logger.getLogger(CalendarApp.class.getName());
 
     private static void setupLogger() {
@@ -103,24 +99,9 @@ public class CalendarApp {
         ch.setLevel(Level.SEVERE);
         LOGR.addHandler(ch);
 
-        Formatter formatter = new SimpleFormatter() {
-            private static final String format = "[%1$tF %1$tT] [%2$-7s] %3$s %n";
-
-            @Override
-            public synchronized String format(java.util.logging.LogRecord lr) {
-                return String.format(format,
-                        new java.util.Date(lr.getMillis()),
-                        lr.getLevel().getLocalizedName(),
-                        lr.getMessage());
-            }
-        };
-
-        ch.setFormatter(formatter); // Set the custom formatter to ConsoleHandler
-
         try {
-            FileHandler fh = new FileHandler(LOG_FILE, true);
+            FileHandler fh = new FileHandler(LOG_FILE_NAME, true);
             fh.setLevel(Level.FINE);
-            fh.setFormatter(formatter); // Set the custom formatter to FileHandler
             LOGR.addHandler(fh);
         } catch (java.io.IOException e) {
             LOGR.log(Level.SEVERE, "Logger broke.", e);

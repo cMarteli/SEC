@@ -1,13 +1,11 @@
 package marteli.calendar.calendarapp;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.StringJoiner;
+import java.time.*;
+import java.time.format.*;
+import java.util.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import marteli.calendar.calendarapp.api.*;
 import marteli.calendar.calendarapp.graphics.DrawCalendar;
@@ -17,10 +15,13 @@ import marteli.calendar.calendarapp.userinput.Keyboard;
 
 public class MainMenu {
 
+    /* Logger */
+    private final static Logger LOGR = Logger.getLogger(MainMenu.class.getName());
+
     private CalendarData calendar;
     private List<Script> scripts;
     private LocalDate currentDate;
-    private ScriptRunner scriptRunner;
+    private ScriptApiImpl scriptRunner;
     private PluginLoader pluginLoader;
 
     private boolean isRunning = true;
@@ -32,7 +33,7 @@ public class MainMenu {
 
     public MainMenu(CalendarData c) {
         calendar = c;
-        scriptRunner = new ScriptRunner(calendar);
+        scriptRunner = new ScriptApiImpl(calendar);
         pluginLoader = new PluginLoader(calendar);
         scripts = new ArrayList<>(calendar.getScripts()); // Copy scripts from calendar
         currentDate = LocalDate.now(); // Set current date to today
@@ -53,9 +54,7 @@ public class MainMenu {
     /* Initialise all plugins */
     private void initPlugins() {
         System.out.println(uiStrings.initPluStr);
-        for (Plugin plugin : calendar.getPlugins()) {
-            pluginLoader.loadPlugin(plugin);
-        }
+        pluginLoader.loadPlugins();
     }
 
     /* Runs all scripts */
@@ -111,14 +110,14 @@ public class MainMenu {
         // Input validation loop
         while (true) {
             String choice = Keyboard.nextLine();
-            if (processChoice(choice, formatter)) {
+            if (processChoice(choice)) {
                 break;
             }
         }
     }
 
     // Returns true if the choice was valid and processed, otherwise false
-    private boolean processChoice(String choice, DateTimeFormatter formatter) {
+    private boolean processChoice(String choice) {
         switch (choice) {
             case "+d":
                 currentDate = currentDate.plusDays(1);
@@ -166,11 +165,12 @@ public class MainMenu {
     /* Ask user to press ENTER to proceed */
     private void waitForUser() {
         System.out.println(uiStrings.enterToContinueStr);
-
         try {
             System.in.read();
         } catch (IOException e) {
-            e.printStackTrace();
+            if (LOGR.isLoggable(Level.SEVERE)) {
+                LOGR.log(Level.SEVERE, "waitForUser() : User entered invalid input: " + e);
+            }
         }
     }
 }

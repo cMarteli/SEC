@@ -5,7 +5,6 @@ import marteli.calendar.calendarapp.CalendarData;
 import marteli.calendar.calendarapp.models.Event;
 import marteli.calendar.calendarapp.models.Script;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -15,7 +14,7 @@ import java.util.logging.Logger;
 import org.python.core.PyException;
 import org.python.util.PythonInterpreter;
 
-public class ScriptRunner implements CoreAPI {
+public class ScriptApiImpl implements CoreAPI {
 
     /* Logger from CalendarApp.java */
     private final static Logger LOGR = Logger.getLogger(CalendarApp.class.getName());
@@ -24,7 +23,7 @@ public class ScriptRunner implements CoreAPI {
     private PythonInterpreter interpreter;
     private CalendarData calendar;
 
-    public ScriptRunner(CalendarData c) {
+    public ScriptApiImpl(CalendarData c) {
         calendar = c;
         // Initialize the PythonInterpreter
         interpreter = new PythonInterpreter();
@@ -128,6 +127,12 @@ public class ScriptRunner implements CoreAPI {
         if (interpreter != null) {
             interpreter.close();
         }
+    }
+
+    @Override
+    public String test() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'test'");
     }
 
 }
