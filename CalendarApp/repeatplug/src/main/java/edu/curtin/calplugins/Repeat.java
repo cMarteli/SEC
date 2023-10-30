@@ -1,50 +1,69 @@
 package edu.curtin.calplugins;
 
 import java.util.Map;
+import java.time.LocalDateTime;
 
 import marteli.calendar.calendarapp.api.*;
 
-// Example plugin with ID "edu.curtin.calplugins.Repeat"
+// Corrected plugin with ID "edu.curtin.calplugins.Repeat"
 public class Repeat implements Plugin {
     private CoreAPI coreAPI;
-    private String id = "RepeatPlugin"; // Plugin ID
-
-    // // Constructor with no arguments
-    // public RepeatPlugin() {
-    // }
-
-    // // Constructor accepting CoreAPI
-
-    // public RepeatPlugin(CoreAPI api) {
-    // coreAPI = api;
-    // }
+    private static final String PLUGIN_ID = "edu.curtin.calplugins.Repeat";
+    private LocalDateTime dateTime; // initial date and time of event
+    private String eventTitle;
+    private int duration; // Duration of the event
+    private int repeatFrequency; // Frequency of repeating the event
 
     @Override
     public void start(CoreAPI api) {
         coreAPI = api;
-        System.out.println("Plugin: " + id + " started");
-        // coreAPI.registerForNotifications(this);
+        // System.out.println(PLUGIN_ID + " started"); //DEBUG
+        initialiseEventData(coreAPI.getArguments(PLUGIN_ID));
+
+        scheduleRepeatEventsForOneYear();
     }
 
-    @Override
-    public void handleEvent(String eventName, Map<String, String> eventData) {
-        // Logic to handle the event and perform repetition
+    private void initialiseEventData(Map<String, String> args) {
+        setDateTime(args);
+        setTitle(args);
+        setDuration(args);
+        setRepeatFrequency(args);
+    }
 
-        // Fetch the plugin-specific arguments
-        Map<String, String> args = coreAPI.getArguments(id);
+    private void setTitle(Map<String, String> args) {
+        eventTitle = args.getOrDefault("title", "Default Title");
+    }
 
-        // For demonstration, let's assume there's a "repeatCount" argument
-        String repeatCountStr = args.getOrDefault("repeatCount", "1");
-        int repeatCount = Integer.parseInt(repeatCountStr);
+    private void setDateTime(Map<String, String> args) {
+        String startTimeStr = args.getOrDefault("startTime", "00:00:00"); // Default to midnight
+        String startDateStr = args.get("startDate");
+        dateTime = LocalDateTime.parse(startDateStr + "T" + startTimeStr);
+    }
 
-        // Now create the same event 'repeatCount' times
-        for (int i = 0; i < repeatCount; ++i) {
-            String description = eventData.get("description");
-            String date = eventData.get("date");
-            String durationStr = eventData.get("duration");
-            Integer duration = Integer.parseInt(durationStr);
+    /* sets the length of the event in minutes */
+    private void setDuration(Map<String, String> args) {
+        duration = Integer.parseInt(args.getOrDefault("duration", "1440")); // Default to 1440 minutes (24 hours)
+    }
 
-            coreAPI.createEvent(description, date, duration);
+    /* sets the duration in days between repeats of the event */
+    private void setRepeatFrequency(Map<String, String> args) {
+        repeatFrequency = Integer.parseInt(args.getOrDefault("repeat", "1"));
+    }
+
+    /* Logic to perform repetition for a year */
+    private void scheduleRepeatEventsForOneYear() {
+        LocalDateTime endDate = dateTime.plusYears(1);
+        LocalDateTime dateToSchedule = dateTime;
+
+        // Repeat until a year after startDate
+        while (dateToSchedule.isBefore(endDate)) {
+            // If duration is 1440 (24hrs), create an all-day event
+            if (duration == 1440) {
+                coreAPI.createEvent(eventTitle, dateToSchedule.toString());
+            } else {
+                coreAPI.createEvent(eventTitle, dateToSchedule.toString(), duration);
+            }
+            dateToSchedule = dateToSchedule.plusDays(repeatFrequency);
         }
     }
 }

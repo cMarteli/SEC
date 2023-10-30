@@ -3,20 +3,12 @@ SEC CALENDAR APP
 
 TODO:
 
-[ ] Make working plugins
-[*] Implement Example plugin classes
+[*] Notify plugin
 [ ] UTF16 + UTF32 Input file Support
 
 -------------------------------------
 KNOWN BUGS:
-Inicializando o plug-in...
-out. 30, 2023 11:53:21 AM marteli.calendar.calendarapp.api.PluginLoader loadPlugins
-GRAVE: Error loading plugin: java.lang.ClassCastException
-java.lang.ClassCastException: class marteli.calendar.myplugins.RepeatPlugin cannot be cast to class marteli.calendar.calendarapp.models.PluginInfo (marteli.calendar.myplugins.RepeatPlugin and marteli.calendar.calendarapp.models.PluginInfo are in unnamed module of loader 'app')
-        at marteli.calendar.calendarapp.api.PluginLoader.loadPlugins(PluginLoader.java:39)
-        at marteli.calendar.calendarapp.MainMenu.initPlugins(MainMenu.java:57)
-        at marteli.calendar.calendarapp.MainMenu.start(MainMenu.java:46)
-        at marteli.calendar.calendarapp.CalendarApp.main(CalendarApp.java:99)
+Repeat plugin needs to schedule event
 -------------------------------------
 NEED TO TEST:
 
@@ -26,6 +18,7 @@ NEED TO TEST:
 _____________________________________
 DONE:
 
+[X] Repeat plugin
 [X] Simple Event Display
 [X] Internationalisation Framework
 [X] Internationalisation Choice
@@ -68,6 +61,17 @@ Build Requirements - 5 Marks
 
 
 NOTES:
+
+3 marks - A plugin with ID "edu.curtin.calplugins.Repeat"
+ 
+requires "title", "startDate" (YYYY-MM-DD), and "startTime" (HH:MM:SS) [optional]
+and "duration".
+It must schedule an event and subsequent repeats every N days
+for a year after "startDate".
+
+2 marks - A plugin with ID "edu.curtin.calplugins.Notify"
+requires a "text" argument and outputs event details when an event with
+a matching "title" begins.
 
 
 to run with logging

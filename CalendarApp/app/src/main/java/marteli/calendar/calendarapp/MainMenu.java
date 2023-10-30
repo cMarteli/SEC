@@ -54,7 +54,7 @@ public class MainMenu {
     /* Initialise all plugins */
     private void initPlugins() {
         System.out.println(uiStrings.initPluStr);
-        pluginLoader.loadPlugins();
+        pluginLoader.startPlugins();
     }
 
     /* Runs all scripts */

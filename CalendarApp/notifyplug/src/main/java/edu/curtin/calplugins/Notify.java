@@ -1,50 +1,29 @@
 package edu.curtin.calplugins;
 
-import java.util.Map;
+import java.util.Date;
 
 import marteli.calendar.calendarapp.api.*;
 
 // Example plugin with ID "edu.curtin.calplugins.Notify"
-public class Notify implements Plugin {
+public class Notify implements Plugin, NotificationHandler {
     private CoreAPI coreAPI;
-    private String id = "NotifyPlugin"; // Plugin name
-
-    // // Constructor with no arguments
-    // public RepeatPlugin() {
-    // }
-
-    // // Constructor accepting CoreAPI
-
-    // public RepeatPlugin(CoreAPI api) {
-    // coreAPI = api;
-    // }
+    private String text;
+    private static final String PLUGIN_ID = "edu.curtin.calplugins.Notify";
 
     @Override
     public void start(CoreAPI api) {
         coreAPI = api;
-        System.out.println("Plugin: " + id + " started");
-        // coreAPI.registerForNotifications(this);
+        System.out.println("Plugin: " + PLUGIN_ID + " started"); // DEBUG
+        text = coreAPI.getArguments(PLUGIN_ID).getOrDefault("text", "Default Text");
+        coreAPI.registerForNotifications(this);
     }
 
     @Override
-    public void handleEvent(String eventName, Map<String, String> eventData) {
-        // Logic to handle the event and perform repetition
-
-        // Fetch the plugin-specific arguments
-        Map<String, String> args = coreAPI.getArguments(id);
-
-        // For demonstration, let's assume there's a "repeatCount" argument
-        String repeatCountStr = args.getOrDefault("repeatCount", "1");
-        int repeatCount = Integer.parseInt(repeatCountStr);
-
-        // Now create the same event 'repeatCount' times
-        for (int i = 0; i < repeatCount; ++i) {
-            String description = eventData.get("description");
-            String date = eventData.get("date");
-            String durationStr = eventData.get("duration");
-            Integer duration = Integer.parseInt(durationStr);
-
-            coreAPI.createEvent(description, date, duration);
+    public void handleEvent(String title, Date startDate, Date endDate) {
+        // Check if the event description contains the specified text
+        if (title.contains(text)) {
+            // Output the complete event details to the user
+            System.out.println("Event: " + title + ", Start: " + startDate + ", End: " + endDate);
         }
     }
 }

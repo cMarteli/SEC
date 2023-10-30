@@ -21,6 +21,7 @@ import marteli.calendar.calendarapp.models.PluginInfo;
 public class PluginParser implements LineParser<PluginInfo> {
 
     private static final Pattern PLUGIN_START_PATTERN = Pattern.compile("plugin\\s+(.*)");
+    private static final String ARG_DELIMITER = "=";
     private static final String PLUGIN_START = "plugin";
     private static final String PLUGIN_END = "}";
     private static final Logger LOGGER = Logger.getLogger(CalendarApp.class.getName());
@@ -114,7 +115,7 @@ public class PluginParser implements LineParser<PluginInfo> {
 
     /* Parses a line containing a plugin attribute and stores it. */
     private void parsePluginAttribute(String line) {
-        String[] parts = line.split(":");
+        String[] parts = line.split(ARG_DELIMITER);
         if (parts.length == 2) {
             String key = parts[0].trim();
             String value = parts[1].trim().replaceAll("^\"|\",?$", ""); // Remove quotes and trailing commas

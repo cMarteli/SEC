@@ -1,13 +1,12 @@
 package marteli.calendar.calendarapp.apiclasses;
 
-import java.io.InvalidObjectException;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.management.InvalidAttributeValueException;
-import javax.naming.directory.InvalidAttributesException;
 
 import marteli.calendar.calendarapp.api.CoreAPI;
 import marteli.calendar.calendarapp.api.NotificationHandler;
@@ -42,6 +41,7 @@ public class PluginApiImpl implements CoreAPI {
             return; // Don't add the event if it's invalid
         }
         calendar.addEvent(event);
+        scheduleNotification(event);
     }
 
     @Override
@@ -57,20 +57,39 @@ public class PluginApiImpl implements CoreAPI {
             return; // Don't add the event if it's invalid
         }
         calendar.addEvent(event);
+        scheduleNotification(event);
     }
 
-    // // Notify all registered NotificationHandler objects
-    // private void notifyHandlers(Event event) {
-    // /* Get offset in seconds */
-    // ZoneOffset offset =
-    // ZoneOffset.ofTotalSeconds(TimeZone.getDefault().getRawOffset() / 1000);
-    // Date startDate = Date.from(event.getDateTime().toInstant(offset));
-    // Date endDate =
-    // Date.from(event.getDateTime().plusMinutes(event.getDuration()).toInstant(offset));
-    // for (NotificationHandler handler : notificationHandlers) {
-    // handler.handleEvent(event.getDescription(), startDate, endDate);
-    // }
-    // }
+    private void scheduleNotification(Event event) {
+        Timer timer = new Timer();
+
+        // Calculate the time until the event starts.
+        long delay = calculateDelay(event.getDateTime());
+
+        // Schedule the notification.
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                notifyHandlers(event);
+            }
+        }, delay);
+    }
+
+    private long calculateDelay(LocalDateTime eventStart) {
+        LocalDateTime now = LocalDateTime.now();
+        return Duration.between(now, eventStart).toMillis();
+    }
+
+    // Notify all registered NotificationHandler objects
+    private void notifyHandlers(Event event) {
+        /* Get offset in seconds */
+        ZoneOffset offset = ZoneOffset.ofTotalSeconds(TimeZone.getDefault().getRawOffset() / 1000);
+        Date startDate = Date.from(event.getDateTime().toInstant(offset));
+        Date endDate = Date.from(event.getDateTime().plusMinutes(event.getDuration()).toInstant(offset));
+        for (NotificationHandler handler : notificationHandlers) {
+            handler.handleEvent(event.getDescription(), startDate, endDate);
+        }
+    }
 
     @Override
     public void registerForNotifications(NotificationHandler handler) {
