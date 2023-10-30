@@ -1,13 +1,13 @@
-package marteli.calendar.myplugins;
+package edu.curtin.calplugins;
 
 import java.util.Map;
 
 import marteli.calendar.calendarapp.api.*;
 
-// Example plugin with ID "edu.curtin.calplugins.Repeat"
-public class RepeatPlugin implements Plugin {
+// Example plugin with ID "edu.curtin.calplugins.Notify"
+public class Notify implements Plugin {
     private CoreAPI coreAPI;
-    private String id = "RepeatPlugin"; // Plugin ID
+    private String id = "NotifyPlugin"; // Plugin name
 
     // // Constructor with no arguments
     // public RepeatPlugin() {

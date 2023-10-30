@@ -3,11 +3,13 @@ event 2023-10-20 08:30:45 45 "Meeting 2"
 event 2023-10-29 08:30:45 45 "Meeting 3"
 event 2023-10-29 18:30:45 20 "Birthday"
 
-plugin marteli.calendar.myplugins.RepeatPlugin
+plugin edu.curtin.calplugins.Notify
 {
     key1: "value 1",
     key2: "value 2"
 }
+
+plugin edu.curtin.calplugins.Repeat { keyA: "X", keyB: "Y", keyC: "Z" }
 
 
 script "

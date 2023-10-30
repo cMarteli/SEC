@@ -7,7 +7,7 @@ plugin com.example.pluginpkg.ExamplePlugin
 }
 event 2023-12-25
     all-day "Christmas Day"
-plugin com.example.plugin2pkg.DemoPlugin { keyA: "X", keyB: "Y", keyC: "Z" }
+plugin edu.curtin.calplugins.Repeat { keyA: "X", keyB: "Y", keyC: "Z" }
 
 script "
 # I'm a Python script!

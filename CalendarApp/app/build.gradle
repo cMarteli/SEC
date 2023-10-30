@@ -25,13 +25,14 @@ dependencies {
 
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:31.1-jre'
+	
+	// Jython for scripts
+	implementation 'org.python:jython-standalone:2.7.3'
 
     implementation project(':lib')
 	implementation project(':api')
-	runtimeOnly project(':repeatplugin')
-
-    // Jython for scripts
-	implementation 'org.python:jython-standalone:2.7.3'
+	runtimeOnly project(':repeatplug')
+	runtimeOnly project(':notifyplug')
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
