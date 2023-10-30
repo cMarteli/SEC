@@ -17,7 +17,7 @@ public class Notify implements Plugin, NotificationHandler {
     @Override
     public void start(CoreAPI api) {
         coreAPI = api;
-        System.out.println("Plugin: " + PLUGIN_ID + " started"); // DEBUG
+        // System.out.println("Plugin: " + PLUGIN_ID + " started"); // DEBUG
         text = coreAPI.getArguments(PLUGIN_ID).getOrDefault("text", "Default Text");
         coreAPI.registerForNotifications(this);
     }

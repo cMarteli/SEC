@@ -35,9 +35,10 @@ public class InputReader {
         Charset charset = StandardCharsets.UTF_8; // Default to UTF-8
         if (filePath.endsWith(".utf16.cal")) {
             charset = StandardCharsets.UTF_16;
-        } else if (filePath.endsWith(".utf32.cal")) {
-            charset = Charset.forName("UTF-32");
         }
+        // else if (filePath.endsWith(".utf32.cal")) {
+        // charset = Charset.forName("UTF-32"); // TODO: UTF32 doesn't work
+        // }
 
         try (BufferedReader bufferedReader = new BufferedReader(
                 new InputStreamReader(new FileInputStream(filePath), charset))) {

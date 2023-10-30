@@ -41,14 +41,16 @@ public class MainMenu {
 
     public void start() {
         System.out.println(uiStrings.welcomeStr);
-        calendar.printData(); // TODO: DEBUG ONLY
+        // calendar.printData(); // DEBUG ONLY
         initScripts();
         initPlugins();
-        waitForUser(); // TODO: DEBUG Makes it easier to see the output
+        // waitForUser(); // DEBUG Makes it easier to see the output
         while (isRunning) {
             DrawCalendar.draw(calendar, currentDate, uiStrings);
             changeDate();
         }
+        // Cleanup before exiting
+        pluginLoader.shutdown();
     }
 
     /* Initialise all plugins */

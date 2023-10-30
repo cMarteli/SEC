@@ -12,8 +12,10 @@ public class PluginLoader {
 
     /* Logger */
     private final static Logger LOGR = Logger.getLogger(CalendarApp.class.getName());
+
     private CalendarData calendar;
     private List<Plugin> pluginsLoaded = new ArrayList<>();
+    private PluginApiImpl pluginApi;
 
     public PluginLoader(CalendarData c) {
         calendar = c;
@@ -45,10 +47,15 @@ public class PluginLoader {
     /* Public method to start plugins */
     public void startPlugins() {
         loadPlugins();
-        PluginApiImpl pluginApi = new PluginApiImpl(calendar);
+        pluginApi = new PluginApiImpl(calendar);
         for (Plugin plugin : pluginsLoaded) {
             plugin.start(pluginApi);
         }
+    }
+
+    /* Closes timer threads */
+    public void shutdown() {
+        pluginApi.shutdownAllTimers();
     }
 
 }

@@ -24,6 +24,8 @@ public class ScriptApiImpl implements CoreAPI {
     private PythonInterpreter interpreter;
     private CalendarData calendar;
 
+    private List<NotificationHandler> notificationHandlers; // List of objects that will receive notifications
+
     public ScriptApiImpl(CalendarData c) {
         calendar = c;
         // Initialize the PythonInterpreter
@@ -84,8 +86,7 @@ public class ScriptApiImpl implements CoreAPI {
 
     @Override
     public Map<String, String> getArguments(String pluginID) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getArguments'");
+        throw new UnsupportedOperationException("Arguments not supported for scripts");
     }
 
     @Override
@@ -120,8 +121,12 @@ public class ScriptApiImpl implements CoreAPI {
 
     @Override
     public void registerForNotifications(NotificationHandler handler) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'registerForNotifications'");
+        if (handler != null) {
+            notificationHandlers.add(handler);
+            if (LOGR.isLoggable(Level.INFO)) {
+                LOGR.log(Level.INFO, "Registered for notifications: " + handler.getClass().getName());
+            }
+        }
     }
 
     public void close() {

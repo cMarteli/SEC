@@ -20,6 +20,7 @@ public class PluginApiImpl implements CoreAPI {
     /* Logger from CalendarApp.java */
     private final static Logger LOGR = Logger.getLogger(CalendarApp.class.getName());
 
+    private Map<Event, Timer> eventTimers = new HashMap<>(); // To keep track of Timers for each event
     private List<NotificationHandler> notificationHandlers; // List of objects that will receive notifications
     private CalendarData calendar;
 
@@ -63,22 +64,36 @@ public class PluginApiImpl implements CoreAPI {
     /* Schedules the notification for when the event starts */
     private void scheduleNotification(Event event) {
         Timer timer = new Timer();
-
-        // Calculate the time until the event starts.
         long delay = calculateDelay(event.getDateTime());
 
-        // Schedule the notification.
-        timer.schedule(new TimerTask() {
+        TimerTask notificationTask = new TimerTask() {
             @Override
             public void run() {
                 notifyHandlers(event);
             }
-        }, delay);
+        };
+
+        timer.schedule(notificationTask, delay);
+        eventTimers.put(event, timer); // Store the timer associated with the event.
     }
 
     private long calculateDelay(LocalDateTime eventStart) {
         LocalDateTime now = LocalDateTime.now();
         return Duration.between(now, eventStart).toMillis();
+    }
+
+    /**
+     * Cancels all scheduled notifications and shuts down their corresponding
+     * timers.
+     */
+    public void shutdownAllTimers() {
+        for (Timer timer : eventTimers.values()) {
+            timer.cancel(); // Cancel each timer, stopping any scheduled tasks from executing.
+        }
+        eventTimers.clear(); // Clear the map to allow garbage collection of Timer objects.
+        if (LOGR.isLoggable(Level.INFO)) {
+            LOGR.log(Level.INFO, "All timers cancelled and cleared.");
+        }
     }
 
     // Notify all registered NotificationHandler objects
@@ -95,6 +110,9 @@ public class PluginApiImpl implements CoreAPI {
     @Override
     public void registerForNotifications(NotificationHandler handler) {
         notificationHandlers.add(handler);
+        if (LOGR.isLoggable(Level.INFO)) {
+            LOGR.log(Level.INFO, "Registered for notifications: " + handler.getClass().getName());
+        }
     }
 
     @Override

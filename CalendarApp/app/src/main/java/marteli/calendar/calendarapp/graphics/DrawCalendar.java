@@ -129,7 +129,7 @@ public class DrawCalendar {
             for (List<Event> events : weekMap.get(day).values()) {
                 for (Event ev : events) {
                     if (ev.isAllDay()) {
-                        cell.append(ev.getDescription()).append("; "); // TODO: Placeholder
+                        cell.append(ev.getDescription());
                     }
                 }
             }
