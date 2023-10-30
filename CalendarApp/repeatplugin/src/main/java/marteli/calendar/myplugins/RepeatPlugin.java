@@ -5,7 +5,7 @@ import java.util.Map;
 import marteli.calendar.calendarapp.api.*;
 
 // Example plugin with ID "edu.curtin.calplugins.Repeat"
-public class RepeatPlugin implements PluginInterface {
+public class RepeatPlugin implements Plugin {
     private CoreAPI coreAPI;
     private String id = "RepeatPlugin"; // Plugin ID
 
@@ -22,6 +22,7 @@ public class RepeatPlugin implements PluginInterface {
     @Override
     public void start(CoreAPI api) {
         coreAPI = api;
+        System.out.println("Plugin: " + id + " started");
         // coreAPI.registerForNotifications(this);
     }
 

@@ -1,5 +1,7 @@
-package marteli.calendar.calendarapp.api;
+package marteli.calendar.calendarapp.apiclasses;
 
+import marteli.calendar.calendarapp.api.*;
+import marteli.calendar.calendarapp.CalendarApp;
 import marteli.calendar.calendarapp.CalendarData;
 import marteli.calendar.calendarapp.models.PluginInfo;
 import java.util.*;
@@ -9,9 +11,9 @@ import java.util.logging.Logger;
 public class PluginLoader {
 
     /* Logger */
-    private final static Logger LOGR = Logger.getLogger(PluginLoader.class.getName());
+    private final static Logger LOGR = Logger.getLogger(CalendarApp.class.getName());
 
-    private Map<String, PluginInfo> plugins; // Map to hold pluginID to Plugin object mapping
+    private Map<String, Plugin> plugins; // Map to hold pluginID to Plugin object mapping
     private Map<String, Map<String, String>> pluginArgs; // Map to hold pluginID to arguments mapping
     private CalendarData calendar;
 
@@ -32,19 +34,19 @@ public class PluginLoader {
                 // Get Class object
                 Class<?> pluginClass = Class.forName(plugin.getPluginID());
                 /* Imposing a no-arg constructor for the class exists */
-                PluginInterface pluginInstance = (PluginInterface) pluginClass.getConstructor().newInstance();
+                Plugin pluginInstance = (Plugin) pluginClass.getConstructor().newInstance();
 
                 // Add to map
-                plugins.put(plugin.getPluginID(), (PluginInfo) pluginInstance);
+                plugins.put(plugin.getPluginID(), (Plugin) pluginInstance);
 
                 // Add arguments
-                pluginArgs.put(plugin.getPluginID(), plugin.getConfig());
+                pluginArgs.put(plugin.getPluginID(), plugin.getArgs());
+                System.out.println("Trying to load plugin: " + plugin.toString() + " Class: "
+                        + pluginInstance.getClass().getName());
 
             } catch (ReflectiveOperationException | ClassCastException e) {
-                // TODO: LOG THIS
-                System.out.println("Error loading plugin: " + e.getClass().getName() + "\nMessage: " + e.getMessage());
                 if (LOGR.isLoggable(Level.SEVERE)) {
-                    LOGR.log(Level.SEVERE, "Error loading plugin: " + plugin.getPluginID(), e);
+                    LOGR.log(Level.SEVERE, "Error loading plugin: " + e.getClass().getName(), e);
                 }
             }
 
@@ -55,14 +57,14 @@ public class PluginLoader {
 
     // TODO: Need to test
     private void startPlugins(CoreAPI api) {
-        for (PluginInfo plugin : plugins.values()) {
+        for (Plugin plugin : plugins.values()) {
             plugin.start(api);
         }
     }
 
     /* Getters */
 
-    public Map<String, PluginInfo> getPlugins() {
+    public Map<String, Plugin> getPlugins() {
         return plugins;
     }
 

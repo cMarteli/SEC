@@ -1,5 +1,6 @@
-package marteli.calendar.calendarapp.api;
+package marteli.calendar.calendarapp.apiclasses;
 
+import marteli.calendar.calendarapp.api.*;
 import marteli.calendar.calendarapp.CalendarApp;
 import marteli.calendar.calendarapp.CalendarData;
 import marteli.calendar.calendarapp.models.Event;
@@ -127,12 +128,6 @@ public class ScriptApiImpl implements CoreAPI {
         if (interpreter != null) {
             interpreter.close();
         }
-    }
-
-    @Override
-    public String test() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'test'");
     }
 
 }

@@ -8,6 +8,7 @@ public class PluginA implements AppPlugin
     @Override
     public void startPlugin(AppPluginApi api) 
     {
+		System.out.println("This is the PluginA API doing this!!!");
         System.out.println(api.getInfo());    
     }
 }

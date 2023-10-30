@@ -10,6 +10,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
+import marteli.calendar.calendarapp.CalendarApp;
 import marteli.calendar.calendarapp.CalendarData;
 import marteli.calendar.calendarapp.models.*;
 
@@ -24,7 +25,7 @@ import java.util.logging.Logger;
 public class InputReader {
 
     /* Logger */
-    private final static Logger LOGR = Logger.getLogger(InputReader.class.getName());
+    private final static Logger LOGR = Logger.getLogger(CalendarApp.class.getName());
 
     private static LineParser<Event> eventParser = new EventParser();
     private static LineParser<Script> scriptParser = new ScriptParser();

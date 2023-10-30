@@ -3,23 +3,25 @@ SEC CALENDAR APP
 
 TODO:
 
-[*] Plugin Support
-    > Put the plugin in the 'classpath'?
-        export CLASSPATH=repeatplugin/build/libs/repeatplugin.jar
-    > Install Application
-        ./gradlew install
-    > Then run with plugin package
-    coreapp/build/install/coreapp/bin/coreapp edu.curtin.myplugins.pluginA.PluginA
+[ ] Make working plugins
 [*] Implement Example plugin classes
 [ ] UTF16 + UTF32 Input file Support
 
 -------------------------------------
 KNOWN BUGS:
-
+Inicializando o plug-in...
+out. 30, 2023 11:53:21 AM marteli.calendar.calendarapp.api.PluginLoader loadPlugins
+GRAVE: Error loading plugin: java.lang.ClassCastException
+java.lang.ClassCastException: class marteli.calendar.myplugins.RepeatPlugin cannot be cast to class marteli.calendar.calendarapp.models.PluginInfo (marteli.calendar.myplugins.RepeatPlugin and marteli.calendar.calendarapp.models.PluginInfo are in unnamed module of loader 'app')
+        at marteli.calendar.calendarapp.api.PluginLoader.loadPlugins(PluginLoader.java:39)
+        at marteli.calendar.calendarapp.MainMenu.initPlugins(MainMenu.java:57)
+        at marteli.calendar.calendarapp.MainMenu.start(MainMenu.java:46)
+        at marteli.calendar.calendarapp.CalendarApp.main(CalendarApp.java:99)
 -------------------------------------
 NEED TO TEST:
 
 [*] PMD Linting
+[*] Check TODOs
 
 _____________________________________
 DONE:
@@ -30,6 +32,17 @@ DONE:
 [X] Script Support
 [X] Navigation
 [X] Search Function
+[X] Initial Plugin Implementation
+	> Make API a separate project consisting of PluginInterface and API interface
+	> Modify core app build.gradle to include API as dependency
+	> Modify settings.gradle to contain new project (API)
+	> Update the individual plugin's build.gradle to depend on API
+[X]Creation of API Class
+[X] Plugin Support
+	> Make API a separate project consisting of PluginInterface and API interface
+	> Modify core app build.gradle to include API as dependency
+	> Modify settings.gradle to contain new project (API)
+	> Update the individual plugin's build.gradle to depend on API
 
 
 
@@ -57,3 +70,6 @@ Build Requirements - 5 Marks
 NOTES:
 
 
+to run with logging
+./gradlew run --args="input_files/calendar.utf8.cal --locale=pt-BR" -DloggingLevel=FINE
+./gradlew run --args="input_files/calendar.utf8.cal" -DloggingLevel=FINE

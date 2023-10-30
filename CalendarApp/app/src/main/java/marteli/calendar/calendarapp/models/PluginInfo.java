@@ -1,26 +1,19 @@
 /**
  * Plugin.java
- * Holds plugin details
+ * Holds plugin id and arguments
  */
 
 package marteli.calendar.calendarapp.models;
 
 import java.util.Map;
 
-import marteli.calendar.calendarapp.api.CoreAPI;
-
 public class PluginInfo {
     private String pluginID;
-    private Map<String, String> config;
+    private Map<String, String> args;
 
     public PluginInfo(String id, Map<String, String> con) {
         pluginID = id;
-        config = con;
-    }
-
-    // TODO: Implement
-    public void start(CoreAPI api) {
-        System.out.println("Plugin: " + pluginID + " started");
+        args = con;
     }
 
     // Getters and setters
@@ -32,19 +25,19 @@ public class PluginInfo {
         pluginID = cn;
     }
 
-    public Map<String, String> getConfig() {
-        return config;
+    public Map<String, String> getArgs() {
+        return args;
     }
 
-    public void setConfig(Map<String, String> c) {
-        config = c;
+    public void setArgs(Map<String, String> c) {
+        args = c;
     }
 
     @Override
     public String toString() {
         return "Plugin{" +
-                "className='" + pluginID + '\'' +
-                ", config=" + config +
+                "ID='" + pluginID + '\'' +
+                ", config=" + args +
                 '}';
     }
 

@@ -1,13 +1,20 @@
-package marteli.calendar.calendarapp.api;
+package marteli.calendar.calendarapp.apiclasses;
 
+import java.io.InvalidObjectException;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.management.InvalidAttributeValueException;
+import javax.naming.directory.InvalidAttributesException;
+
+import marteli.calendar.calendarapp.api.CoreAPI;
+import marteli.calendar.calendarapp.api.NotificationHandler;
 import marteli.calendar.calendarapp.CalendarApp;
 import marteli.calendar.calendarapp.CalendarData;
 import marteli.calendar.calendarapp.models.Event;
+import marteli.calendar.calendarapp.models.PluginInfo;
 
 public class PluginApiImpl implements CoreAPI {
 
@@ -71,14 +78,13 @@ public class PluginApiImpl implements CoreAPI {
     }
 
     @Override
-    public Map<String, String> getArguments(String pluginID) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getArguments'");
-    }
-
-    @Override
-    public String test() {
-        return calendar.toString();
+    public Map<String, String> getArguments(String pluginID) throws IllegalArgumentException {
+        for (PluginInfo info : calendar.getPlugins()) {
+            if (info.getPluginID().equals(pluginID)) {
+                return info.getArgs();
+            }
+        }
+        throw new IllegalArgumentException("Plugin ID not found");
     }
 
 }

@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
-import marteli.calendar.calendarapp.api.*;
+import marteli.calendar.calendarapp.apiclasses.*;
 import marteli.calendar.calendarapp.graphics.DrawCalendar;
 import marteli.calendar.calendarapp.models.*;
 import marteli.calendar.calendarapp.strings.UIStrings;
@@ -16,7 +16,7 @@ import marteli.calendar.calendarapp.userinput.Keyboard;
 public class MainMenu {
 
     /* Logger */
-    private final static Logger LOGR = Logger.getLogger(MainMenu.class.getName());
+    private final static Logger LOGR = Logger.getLogger(CalendarApp.class.getName());
 
     private CalendarData calendar;
     private List<Script> scripts;
@@ -41,7 +41,7 @@ public class MainMenu {
 
     public void start() {
         System.out.println(uiStrings.welcomeStr);
-        // calendar.printData(); // TODO: DEBUG ONLY
+        calendar.printData(); // TODO: DEBUG ONLY
         initScripts();
         initPlugins();
         waitForUser(); // TODO: DEBUG Makes it easier to see the output

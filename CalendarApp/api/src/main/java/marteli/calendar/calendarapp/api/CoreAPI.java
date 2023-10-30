@@ -17,6 +17,4 @@ public interface CoreAPI {
     // For plugins and scripts: Register to receive notifications for events
     void registerForNotifications(NotificationHandler handler);
 
-    String test(); // TODO: REMOVE
-
 }

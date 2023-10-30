@@ -37,6 +37,26 @@ public class CalendarApp {
     private static CalendarData calendar;
     private static Locale locale = Locale.getDefault();
 
+    /** Logger */
+    private final static Logger LOGR = Logger.getLogger(CalendarApp.class.getName());
+
+    private static void setupLogger() {
+        LogManager.getLogManager().reset();
+        LOGR.setLevel(Level.ALL);
+
+        ConsoleHandler ch = new ConsoleHandler();
+        ch.setLevel(Level.SEVERE);
+        LOGR.addHandler(ch);
+
+        try {
+            FileHandler fh = new FileHandler(LOG_FILE_NAME, true);
+            fh.setLevel(Level.FINE);
+            LOGR.addHandler(fh);
+        } catch (java.io.IOException e) {
+            LOGR.log(Level.SEVERE, "Logger broke.", e);
+        }
+    }
+
     /**
      * Print help message
      */
@@ -85,26 +105,6 @@ public class CalendarApp {
             System.out.println(uiStrings.errorStr + e);
         } finally {
             Keyboard.close(); // Close the scanner to satisfy PMD
-        }
-    }
-
-    /** Logger */
-    private final static Logger LOGR = Logger.getLogger(CalendarApp.class.getName());
-
-    private static void setupLogger() {
-        LogManager.getLogManager().reset();
-        LOGR.setLevel(Level.ALL);
-
-        ConsoleHandler ch = new ConsoleHandler();
-        ch.setLevel(Level.SEVERE);
-        LOGR.addHandler(ch);
-
-        try {
-            FileHandler fh = new FileHandler(LOG_FILE_NAME, true);
-            fh.setLevel(Level.FINE);
-            LOGR.addHandler(fh);
-        } catch (java.io.IOException e) {
-            LOGR.log(Level.SEVERE, "Logger broke.", e);
         }
     }
 }
