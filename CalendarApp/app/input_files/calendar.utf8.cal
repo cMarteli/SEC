@@ -2,7 +2,6 @@ event 2023-11-02 15:00:00 90 "Meeting 1"
 event 2023-10-20 08:30:45 45 "Meeting 2"
 event 2023-10-29 08:30:45 45 "Meeting 3"
 event 2023-10-29 18:30:45 20 "Bob Birthday"
-event 2023-11-22 18:30:45 20 "Al Birthday"
 
 plugin edu.curtin.calplugins.Repeat
 {
@@ -13,7 +12,7 @@ plugin edu.curtin.calplugins.Repeat
     repeat= "2"
 }
 
-plugin edu.curtin.calplugins.Notify { text= "birthday" }
+plugin edu.curtin.calplugins.Notify { text= "Meeting" }
 
 
 script "

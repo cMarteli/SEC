@@ -5,23 +5,18 @@
 
 package marteli.calendar.calendarapp.fileio;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.List;
-
 import marteli.calendar.calendarapp.CalendarApp;
 import marteli.calendar.calendarapp.CalendarData;
 import marteli.calendar.calendarapp.models.*;
 
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Reads the calendar file
- * Returns null in case of error
- */
 public class InputReader {
 
     /* Logger */
@@ -36,7 +31,16 @@ public class InputReader {
         List<Event> events;
         List<Script> scripts;
         List<PluginInfo> plugins;
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
+
+        Charset charset = StandardCharsets.UTF_8; // Default to UTF-8
+        if (filePath.endsWith(".utf16.cal")) {
+            charset = StandardCharsets.UTF_16;
+        } else if (filePath.endsWith(".utf32.cal")) {
+            charset = Charset.forName("UTF-32");
+        }
+
+        try (BufferedReader bufferedReader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(filePath), charset))) {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 lines.add(line);
@@ -49,7 +53,7 @@ public class InputReader {
 
         } catch (IOException e) {
             if (LOGR.isLoggable(Level.FINE)) {
-                LOGR.log(Level.FINE, "Error reading file: " + filePath);
+                LOGR.log(Level.FINE, "Error reading file: " + filePath, e);
             }
         }
 

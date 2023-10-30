@@ -60,6 +60,7 @@ public class PluginApiImpl implements CoreAPI {
         scheduleNotification(event);
     }
 
+    /* Schedules the notification for when the event starts */
     private void scheduleNotification(Event event) {
         Timer timer = new Timer();
 

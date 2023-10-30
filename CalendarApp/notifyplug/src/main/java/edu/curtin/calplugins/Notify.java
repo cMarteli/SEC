@@ -1,3 +1,7 @@
+/**
+ * Notify.java
+ * Plugin to notify the user of events
+ */
 package edu.curtin.calplugins;
 
 import java.util.Date;

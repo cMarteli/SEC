@@ -1,3 +1,7 @@
+/**
+ * Repeat.java
+ * Plugin to create repeating events
+ */
 package edu.curtin.calplugins;
 
 import java.util.Map;
@@ -5,7 +9,6 @@ import java.time.LocalDateTime;
 
 import marteli.calendar.calendarapp.api.*;
 
-// Corrected plugin with ID "edu.curtin.calplugins.Repeat"
 public class Repeat implements Plugin {
     private CoreAPI coreAPI;
     private static final String PLUGIN_ID = "edu.curtin.calplugins.Repeat";
